@@ -2,20 +2,67 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
-
-import '../../custom_style.dart';
-import '../../widgets/common_button.dart';
+import 'package:pack_app/custom_style.dart';
+import 'package:pack_app/widgets/common_button.dart';
+import '../../services/authentication.dart';
 import 'enter_details.dart';
 
 class EnterOtp extends StatefulWidget {
-  EnterOtp({super.key});
+  EnterOtp({super.key, required this.mobileNumber});
+
+  final String mobileNumber;
 
   @override
   State<EnterOtp> createState() => _EnterOtpState();
 }
 
 class _EnterOtpState extends State<EnterOtp> {
-  final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
+  final TextEditingController otpController = TextEditingController();
+  final AuthenticationService _authService = AuthenticationService();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  void _confirmOtp() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null; // Clear previous error message
+    });
+
+    try {
+      final response = await _authService.confirmOtp(widget.mobileNumber, otpController.text);
+
+      setState(() {
+        _isLoading = false;
+      });
+
+      if (response['response_code'] == 2) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EnterDetails(mobileNumber: widget.mobileNumber,),
+          ),
+        );
+      } else if (response['response_code'] == 4) {
+        // Already existing user
+        // Handle already existing user scenario
+      } else if (response['response_code'] == 1) {
+        setState(() {
+          _errorMessage = response['message'] ?? 'Invalid OTP';
+        });
+      } else {
+        // Handle other scenarios
+        setState(() {
+          _errorMessage = response['message'] ?? 'An unknown error occurred';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+        _errorMessage = 'Failed to confirm OTP. Please check your connection.';
+      });
+      print('Error confirming OTP: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +70,7 @@ class _EnterOtpState extends State<EnterOtp> {
       body: SingleChildScrollView(
         child: ConstrainedBox(
           constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height, // Set minimum height
+            minHeight: MediaQuery.of(context).size.height,
           ),
           child: IntrinsicHeight(
             child: Padding(
@@ -43,61 +90,54 @@ class _EnterOtpState extends State<EnterOtp> {
                       ),
                       const SizedBox(height: 22),
                       Text(
-                          'We have sent you a 4 digit code.\nPlease enter here to Verify your Number.',
-                          style: CustomTextStyles.subtitleTextStyle),
+                        'We have sent you a 4 digit code.\nPlease enter here to Verify your Number.',
+                        style: CustomTextStyles.subtitleTextStyle,
+                      ),
                       const SizedBox(height: 40),
                       Row(
                         children: [
                           Container(
                             height: 48,
                             alignment: Alignment.center,
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 14.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 14.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              border:
-                                  Border.all(color: const Color(0xffBEBEBE)),
+                              border: Border.all(color: const Color(0xffBEBEBE)),
                             ),
                             child: RichText(
                               text: TextSpan(
-                                style: CustomTextStyles.subtitleTextStyle
-                                    .copyWith(fontSize: 20),
+                                style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 20),
                                 children: <TextSpan>[
+                                  TextSpan(text: '+974'),
                                   TextSpan(
-                                    text: '+974',
-                                  ),
-                                  TextSpan(
-                                    text: '  32145626',
-                                    style: CustomTextStyles.subtitleTextStyle
-                                        .copyWith(
-                                            color: Colors.black, fontSize: 20),
+                                    text: '  ${widget.mobileNumber}',
+                                    style: CustomTextStyles.subtitleTextStyle.copyWith(
+                                      color: Colors.black,
+                                      fontSize: 20,
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                          SizedBox(
-                            width: 10,
-                          ),
+                          SizedBox(width: 10),
                           Container(
                             padding: EdgeInsets.all(14),
                             height: 48,
                             width: 48,
                             decoration: BoxDecoration(
-                                color: Color(0xffFEC66F),
-                                borderRadius: BorderRadius.circular(8)),
-                            child: SvgPicture.asset(
-                              'assets/images/pencil.svg',
+                              color: Color(0xffFEC66F),
+                              borderRadius: BorderRadius.circular(8),
                             ),
-                          )
+                            child: SvgPicture.asset('assets/images/pencil.svg'),
+                          ),
                         ],
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
                           'Please enter your OTP',
-                          style: CustomTextStyles.subtitleTextStyle
-                              .copyWith(color: Colors.black),
+                          style: CustomTextStyles.subtitleTextStyle.copyWith(color: Colors.black),
                         ),
                       ),
                       Row(
@@ -105,19 +145,22 @@ class _EnterOtpState extends State<EnterOtp> {
                           _otpBox(context: context),
                         ],
                       ),
+                      if (_errorMessage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Text(
+                            _errorMessage!,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                        ),
                       const SizedBox(height: 150),
                     ],
                   ),
                   CommonButton(
                     text: 'Continue',
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => EnterDetails(),
-                          ));
-                    },
-                  )
+                    onTap: _confirmOtp,
+                    isLoading: _isLoading,
+                  ),
                 ],
               ),
             ),
@@ -135,9 +178,11 @@ class _EnterOtpState extends State<EnterOtp> {
         errorTextSpace: 0,
         length: 4,
         keyboardType: TextInputType.number,
-        //autoFocus: true,
         textStyle: const TextStyle(
-            fontSize: 46, fontFamily: 'Aeonik', fontWeight: FontWeight.w500),
+          fontSize: 46,
+          fontFamily: 'Aeonik',
+          fontWeight: FontWeight.w500,
+        ),
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         enableActiveFill: true,
         showCursor: true,
@@ -157,14 +202,8 @@ class _EnterOtpState extends State<EnterOtp> {
           inactiveFillColor: Colors.white,
           selectedFillColor: Colors.white,
         ),
-        onChanged: (value) => {
-          setState(() {
-            // if (value.length == 1 && index < _focusNodes.length - 1) {
-            //   _focusNodes[index + 1].requestFocus();
-            // }
-          })
-        },
-        controller: TextEditingController(),
+        onChanged: (value) => {},
+        controller: otpController,
         onCompleted: (value) async {
           FocusScope.of(context).unfocus();
         },

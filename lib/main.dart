@@ -1,9 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:pack_app/screens/Dashboard/nav_bar.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:pack_app/providers/activity_level_provider.dart';
+import 'package:pack_app/providers/food_to_avoid_provider.dart';
 import 'package:pack_app/widgets/Animation.dart';
+import 'package:provider/provider.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'models/user_model.dart';
+
+Future<void> main() async {
+  await Hive.initFlutter();
+  Hive.registerAdapter(UserAdapter());
+  await Hive.openBox<User>('userBox');
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => FoodProvider()),
+        ChangeNotifierProvider(create: (_) => ActivityProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

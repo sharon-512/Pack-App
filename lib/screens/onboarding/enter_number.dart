@@ -1,14 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/common_button.dart';
-
-import '../../widgets/common_textfield.dart';
+import 'package:pack_app/services/authentication.dart';
+import 'package:pack_app/widgets/common_textfield.dart';
 import 'enter_otp.dart';
 
-class EnterNumber extends StatelessWidget {
+class EnterNumber extends StatefulWidget {
   EnterNumber({super.key});
 
+  @override
+  _EnterNumberState createState() => _EnterNumberState();
+}
+
+class _EnterNumberState extends State<EnterNumber> {
   final TextEditingController mobileNumber = TextEditingController();
+  final AuthenticationService _authService = AuthenticationService();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  void _sendMobileNumber() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null; // Clear previous error message
+    });
+
+    try {
+      final response = await _authService.sendMobileNumber(mobileNumber.text);
+
+      if (response['response_code'] == 1) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EnterOtp(mobileNumber: mobileNumber.text),
+          ),
+        );
+      } else {
+        setState(() {
+          _errorMessage = response['message'] ?? 'An unknown error occurred';
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _errorMessage = '$error';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +63,7 @@ class EnterNumber extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () {
                     Navigator.pop(context);
@@ -67,32 +105,35 @@ class EnterNumber extends StatelessWidget {
                       ),
                       child: Text(
                         '+974',
-                        style: CustomTextStyles.subtitleTextStyle
-                            .copyWith(fontSize: 20),
+                        style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 20),
                       ),
                     ),
                     const SizedBox(width: 8),
-                    CommonTextField(
+                    Expanded(
+                      child: CommonTextField(
                         hintText: 'your phone number',
                         controller: mobileNumber,
-                        keyboardType: TextInputType.phone)
+                        keyboardType: TextInputType.phone,
+                      ),
+                    ),
                   ],
                 ),
-                SizedBox(
-                  height: 40,
-                )
+                if (_errorMessage != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                SizedBox(height: 40),
               ],
             ),
             CommonButton(
               text: 'Continue',
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EnterOtp(),
-                    ));
-              },
-            )
+              onTap: _sendMobileNumber,
+              isLoading: _isLoading,
+            ),
           ],
         ),
       ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../../../custom_style.dart';
+import '../../../models/activity_level_model.dart';
+import '../../../providers/activity_level_provider.dart';
 
 class ActivityLevelSelection2 extends StatefulWidget {
   const ActivityLevelSelection2({super.key});
@@ -11,12 +13,22 @@ class ActivityLevelSelection2 extends StatefulWidget {
 }
 
 class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
-  int _selectedIndex = -1; // Initial value for no selection
+  int _selectedIndex = -1;
+
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<ActivityProvider>(context, listen: false).fetchActivities();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final activityProvider = Provider.of<ActivityProvider>(context);
+
     return Scaffold(
-      body: Column(
+      body: activityProvider.isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,64 +40,75 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
               textAlign: TextAlign.center,
             ),
           ),
-          SizedBox(
-            height: 40,
-          ),
-          Column(
-            children: [
-              _buildContainer(
-                  0,
-                  'Quite active',
-                  'You engage in any form physical activity\nthroughout the day, such as walking',
-                  'activity1.png'), // Customize these texts for each container
-              _buildContainer(
-                  1,
-                  'Very active',
-                  'You have an exceptionally high level\nof physical activity',
-                  'acti.png'), // Customize these texts for each container
-              _buildContainer(
-                  2,
-                  'Sedentary',
-                  'You spend most of their day sitting or\nlying down.',
-                  'activity3.png'), // Customize these texts for each container
-            ],
+          SizedBox(height: 40),
+          Expanded(
+            child: ListView.builder(
+              itemCount: activityProvider.activities.length,
+              itemBuilder: (context, index) {
+                final activity = activityProvider.activities[index];
+                return _buildContainer(index, activity);
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContainer(int index, String text1, String text2, String image) {
+  Widget _buildContainer(int index, Activity activity) {
     bool isSelected = _selectedIndex == index;
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedIndex = index; // Update the selected index
+          _selectedIndex = index;
         });
       },
       child: Container(
         height: 90,
-        // Set your desired height
         width: double.infinity,
-        // Set your desired width
         decoration: BoxDecoration(
-            color: isSelected ? Color(0xFFEDC0B2) : Colors.transparent,
-            border: Border.all(color: Color(0xFFEDC0B2)),
-            borderRadius: BorderRadius.circular(8)),
+          color: isSelected ? Color(0xFFEDC0B2) : Colors.transparent,
+          border: Border.all(color: Color(0xFFEDC0B2)),
+          borderRadius: BorderRadius.circular(8),
+        ),
         margin: EdgeInsets.only(bottom: 16),
-        // Space between containers
         child: Row(
           children: [
             SizedBox(width: 10),
-            Image.asset('assets/images/$image'), // Add your image path here
-            SizedBox(width: 10), // Spacing between image and text
+            Image.network(
+              activity.imageUrl,
+              height: 70,
+              width: 70,
+              fit: BoxFit.fill,
+              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Image.asset(
+                    'assets/images/default.png', // Path to your default image
+                    height: 70,
+                    width: 70,
+                    fit: BoxFit.fill,
+                  );
+                }
+              },
+              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                return Image.asset(
+                  'assets/images/default.png', // Path to your default image
+                  height: 70,
+                  width: 70,
+                  fit: BoxFit.fill,
+                );
+              },
+            ),
+            SizedBox(width: 10),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    text1,
+                    activity.activityName,
                     style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 20,
@@ -94,7 +117,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
                     ),
                   ),
                   Text(
-                    text2,
+                    activity.activityDescription,
                     style: TextStyle(
                       fontFamily: 'Aeonik',
                       fontSize: 12,

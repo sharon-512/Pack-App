@@ -85,7 +85,7 @@ class DatePicker extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'You can freeze your plan thriugh your profile. this is a weekly ongoing subscription. you can freeze up to 3 days',
+                    'You can freeze your plan through your profile. this is a weekly ongoing subscription. you can freeze up to 3 days',
                     style: CustomTextStyles.labelTextStyle
                         .copyWith(fontSize: 11, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,

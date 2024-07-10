@@ -9,8 +9,10 @@ import 'daily_nutrition.dart';
 
 class NumberOfMeals extends StatefulWidget {
   final String subplanName;
-
-  const NumberOfMeals({Key? key, required this.subplanName}) : super(key: key);
+  const NumberOfMeals({
+    Key? key,
+    required this.subplanName,
+  }) : super(key: key);
 
   @override
   State<NumberOfMeals> createState() => _NumberOfMealsState();
@@ -19,7 +21,6 @@ class NumberOfMeals extends StatefulWidget {
 class _NumberOfMealsState extends State<NumberOfMeals> {
   int selectedOption = 0; // 0 for none, 1 for One Meal, 2 for Two Meal, etc.
   List<dynamic> mealOptions = [];
-
   @override
   void initState() {
     super.initState();
@@ -28,7 +29,8 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
 
   Future<void> fetchMealOptions(String subplanName) async {
     try {
-      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+      final response = await http
+          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -38,7 +40,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         for (var plan in data['plan']) {
           final subplans = plan['sub_plans'] as List<dynamic>;
           selectedSubplan = subplans.firstWhere(
-                (subplan) => subplan['subplan_name'] == subplanName,
+            (subplan) => subplan['subplan_name'] == subplanName,
             orElse: () => null,
           );
           if (selectedSubplan != null) {
@@ -48,7 +50,8 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
 
         if (selectedSubplan != null && selectedSubplan['meal_plan'] != null) {
           setState(() {
-            mealOptions = List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
+            mealOptions =
+                List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
           });
         }
       } else {
@@ -109,13 +112,17 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedOption = i + 1; // +1 to match your meal options (1-based)
+                              selectedOption = i +
+                                  1; // +1 to match your meal options (1-based)
                             });
                           },
                           child: Container(
-                            margin: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 6, horizontal: 5),
                             decoration: BoxDecoration(
-                              color: selectedOption == i + 1 ? Color(0xFFEDC0B2) : Colors.transparent,
+                              color: selectedOption == i + 1
+                                  ? Color(0xFFEDC0B2)
+                                  : Colors.transparent,
                               border: Border.all(color: Color(0xFFEDC0B2)),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -125,7 +132,9 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                               child: Text(
                                 mealOptions[i]['mealtype_name'],
                                 style: TextStyle(
-                                  color: selectedOption == i + 1 ? Colors.white : Colors.black,
+                                  color: selectedOption == i + 1
+                                      ? Colors.white
+                                      : Colors.black,
                                   fontFamily: 'Aeonik',
                                   fontSize: 18,
                                 ),
@@ -144,7 +153,8 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'You can freeze your plan through your profile. this is a weekly ongoing subscription. you can freeze up to 3 days',
-                    style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 11, fontWeight: FontWeight.w400),
+                    style: CustomTextStyles.labelTextStyle
+                        .copyWith(fontSize: 11, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   ),
                 ),
@@ -152,7 +162,8 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                   text: 'Continue',
                   onTap: () {
                     if (selectedOption > 0) {
-                      String selectedMealType = mealOptions[selectedOption - 1]['mealtype_name'];
+                      String selectedMealType =
+                          mealOptions[selectedOption - 1]['mealtype_name'];
                       Navigator.push(
                         context,
                         MaterialPageRoute(

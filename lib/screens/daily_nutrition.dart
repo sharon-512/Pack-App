@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:pack_app/screens/summary_screen.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../custom_style.dart';
 import '../widgets/Addon_item.dart';
 import '../widgets/common_button.dart';
 import '../widgets/food_detail_container.dart';
+import '../screens/summary_screen.dart';
 
 class DailyNutrition extends StatefulWidget {
   final String subplanName;
   final String mealtypeName;
 
-  const DailyNutrition({Key? key, required this.subplanName, required this.mealtypeName}) : super(key: key);
+  const DailyNutrition({
+    Key? key,
+    required this.subplanName,
+    required this.mealtypeName,
+  }) : super(key: key);
 
   @override
   State<DailyNutrition> createState() => _DailyNutritionState();
@@ -23,16 +29,45 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int selectedFoodOption = 0;
   int selectedCardIndex = -1;
   Map<String, dynamic>? foodDetails;
+  late DateTime startDate;
+  late DateTime endDate;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    fetchDatesFromSharedPreferences();
+  }
+
+  Future<void> fetchDatesFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedStartDate = prefs.getString('startDate');
+    final storedEndDate = prefs.getString('endDate');
+
+    if (storedStartDate != null && storedEndDate != null) {
+      setState(() {
+        startDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedStartDate);
+        endDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedEndDate);
+        print(storedEndDate);
+        print(storedStartDate);
+        _isLoading = false;
+      });
+    } else {
+      // Handle case where dates are not stored in SharedPreferences
+      setState(() {
+        startDate = DateTime.now();
+        endDate = DateTime.now();
+        _isLoading = false;
+      });
+    }
+
     fetchFoodDetails(widget.subplanName, widget.mealtypeName);
   }
 
   Future<void> fetchFoodDetails(String subplanName, String mealtypeName) async {
     try {
-      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+      final response = await http
+          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -80,6 +115,14 @@ class _DailyNutritionState extends State<DailyNutrition> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
@@ -120,20 +163,13 @@ class _DailyNutritionState extends State<DailyNutrition> {
                   height: 92,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: 7,
+                    itemCount: calculateDaysDifference(startDate, endDate) + 1,
                     itemBuilder: (context, index) {
-                      // Define the texts for each container
-                      String text1 = 'Apr';
-                      String text2 = (21 + index).toString();
-                      String text3 = [
-                        'Sun',
-                        'Mon',
-                        'Tue',
-                        'Wed',
-                        'Thu',
-                        'Fri',
-                        'Sat'
-                      ][index];
+                      // Calculate date for each index
+                      DateTime currentDate = startDate.add(Duration(days: index));
+                      String text1 = DateFormat('MMM').format(currentDate);
+                      String text2 = DateFormat('d').format(currentDate);
+                      String text3 = DateFormat('E').format(currentDate);
 
                       return GestureDetector(
                         onTap: () {
@@ -144,10 +180,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         child: Row(
                           children: [
                             CustomContainer(
-                              index == selectedDay,
-                              text1,
-                              text2,
-                              text3,
+                              isSelected: index == selectedDay,
+                              text1: text1,
+                              text2: text2,
+                              text3: text3,
                             ),
                             SizedBox(
                               width: 10,
@@ -164,7 +200,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 Container(
                   height: 40,
                   decoration: BoxDecoration(
-                    color: Color(0xffFFF7E2),
+                    color: const Color(0xffFFF7E2),
                     borderRadius: BorderRadius.circular(30),
                   ),
                   child: Row(
@@ -190,27 +226,27 @@ class _DailyNutritionState extends State<DailyNutrition> {
                           padding: EdgeInsets.symmetric(horizontal: 8),
                           decoration: BoxDecoration(
                             color: selectedFoodOption == index
-                                ? Color(0xFFFEC66F)
+                                ? const Color(0xFFFEC66F)
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(
                               color: selectedFoodOption == index
-                                  ? Color(0xFFFEC66F)
-                                  : Colors
-                                  .transparent, // Same border color for all
+                                  ? const Color(0xFFFEC66F)
+                                  : Colors.transparent, // Same border color for all
                             ),
                           ),
                           child: Center(
                             child: Text(
                               foodOptions[index],
                               style: TextStyle(
-                                  color: selectedFoodOption == index
-                                      ? Colors.black
-                                      : Color(0xFFA89B87),
-                                  fontSize: 13,
-                                  fontFamily: 'Aeonik',
-                                  letterSpacing: .14,
-                                  fontWeight: FontWeight.w500),
+                                color: selectedFoodOption == index
+                                    ? Colors.black
+                                    : const Color(0xFFA89B87),
+                                fontSize: 13,
+                                fontFamily: 'Aeonik',
+                                letterSpacing: 0.14,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
@@ -224,84 +260,86 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
-                      children: selectedFoodOption == 0
-                          ? List.generate(
-                        foodDetails?['BreakFast']?.length ?? 0,
-                            (index) => FoodInfoCard(
-                          isSelected: selectedCardIndex == index,
-                          onTap: () {
-                            setState(() {
-                              selectedCardIndex = index;
-                            });
-                          },
-                          foodData: foodDetails?['BreakFast'][index],
-                        ),
-                      )
-                          : selectedFoodOption == 1
-                          ? List.generate(
-                        foodDetails?['Lunch']?.length ?? 0,
-                            (index) => FoodInfoCard(
-                          isSelected: selectedCardIndex == index,
-                          onTap: () {
-                            setState(() {
-                              selectedCardIndex = index;
-                            });
-                          },
-                          foodData: foodDetails?['Lunch'][index],
-                        ),
-                      )
-                          : selectedFoodOption == 2
-                          ? List.generate(
-                        foodDetails?['Snacks']?.length ?? 0,
-                            (index) => FoodInfoCard(
-                          isSelected: selectedCardIndex == index,
-                          onTap: () {
-                            setState(() {
-                              selectedCardIndex = index;
-                            });
-                          },
-                          foodData: foodDetails?['Snacks'][index],
-                        ),
-                      )
-                          : selectedFoodOption == 3
-                          ? List.generate(
-                        foodDetails?['Dinner']?.length ?? 0,
-                            (index) => FoodInfoCard(
-                          isSelected: selectedCardIndex == index,
-                          onTap: () {
-                            setState(() {
-                              selectedCardIndex = index;
-                            });
-                          },
-                          foodData: foodDetails?['Dinner'][index],
-                        ),
-                      )
-                          : selectedFoodOption == 4
-                          ? List.generate(
-                        foodDetails?['Addons']?.length ?? 0,
-                            (index) => AddonItem(
-                          onTap: () {
-                            setState(() {
-                              selectedCardIndex = index;
-                            });
-                          },
-                          // foodData: foodDetails?['Addons'][index],
-                        ),
-                      )
-                          : [],
+                      children: [
+                        if (selectedFoodOption == 0)
+                          ...List.generate(
+                            foodDetails?['BreakFast']?.length ?? 0,
+                                (index) => FoodInfoCard(
+                              isSelected: selectedCardIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedCardIndex = index;
+                                });
+                              },
+                              foodData: foodDetails?['BreakFast'][index],
+                            ),
+                          ),
+                        if (selectedFoodOption == 1)
+                          ...List.generate(
+                            foodDetails?['Lunch']?.length ?? 0,
+                                (index) => FoodInfoCard(
+                              isSelected: selectedCardIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedCardIndex = index;
+                                });
+                              },
+                              foodData: foodDetails?['Lunch'][index],
+                            ),
+                          ),
+                        if (selectedFoodOption == 2)
+                          ...List.generate(
+                            foodDetails?['Snacks']?.length ?? 0,
+                                (index) => FoodInfoCard(
+                              isSelected: selectedCardIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedCardIndex = index;
+                                });
+                              },
+                              foodData: foodDetails?['Snacks'][index],
+                            ),
+                          ),
+                        if (selectedFoodOption == 3)
+                          ...List.generate(
+                            foodDetails?['Dinner']?.length ?? 0,
+                                (index) => FoodInfoCard(
+                              isSelected: selectedCardIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedCardIndex = index;
+                                });
+                              },
+                              foodData: foodDetails?['Dinner'][index],
+                            ),
+                          ),
+                        if (selectedFoodOption == 4)
+                          ...List.generate(
+                            foodDetails?['Addons']?.length ?? 0,
+                                (index) => AddonItem(
+                              onTap: () {
+                                setState(() {
+                                  selectedCardIndex = index;
+                                });
+                              },
+                              // foodData: foodDetails?['Addons'][index],
+                            ),
+                          ),
+                      ],
                     ),
                   ),
-                )
+                ),
               ],
             ),
             CommonButton(
               text: 'Continue',
               onTap: () {
                 Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SummaryScreen(),
-                    ));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SummaryScreen(),
+                  ),
+                );
               },
             ),
           ],
@@ -310,20 +348,35 @@ class _DailyNutritionState extends State<DailyNutrition> {
     );
   }
 
-  Widget CustomContainer(
-      bool isSelected,
-      String text1,
-      String text2,
-      String text3,
-      ) {
+  int calculateDaysDifference(DateTime start, DateTime end) {
+    return end.difference(start).inDays;
+  }
+}
+
+class CustomContainer extends StatelessWidget {
+  final bool isSelected;
+  final String text1;
+  final String text2;
+  final String text3;
+
+  const CustomContainer({
+    Key? key,
+    required this.isSelected,
+    required this.text1,
+    required this.text2,
+    required this.text3,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       height: 90,
       width: 69,
       decoration: BoxDecoration(
-        color: isSelected ? Color(0xFFEDC0B2) : Colors.transparent,
+        color: isSelected ? const Color(0xFFEDC0B2) : Colors.transparent,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: Color(0xFFEDC0B2), // Thicker border if selected
+          color: const Color(0xFFEDC0B2), // Thicker border if selected
         ),
       ),
       child: Column(
@@ -331,20 +384,24 @@ class _DailyNutritionState extends State<DailyNutrition> {
         children: [
           Text(
             text1,
-            style: CustomTextStyles.labelTextStyle
-                .copyWith(color: isSelected ? Colors.white : Colors.black),
+            style: CustomTextStyles.labelTextStyle.copyWith(
+              color: isSelected ? Colors.white : Colors.black,
+            ),
           ),
           Text(
             text2,
             style: CustomTextStyles.labelTextStyle.copyWith(
-                fontSize: 24, color: isSelected ? Colors.white : Colors.black),
+              fontSize: 24,
+              color: isSelected ? Colors.white : Colors.black,
+            ),
           ),
           Text(
             text3,
             style: CustomTextStyles.labelTextStyle.copyWith(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: isSelected ? Colors.white : const Color(0xffABABAB)),
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: isSelected ? Colors.white : const Color(0xffABABAB),
+            ),
           ),
         ],
       ),

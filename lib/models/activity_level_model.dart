@@ -5,6 +5,9 @@ class Activity {
   final String activityDescription;
   final String activityImage;
   final String imageUrl;
+  final int status;
+  final String createdAt;
+  final String updatedAt;
 
   Activity({
     required this.id,
@@ -13,6 +16,9 @@ class Activity {
     required this.activityDescription,
     required this.activityImage,
     required this.imageUrl,
+    required this.status,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Activity.fromJson(Map<String, dynamic> json) {
@@ -23,6 +29,9 @@ class Activity {
       activityDescription: json['activity_descrption'],
       activityImage: json['activityimage'],
       imageUrl: json['image_url'],
+      status: json['status'],
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 }

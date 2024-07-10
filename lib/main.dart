@@ -3,6 +3,8 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:pack_app/providers/activity_level_provider.dart';
 import 'package:pack_app/providers/food_to_avoid_provider.dart';
+import 'package:pack_app/providers/user_registration_provider.dart';
+import 'package:pack_app/screens/onboarding/enter_details.dart';
 import 'package:pack_app/widgets/Animation.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +19,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => FoodProvider()),
         ChangeNotifierProvider(create: (_) => ActivityProvider()),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child: MyApp(),
     ),

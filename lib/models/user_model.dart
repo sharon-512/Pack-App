@@ -5,50 +5,70 @@ part 'user_model.g.dart';
 @HiveType(typeId: 0)
 class User {
   @HiveField(0)
-  final int id;
+  final int? id;
 
   @HiveField(1)
-  final String email;
+  final String? email;
 
   @HiveField(2)
-  final String firstname;
+  final String? firstname;
 
   @HiveField(3)
-  final String lastname;
+  final String? lastname;
 
   @HiveField(4)
-  final String image;
+  final String? image;
 
   @HiveField(5)
-  final String mobno;
+  final String? mobno;
 
   @HiveField(6)
-  final String? streetaddress;
+  final String? address;
 
   @HiveField(7)
-  final String? city;
+  final String? areaName;
+
+  @HiveField(8)
+  final double? height;
+
+  @HiveField(9)
+  final double? weight;
+
+  @HiveField(10)
+  final int? age;
+
+  @HiveField(11)
+  final String? gender;
 
   User({
-    required this.id,
-    required this.email,
-    required this.firstname,
-    required this.lastname,
-    required this.image,
-    required this.mobno,
-    this.streetaddress,
-    this.city,
+    this.id,
+    this.email,
+    this.firstname,
+    this.lastname,
+    this.image,
+    this.mobno,
+    this.address,
+    this.areaName,
+    this.height,
+    this.weight,
+    this.age,
+    this.gender,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
       email: json['email'],
-      firstname: json['firstname'],
-      lastname: json['lastname'],
+      firstname: json['first_name'],
+      lastname: json['last_name'],
       image: json['image'],
-      mobno: json['mobno'],
-      streetaddress: json['streetaddress'],
-      city: json['city'],
+      mobno: json['mobno']?.toString(),
+      address: json['address'],
+      areaName: json['area_name'],
+      height: json['height']?.toDouble(),
+      weight: json['weight']?.toDouble(),
+      age: json['age'],
+      gender: json['gender'],
     );
   }
 }

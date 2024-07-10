@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../../../custom_style.dart';
+import '../../../providers/user_registration_provider.dart'; // Import the UserProvider
 
 class SelectGender2 extends StatefulWidget {
   const SelectGender2({super.key});
@@ -12,10 +13,13 @@ class SelectGender2 extends StatefulWidget {
 class _SelectGenderState extends State<SelectGender2> {
   String _selectedGender = '';
 
-  void _selectGender(String gender) {
+  void _selectGender(String gender, UserProvider userProvider) {
     setState(() {
       _selectedGender = gender;
     });
+
+    // Update the gender in the user provider
+    userProvider.updateGender(gender);
   }
 
   @override
@@ -51,19 +55,20 @@ class _SelectGenderState extends State<SelectGender2> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               GestureDetector(
-                onTap: () => _selectGender('male'),
+                onTap: () => _selectGender('male', Provider.of<UserProvider>(context, listen: false)),
                 child: Column(
                   children: [
                     Container(
-                        decoration: _boxDecoration(_selectedGender == 'male'
-                            ? _activeColor
-                            : _defaultColor),
-                        height: _heightWidth,
-                        width: _heightWidth,
-                        child: Image.asset(
-                          'assets/images/male2.png',
-                          alignment: Alignment.bottomCenter,
-                        )),
+                      decoration: _boxDecoration(_selectedGender == 'male'
+                          ? _activeColor
+                          : _defaultColor),
+                      height: _heightWidth,
+                      width: _heightWidth,
+                      child: Image.asset(
+                        'assets/images/male2.png',
+                        alignment: Alignment.bottomCenter,
+                      ),
+                    ),
                     Text(
                       'Male',
                       style: CustomTextStyles.labelTextStyle
@@ -74,17 +79,18 @@ class _SelectGenderState extends State<SelectGender2> {
               ),
               SizedBox(width: 20), // Spacing between containers
               GestureDetector(
-                onTap: () => _selectGender('female'),
+                onTap: () => _selectGender('female', Provider.of<UserProvider>(context, listen: false)),
                 child: Column(
                   children: [
                     Container(
-                        decoration: _boxDecoration(_selectedGender == 'female'
-                            ? _activeColor
-                            : _defaultColor),
-                        height: _heightWidth,
-                        width: _heightWidth,
-                        child: Image.asset('assets/images/female.png',
-                            alignment: Alignment.bottomCenter)),
+                      decoration: _boxDecoration(_selectedGender == 'female'
+                          ? _activeColor
+                          : _defaultColor),
+                      height: _heightWidth,
+                      width: _heightWidth,
+                      child: Image.asset('assets/images/female.png',
+                          alignment: Alignment.bottomCenter),
+                    ),
                     Text(
                       'Female',
                       style: CustomTextStyles.labelTextStyle

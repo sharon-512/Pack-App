@@ -1,7 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../custom_style.dart';
+import '../../../providers/user_registration_provider.dart';
 
 class SelectDob2 extends StatefulWidget {
   const SelectDob2({super.key});
@@ -12,22 +14,26 @@ class SelectDob2 extends StatefulWidget {
 
 class _SelectDobState2 extends State<SelectDob2> {
   int _selectedDay = 1;
-  int _selectedYear = 1;
+  int _selectedYear = 1950; // Initial value adjusted for demonstration
   int _selectedMonthIndex = 0;
   final List<String> _months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
   ];
+
+  void _calculateAgeAndStore(BuildContext context) {
+    // Calculate age based on selected date of birth
+    DateTime currentDate = DateTime.now();
+    DateTime selectedDateOfBirth = DateTime(_selectedYear, _selectedMonthIndex + 1, _selectedDay);
+    int age = currentDate.year - selectedDateOfBirth.year;
+    if (currentDate.month < selectedDateOfBirth.month ||
+        (currentDate.month == selectedDateOfBirth.month && currentDate.day < selectedDateOfBirth.day)) {
+      age--;
+    }
+
+    // Update age in UserProvider
+    Provider.of<UserProvider>(context, listen: false).updateAge(age.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +60,7 @@ class _SelectDobState2 extends State<SelectDob2> {
                     children: [
                       Text(
                         'Day',
-                        style: CustomTextStyles.subtitleTextStyle
-                            .copyWith(fontSize: 14),
+                        style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
                         height: 76,
@@ -67,13 +72,12 @@ class _SelectDobState2 extends State<SelectDob2> {
                         alignment: Alignment.center,
                         child: CupertinoPicker(
                           itemExtent: 76,
-                          selectionOverlay: Container(
-                            color: Colors.transparent,
-                          ),
+                          selectionOverlay: Container(color: Colors.transparent),
                           onSelectedItemChanged: (int value) {
                             setState(() {
                               _selectedDay = value + 1;
                             });
+                            _calculateAgeAndStore(context); // Update age when day changes
                           },
                           children: List<Widget>.generate(31, (int index) {
                             return Center(
@@ -98,8 +102,7 @@ class _SelectDobState2 extends State<SelectDob2> {
                     children: [
                       Text(
                         'Month',
-                        style: CustomTextStyles.subtitleTextStyle
-                            .copyWith(fontSize: 14),
+                        style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
                         height: 78,
@@ -110,13 +113,12 @@ class _SelectDobState2 extends State<SelectDob2> {
                         alignment: Alignment.center,
                         child: CupertinoPicker(
                           itemExtent: 76,
-                          selectionOverlay: Container(
-                            color: Colors.transparent,
-                          ),
+                          selectionOverlay: Container(color: Colors.transparent),
                           onSelectedItemChanged: (int value) {
                             setState(() {
                               _selectedMonthIndex = value;
                             });
+                            _calculateAgeAndStore(context); // Update age when month changes
                           },
                           children: _months.map((String month) {
                             return Center(
@@ -141,8 +143,7 @@ class _SelectDobState2 extends State<SelectDob2> {
                     children: [
                       Text(
                         'Year',
-                        style: CustomTextStyles.subtitleTextStyle
-                            .copyWith(fontSize: 14),
+                        style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
                         margin: EdgeInsets.only(left: 10),
@@ -154,19 +155,18 @@ class _SelectDobState2 extends State<SelectDob2> {
                         alignment: Alignment.center,
                         child: CupertinoPicker(
                           itemExtent: 76,
-                          selectionOverlay: Container(
-                            color: Colors.transparent,
-                          ),
+                          selectionOverlay: Container(color: Colors.transparent),
                           onSelectedItemChanged: (int value) {
                             setState(() {
                               _selectedYear = value + 1950;
                             });
+                            _calculateAgeAndStore(context); // Update age when year changes
                           },
-                          children: List<Widget>.generate(2024, (int index) {
-                            return const Center(
+                          children: List<Widget>.generate(75, (int index) {
+                            return Center(
                               child: Text(
-                                '${1950 + 1}',
-                                style: TextStyle(
+                                '${1950 + index}',
+                                style: const TextStyle(
                                   fontSize: 34,
                                   fontFamily: 'Aeonik',
                                   fontWeight: FontWeight.w400,
@@ -181,9 +181,10 @@ class _SelectDobState2 extends State<SelectDob2> {
                 ),
               ],
             ),
-          )
+          ),
         ],
       ),
     );
   }
 }
+

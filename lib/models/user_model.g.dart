@@ -23,15 +23,19 @@ class UserAdapter extends TypeAdapter<User> {
       lastname: fields[3] as String,
       image: fields[4] as String,
       mobno: fields[5] as String,
-      streetaddress: fields[6] as String?,
-      city: fields[7] as String?,
+      address: fields[6] as String?,
+      areaName: fields[7] as String?,
+      height: fields[8] as double?,
+      weight: fields[9] as double?,
+      age: fields[10] as int?,
+      gender: fields[11] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(12)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -45,9 +49,17 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(5)
       ..write(obj.mobno)
       ..writeByte(6)
-      ..write(obj.streetaddress)
+      ..write(obj.address)
       ..writeByte(7)
-      ..write(obj.city);
+      ..write(obj.areaName)
+      ..writeByte(8)
+      ..write(obj.height)
+      ..writeByte(9)
+      ..write(obj.weight)
+      ..writeByte(10)
+      ..write(obj.age)
+      ..writeByte(11)
+      ..write(obj.gender);
   }
 
   @override

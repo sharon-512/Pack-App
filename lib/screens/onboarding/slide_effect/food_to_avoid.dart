@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../custom_style.dart';
 import '../../../models/food_to_avoid_model.dart';
 import '../../../providers/food_to_avoid_provider.dart';
+import '../../../providers/user_registration_provider.dart';
 
 class SpecificFood2 extends StatefulWidget {
   const SpecificFood2({super.key});
@@ -13,6 +14,10 @@ class SpecificFood2 extends StatefulWidget {
 
 class _SpecificFood2 extends State<SpecificFood2> {
   int _selectedIndex = -1;
+
+  void _updateFoodAvoid(String foodName) {
+    Provider.of<UserProvider>(context, listen: false).updateFoodAvoid(foodName);
+  }
 
   @override
   void initState() {
@@ -68,6 +73,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
         setState(() {
           _selectedIndex = index;
         });
+        _updateFoodAvoid(food.foodName); // Update foodavoid with selected food name
       },
       child: Container(
         height: 70,
@@ -80,7 +86,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(food.imageUrl,fit: BoxFit.fill,height: 37,width: 37,),
+            Image.network(food.imageUrl, fit: BoxFit.fill, height: 37, width: 37),
             Text(
               food.foodName,
               style: TextStyle(

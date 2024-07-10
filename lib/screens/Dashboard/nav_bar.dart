@@ -60,9 +60,9 @@ class CustomNavItem extends StatelessWidget {
   }
 }
 
-// Bottom navigation bar stateful widget
+
 class BottomNavbar extends StatefulWidget {
-  const BottomNavbar({super.key});
+  const BottomNavbar({Key? key}) : super(key: key);
 
   @override
   State<BottomNavbar> createState() => _BottomNavbarState();
@@ -87,64 +87,71 @@ class _BottomNavbarState extends State<BottomNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: _widgetOptions.elementAt(_selectedIndex), // Display the selected page
-      bottomNavigationBar: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        child: Container(
-          height: 70,
-          padding: EdgeInsets.symmetric(horizontal: 10),
-          color: Color(0xff124734),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              GestureDetector(
-                onTap: () => _onItemTapped(0),
-                child: CustomNavItem(
-                  imagePath: 'assets/images/nav_bar1.svg',
-                  label: 'Home',
-                  isSelected: _selectedIndex == 0,
+    return WillPopScope(
+      onWillPop: () async {
+        // Return false to disable the back button
+        return false;
+      },
+      child: Scaffold(
+        body: _widgetOptions.elementAt(_selectedIndex), // Display the selected page
+        bottomNavigationBar: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(25),
+            topRight: Radius.circular(25),
+          ),
+          child: Container(
+            height: 70,
+            padding: EdgeInsets.symmetric(horizontal: 10),
+            color: Color(0xff124734),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                GestureDetector(
+                  onTap: () => _onItemTapped(0),
+                  child: CustomNavItem(
+                    imagePath: 'assets/images/nav_bar1.svg',
+                    label: 'Home',
+                    isSelected: _selectedIndex == 0,
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () => _onItemTapped(1),
-                child: CustomNavItem(
-                  imagePath: 'assets/images/nav_bar2.svg',
-                  label: 'Food',
-                  isSelected: _selectedIndex == 1,
+                GestureDetector(
+                  onTap: () => _onItemTapped(1),
+                  child: CustomNavItem(
+                    imagePath: 'assets/images/nav_bar2.svg',
+                    label: 'Food',
+                    isSelected: _selectedIndex == 1,
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () => _onItemTapped(2),
-                child: CustomNavItem(
-                  imagePath: 'assets/icons/subscription.svg',
-                  label: 'Pack',
-                  isSelected: _selectedIndex == 2,
+                GestureDetector(
+                  onTap: () => _onItemTapped(2),
+                  child: CustomNavItem(
+                    imagePath: 'assets/icons/subscription.svg',
+                    label: 'Pack',
+                    isSelected: _selectedIndex == 2,
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () => _onItemTapped(3),
-                child: CustomNavItem(
-                  imagePath: 'assets/images/nav_bar3.svg',
-                  label: 'Alert',
-                  isSelected: _selectedIndex == 3,
+                GestureDetector(
+                  onTap: () => _onItemTapped(3),
+                  child: CustomNavItem(
+                    imagePath: 'assets/images/nav_bar3.svg',
+                    label: 'Alert',
+                    isSelected: _selectedIndex == 3,
+                  ),
                 ),
-              ),
-              GestureDetector(
-                onTap: () => _onItemTapped(4),
-                child: CustomNavItem(
-                  imagePath: 'assets/images/nav_bar4.svg',
-                  label: 'Profile',
-                  isSelected: _selectedIndex == 4,
+                GestureDetector(
+                  onTap: () => _onItemTapped(4),
+                  child: CustomNavItem(
+                    imagePath: 'assets/images/nav_bar4.svg',
+                    label: 'Profile',
+                    isSelected: _selectedIndex == 4,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 }
+

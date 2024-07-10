@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../custom_style.dart';
 import '../../../models/activity_level_model.dart';
 import '../../../providers/activity_level_provider.dart';
+import '../../../providers/user_registration_provider.dart';
 
 class ActivityLevelSelection2 extends StatefulWidget {
   const ActivityLevelSelection2({super.key});
@@ -14,6 +15,10 @@ class ActivityLevelSelection2 extends StatefulWidget {
 
 class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
   int _selectedIndex = -1;
+
+  void _updateActivityLevel(String activityLevel) {
+    Provider.of<UserProvider>(context, listen: false).updateActivityLevel(activityLevel);
+  }
 
   @override
   void initState() {
@@ -62,6 +67,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
         setState(() {
           _selectedIndex = index;
         });
+        _updateActivityLevel(activity.activityName); // Update activitylevel with selected activity name
       },
       child: Container(
         height: 90,
@@ -134,3 +140,4 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
     );
   }
 }
+

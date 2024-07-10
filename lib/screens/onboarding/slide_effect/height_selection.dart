@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../custom_style.dart';
+import '../../../providers/user_registration_provider.dart';
 
 class WeightAndHeight2 extends StatefulWidget {
   const WeightAndHeight2({Key? key}) : super(key: key);
@@ -23,6 +25,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
           ? (_selectedWeight / 2.20462).round()
           : (_selectedWeight * 2.20462).round();
     });
+    _updateUserData();
   }
 
   void _toggleHeightUnit() {
@@ -30,14 +33,20 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
       _isCentimeters = !_isCentimeters;
       // Convert the height if necessary
       _selectedHeight = _isCentimeters
-          ? (_selectedHeight / 30.48).round()
+          ? (_selectedHeight)
           : (_selectedHeight * 30.48).round();
     });
+    _updateUserData();
+  }
+
+  void _updateUserData() {
+    // Update height and weight in UserProvider
+    Provider.of<UserProvider>(context, listen: false).updateHeight(_selectedHeight.toString(),);
+    Provider.of<UserProvider>(context, listen: false).updateWeight(_selectedWeight.toString(),);
   }
 
   @override
   Widget build(BuildContext context) {
-    int _selectedWeight = 60;
     return Scaffold(
       backgroundColor: Colors.white,
       body: Column(
@@ -78,8 +87,9 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
                           _selectedWeight = _isKilograms
                               ? index + 40
                               : (index + 88)
-                                  .round(); // Adjust for lbs if necessary
+                              .round(); // Adjust for lbs if necessary
                         });
+                        _updateUserData(); // Update user data on weight change
                       },
                       childDelegate: ListWheelChildBuilderDelegate(
                         builder: (context, index) {
@@ -96,7 +106,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
                           );
                         },
                         childCount:
-                            101, // Range from 40kg to 140kg or 88lbs to 308lbs
+                        101, // Range from 40kg to 140kg or 88lbs to 308lbs
                       ),
                     ),
                   ),
@@ -166,8 +176,9 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
                           _selectedHeight = _isCentimeters
                               ? index + 100
                               : (index + 3)
-                                  .round(); // Adjust for ft if necessary
+                              .round(); // Adjust for ft if necessary
                         });
+                        _updateUserData(); // Update user data on height change
                       },
                       childDelegate: ListWheelChildBuilderDelegate(
                         builder: (context, index) {
@@ -184,7 +195,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
                           );
                         },
                         childCount:
-                            251, // Range from 100cm to 350cm or 3ft to 11ft
+                        251, // Range from 100cm to 350cm or 3ft to 11ft
                       ),
                     ),
                   ),
@@ -227,7 +238,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
 
   Widget _unitOption(String unit, bool isSelected) {
     return InkWell(
-      onTap: _toggleUnit,
+      onTap: unit == 'Kg' || unit == 'lbs' ? _toggleUnit : _toggleHeightUnit,
       child: Text(
         unit,
         style: TextStyle(
@@ -240,3 +251,4 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
     );
   }
 }
+

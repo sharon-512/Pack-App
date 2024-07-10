@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pack_app/screens/Dashboard/nav_bar.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/common_button.dart';
+import 'package:hive/hive.dart';
+import 'package:pack_app/models/user_model.dart';
 import '../../services/authentication.dart';
 import 'enter_details.dart';
 
@@ -30,22 +33,28 @@ class _EnterOtpState extends State<EnterOtp> {
 
     try {
       final response = await _authService.confirmOtp(widget.mobileNumber, otpController.text);
+      print(response);
 
       setState(() {
         _isLoading = false;
       });
 
-      if (response['response_code'] == 2) {
+      if (response['status_code'] == 0) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => EnterDetails(mobileNumber: widget.mobileNumber,),
+            builder: (context) => EnterDetails(mobileNumber: widget.mobileNumber),
           ),
         );
-      } else if (response['response_code'] == 4) {
+      } else if (response['status_code'] == 1) {
         // Already existing user
-        // Handle already existing user scenario
-      } else if (response['response_code'] == 1) {
+        // final userBox = Hive.box<User>('userBox');
+        // final user = User.fromJson(response['user']);
+        // await userBox.put('currentUser', user);
+        //print('User details stored: $user');
+        // Navigate to the home page or dashboard
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavbar(),));
+      } else if (response['status_code'] == 2) {
         setState(() {
           _errorMessage = response['message'] ?? 'Invalid OTP';
         });

@@ -2,7 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pack_app/widgets/common_button.dart';
+import 'package:provider/provider.dart';
 
+import '../../../providers/user_registration_provider.dart';
+import '../../../services/registraction.dart';
 import '../../../widgets/progress_bar.dart';
 import '../../Dashboard/nav_bar.dart';
 import 'activity_level.dart';
@@ -19,6 +22,8 @@ class OnboardingScreen extends StatefulWidget {
 class _OnboardingScreenState extends State<OnboardingScreen> {
   PageController _pageController = PageController();
   int _currentPage = 0;
+  RegistrationService _registrationService = RegistrationService();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +98,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 children: [
                   StaticProgressBar(progress: (_currentPage+1)/5, value: _currentPage+1),
                   CommonButton(
-                    onTap: () {
+                    onTap: () async {
                       if (_currentPage < 4) {
                         _pageController.animateToPage(
                           _currentPage + 1,
@@ -101,11 +106,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeInOut,
                         );
                       } else {
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (context) => BottomNavbar(),)
-                        );
+                        _registerUser();
                       }
-                    }, text: 'Continue',
+                    },
+                    text: 'Continue',
+                    isLoading: isLoading,
                   ),
                 ],
               ),
@@ -114,5 +119,63 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         ),
       ),
     );
+  }
+
+  void _registerUser() async {
+
+    setState(() {
+      isLoading = true;
+    });
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      // Print user details (for testing purposes)
+
+      print('512 -- User Details:');
+      print('First Name: ${userProvider.user.firstName}');
+      print('Last Name: ${userProvider.user.lastName}');
+      print('Email: ${userProvider.user.email}');
+      print('Mobile Number: ${userProvider.user.mobileNumber}');
+      print('Height: ${userProvider.user.height}');
+      print('Weight: ${userProvider.user.weight}');
+      print('Age: ${userProvider.user.age}');
+      print('Gender: ${userProvider.user.gender}');
+      print('Activity Level: ${userProvider.user.activityLevel}');
+      print('Food to Avoid: ${userProvider.user.foodAvoid}');
+
+      final response = await _registrationService.newRegister(userProvider.user);
+
+      if (response['response_code'] == 3) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => BottomNavbar(),
+          ),
+        );
+      } else if (response['response_code'] == 0) {
+        _showErrorSnackBar('Existing email ID');
+      } else {
+        _showErrorSnackBar('Failed to register');
+      }
+    } catch (error) {
+      // Handle errors appropriately
+      print('Failed to register user: $error');
+      _showErrorSnackBar('Failed to register');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _showErrorSnackBar(String message) {
+    final snackBar = SnackBar(
+      content: Text(
+        message,
+        style: TextStyle(color: Colors.red),
+      ),
+      backgroundColor: Colors.white,
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

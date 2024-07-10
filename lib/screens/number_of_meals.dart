@@ -1,20 +1,64 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 import '../custom_style.dart';
 import '../widgets/common_button.dart';
 import 'daily_nutrition.dart';
-import 'date_picker.dart';
 
 class NumberOfMeals extends StatefulWidget {
-  const NumberOfMeals({Key? key}) : super(key: key);
+  final String subplanName;
+
+  const NumberOfMeals({Key? key, required this.subplanName}) : super(key: key);
 
   @override
   State<NumberOfMeals> createState() => _NumberOfMealsState();
 }
 
 class _NumberOfMealsState extends State<NumberOfMeals> {
-  int selectedOption = 0; // 0 for none, 1 for Day Pack, 2 for One Week, etc.
+  int selectedOption = 0; // 0 for none, 1 for One Meal, 2 for Two Meal, etc.
+  List<dynamic> mealOptions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMealOptions(widget.subplanName);
+  }
+
+  Future<void> fetchMealOptions(String subplanName) async {
+    try {
+      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Assuming data['plan'] is a list, find the plan with matching subplan_name
+        Map<String, dynamic>? selectedSubplan;
+        for (var plan in data['plan']) {
+          final subplans = plan['sub_plans'] as List<dynamic>;
+          selectedSubplan = subplans.firstWhere(
+                (subplan) => subplan['subplan_name'] == subplanName,
+            orElse: () => null,
+          );
+          if (selectedSubplan != null) {
+            break;
+          }
+        }
+
+        if (selectedSubplan != null && selectedSubplan['meal_plan'] != null) {
+          setState(() {
+            mealOptions = List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
+          });
+        }
+      } else {
+        throw Exception('Failed to load meal options: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching meal options: $e');
+      // Handle error as needed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,20 +104,18 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                         style: CustomTextStyles.titleTextStyle,
                       ),
                       const SizedBox(height: 50),
-                      // Options are generated here
-                      for (int i = 1; i <= 4; i++)
+                      // Display meal options dynamically
+                      for (int i = 0; i < mealOptions.length; i++)
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              selectedOption = i;
+                              selectedOption = i + 1; // +1 to match your meal options (1-based)
                             });
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
                             decoration: BoxDecoration(
-                              color: selectedOption == i
-                                  ? Color(0xFFEDC0B2)
-                                  : Colors.transparent,
+                              color: selectedOption == i + 1 ? Color(0xFFEDC0B2) : Colors.transparent,
                               border: Border.all(color: Color(0xFFEDC0B2)),
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -81,11 +123,9 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                             width: double.infinity,
                             child: Center(
                               child: Text(
-                                _getTextForOption(i),
+                                mealOptions[i]['mealtype_name'],
                                 style: TextStyle(
-                                  color: selectedOption == i
-                                      ? Colors.white
-                                      : Colors.black,
+                                  color: selectedOption == i + 1 ? Colors.white : Colors.black,
                                   fontFamily: 'Aeonik',
                                   fontSize: 18,
                                 ),
@@ -104,20 +144,27 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     'You can freeze your plan through your profile. this is a weekly ongoing subscription. you can freeze up to 3 days',
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(fontSize: 11, fontWeight: FontWeight.w400),
+                    style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 11, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 CommonButton(
                   text: 'Continue',
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DailyNutrition(),
-                      ),
-                    );
+                    if (selectedOption > 0) {
+                      String selectedMealType = mealOptions[selectedOption - 1]['mealtype_name'];
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DailyNutrition(
+                            subplanName: widget.subplanName,
+                            mealtypeName: selectedMealType,
+                          ),
+                        ),
+                      );
+                    } else {
+                      // Show an error or a message to select an option
+                    }
                   },
                 ),
               ],
@@ -126,20 +173,5 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         ),
       ),
     );
-  }
-
-  String _getTextForOption(int option) {
-    switch (option) {
-      case 1:
-        return 'One Meal';
-      case 2:
-        return 'Two Meal';
-      case 3:
-        return 'Three Meal';
-      case 4:
-        return 'Four Meal';
-      default:
-        return '';
-    }
   }
 }

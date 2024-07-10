@@ -6,12 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 class FoodInfoCard extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
+  final Map<String, dynamic> foodData; // Add this line
 
   const FoodInfoCard({
     super.key,
     required this.isSelected,
     required this.onTap,
+    required this.foodData, // Add this line
   });
+
   @override
   State<FoodInfoCard> createState() => _FoodInfoCardState();
 }
@@ -35,8 +38,8 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
         child: Row(
           children: [
             SizedBox(width: 10),
-            Image.asset(
-              'assets/images/foodcard1.png',
+            Image.network(
+              widget.foodData['menu_image'],
               width: 100,
               height: 100,
             ),
@@ -48,7 +51,7 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Spaghetti',
+                      widget.foodData['menu_name'] ?? 'Food Name', // Use foodData here
                       style: CustomTextStyles.labelTextStyle.copyWith(
                         fontSize: 20,
                         color: textColor, // Apply the conditional color here
@@ -58,7 +61,7 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                       children: [
                         SvgPicture.asset('assets/images/fire.svg'),
                         Text(
-                          '210 kcal • 150 g',
+                          '${widget.foodData['calories']} kcal • ${widget.foodData['weight']} g',
                           style: CustomTextStyles.subtitleTextStyle.copyWith(
                             fontSize: 12,
                             color: textColor, // Apply the conditional color here
@@ -70,21 +73,21 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                       children: [
                         NutritionBar(
                           color: const Color(0xffBBC392),
-                          label: '21g',
+                          label: '${widget.foodData['protein']}g',
                           widthFactor: 25,
-                          label2: ' Protin',
+                          label2: ' Protein',
                           isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
                         ),
                         NutritionBar(
                           color: const Color(0xffF7C648),
-                          label: '29g',
+                          label: '${widget.foodData['carbs']}g',
                           widthFactor: 35,
                           label2: ' Carbs',
                           isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
                         ),
                         NutritionBar(
                           color: const Color(0xffA8353A),
-                          label: '12g',
+                          label: '${widget.foodData['fat']}g',
                           widthFactor: 20,
                           label2: ' Fat',
                           isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
@@ -101,7 +104,6 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
     );
   }
 }
-
 
 class NutritionBar extends StatelessWidget {
   final Color color;
@@ -139,7 +141,7 @@ class NutritionBar extends StatelessWidget {
                 TextSpan(text: label),
                 TextSpan(
                   text: label2,
-                  style: TextStyle(color: isSelected ?Color(0xff54423C) :Color(0xffA5A5A5)),
+                  style: TextStyle(color: isSelected ? Color(0xff54423C) : Color(0xffA5A5A5)),
                 ),
               ],
             ),
@@ -151,7 +153,7 @@ class NutritionBar extends StatelessWidget {
                 height: 4,
                 width: 50,
                 decoration: BoxDecoration(
-                  color: isSelected ?Colors.white :Color(0xffD9D9D9),
+                  color: isSelected ? Colors.white : Color(0xffD9D9D9),
                   borderRadius: BorderRadius.circular(5),
                 ),
               ),
@@ -170,4 +172,3 @@ class NutritionBar extends StatelessWidget {
     );
   }
 }
-

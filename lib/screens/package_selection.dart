@@ -90,7 +90,7 @@ class PackageSelection extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MealSelection()),
+                                    builder: (context) => MealSelection(planId: 0,)),
                               );
                             },
                             child: Stack(
@@ -130,7 +130,7 @@ class PackageSelection extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MealSelection()),
+                                    builder: (context) => MealSelection(planId: 0,)),
                               );
                             },
                             child: Stack(
@@ -170,7 +170,7 @@ class PackageSelection extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MealSelection()),
+                                    builder: (context) => MealSelection(planId: 0,)),
                               );
                             },
                             child: Stack(
@@ -217,7 +217,7 @@ class PackageSelection extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MealSelection()),
+                                    builder: (context) =>MealSelection(planId: 0,)),
                               );
                             },
                             child: Stack(
@@ -257,7 +257,7 @@ class PackageSelection extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => MealSelection()),
+                                    builder: (context) => MealSelection(planId: 0,)),
                               );
                             },
                             child: Stack(

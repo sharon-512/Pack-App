@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:pack_app/screens/summary_screen.dart';
+import 'dart:convert';
 
 import '../custom_style.dart';
 import '../widgets/Addon_item.dart';
@@ -7,7 +9,10 @@ import '../widgets/common_button.dart';
 import '../widgets/food_detail_container.dart';
 
 class DailyNutrition extends StatefulWidget {
-  const DailyNutrition({super.key});
+  final String subplanName;
+  final String mealtypeName;
+
+  const DailyNutrition({Key? key, required this.subplanName, required this.mealtypeName}) : super(key: key);
 
   @override
   State<DailyNutrition> createState() => _DailyNutritionState();
@@ -17,6 +22,61 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int selectedDay = 0;
   int selectedFoodOption = 0;
   int selectedCardIndex = -1;
+  Map<String, dynamic>? foodDetails;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchFoodDetails(widget.subplanName, widget.mealtypeName);
+  }
+
+  Future<void> fetchFoodDetails(String subplanName, String mealtypeName) async {
+    try {
+      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Find the subplan using subplanName
+        Map<String, dynamic>? selectedSubplan;
+        for (var plan in data['plan']) {
+          for (var subplan in plan['sub_plans']) {
+            if (subplan['subplan_name'] == subplanName) {
+              selectedSubplan = subplan;
+              break;
+            }
+          }
+          if (selectedSubplan != null) break;
+        }
+
+        if (selectedSubplan != null) {
+          // Find the meal type using mealtypeName
+          Map<String, dynamic>? selectedMealType;
+          for (var mealType in selectedSubplan['meal_plan']) {
+            if (mealType['mealtype_name'] == mealtypeName) {
+              selectedMealType = mealType;
+              break;
+            }
+          }
+
+          if (selectedMealType != null) {
+            setState(() {
+              foodDetails = selectedMealType?['products'];
+            });
+          } else {
+            throw Exception('Selected meal type not found');
+          }
+        } else {
+          throw Exception('Selected subplan not found');
+        }
+      } else {
+        throw Exception('Failed to load food details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching food details: $e');
+      // Handle error as needed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,7 +226,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                     child: Column(
                       children: selectedFoodOption == 0
                           ? List.generate(
-                        8,
+                        foodDetails?['BreakFast']?.length ?? 0,
                             (index) => FoodInfoCard(
                           isSelected: selectedCardIndex == index,
                           onTap: () {
@@ -174,17 +234,58 @@ class _DailyNutritionState extends State<DailyNutrition> {
                               selectedCardIndex = index;
                             });
                           },
+                          foodData: foodDetails?['BreakFast'][index],
+                        ),
+                      )
+                          : selectedFoodOption == 1
+                          ? List.generate(
+                        foodDetails?['Lunch']?.length ?? 0,
+                            (index) => FoodInfoCard(
+                          isSelected: selectedCardIndex == index,
+                          onTap: () {
+                            setState(() {
+                              selectedCardIndex = index;
+                            });
+                          },
+                          foodData: foodDetails?['Lunch'][index],
+                        ),
+                      )
+                          : selectedFoodOption == 2
+                          ? List.generate(
+                        foodDetails?['Snacks']?.length ?? 0,
+                            (index) => FoodInfoCard(
+                          isSelected: selectedCardIndex == index,
+                          onTap: () {
+                            setState(() {
+                              selectedCardIndex = index;
+                            });
+                          },
+                          foodData: foodDetails?['Snacks'][index],
+                        ),
+                      )
+                          : selectedFoodOption == 3
+                          ? List.generate(
+                        foodDetails?['Dinner']?.length ?? 0,
+                            (index) => FoodInfoCard(
+                          isSelected: selectedCardIndex == index,
+                          onTap: () {
+                            setState(() {
+                              selectedCardIndex = index;
+                            });
+                          },
+                          foodData: foodDetails?['Dinner'][index],
                         ),
                       )
                           : selectedFoodOption == 4
                           ? List.generate(
-                        8,
+                        foodDetails?['Addons']?.length ?? 0,
                             (index) => AddonItem(
                           onTap: () {
                             setState(() {
                               selectedCardIndex = index;
                             });
                           },
+                          // foodData: foodDetails?['Addons'][index],
                         ),
                       )
                           : [],
@@ -249,5 +350,4 @@ class _DailyNutritionState extends State<DailyNutrition> {
       ),
     );
   }
-
 }

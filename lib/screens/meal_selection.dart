@@ -147,8 +147,8 @@ class _MealSelectionState extends State<MealSelection> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NumberOfMeals(
-                      subplanName: selectedSubplanName,
+                    builder: (context) => DatePicker(
+                      selectedSubplanName: selectedSubplanName,
                     ),
                   ),
                 );

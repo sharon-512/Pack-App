@@ -29,6 +29,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int selectedFoodOption = 0;
   int selectedCardIndex = -1;
   Map<String, dynamic>? foodDetails;
+  List<dynamic>? addons;
   late DateTime startDate;
   late DateTime endDate;
   bool _isLoading = true;
@@ -109,6 +110,25 @@ class _DailyNutritionState extends State<DailyNutrition> {
       }
     } catch (e) {
       print('Error fetching food details: $e');
+      // Handle error as needed
+    }
+  }
+
+  Future<void> fetchAddons() async {
+    try {
+      final response = await http
+          .get(Uri.parse('https://interfuel.qa/packupadmin/api/addons'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          addons = data['data'];
+        });
+      } else {
+        throw Exception('Failed to load addons: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching addons: $e');
       // Handle error as needed
     }
   }
@@ -314,21 +334,26 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             ),
                           ),
                         if (selectedFoodOption == 4)
-                          ...List.generate(
-                            foodDetails?['Addons']?.length ?? 0,
-                                (index) => AddonItem(
-                              onTap: () {
-                                setState(() {
-                                  selectedCardIndex = index;
-                                });
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: foodDetails?['Addons']?.length ?? 0,
+                              itemBuilder: (context, index) {
+                                return AddonItem(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedCardIndex = index;
+                                    });
+                                  },
+                                  addonData: foodDetails?['Addons'][index],
+                                );
                               },
-                              // foodData: foodDetails?['Addons'][index],
                             ),
                           ),
                       ],
                     ),
                   ),
                 ),
+
               ],
             ),
             CommonButton(

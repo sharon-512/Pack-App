@@ -173,9 +173,9 @@ class _DatePickerState extends State<DatePicker> {
 
     if (subplanName == '1 week') {
       daysToAdd = 8;
-    } else if (subplanName == '2 weeks') {
+    } else if (subplanName == '2 weeks' || subplanName == '2 weekss') {
       daysToAdd = 16;
-    } else if (subplanName == '3 weeks') {
+    } else if (subplanName == '3 weeks'|| subplanName == 'three week') {
       daysToAdd = 24;
     } else if (subplanName == '1 month') {
       daysToAdd = 30;

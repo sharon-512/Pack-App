@@ -1,14 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:pack_app/custom_style.dart';
+import 'package:flutter/widgets.dart';
+
+import '../custom_style.dart';
+
+
 
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
+  final Map<String, dynamic> addonData;
 
   const AddonItem({
-    super.key,
+    Key? key,
     required this.onTap,
-  });
+    required this.addonData,
+  }) : super(key: key);
 
   @override
   State<AddonItem> createState() => _AddonItemState();
@@ -35,18 +40,28 @@ class _AddonItemState extends State<AddonItem> {
         child: Row(
           children: [
             SizedBox(width: 20),
-            Image.asset(
-              'assets/images/addon_can.png',
+            Image.network(
+              widget.addonData['image_url'],
+              height: 50,
+              width: 50,
             ),
-            Expanded(
+            Flexible(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 16, 0, 16),
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Spindrift Pink\nLemonade',
+                      widget.addonData['addon_name'],
+                      style: CustomTextStyles.labelTextStyle.copyWith(
+                        fontSize: 14,
+                        color: textColor, // Apply the conditional color here
+                      ),
+                    ),
+                    Text(
+                      '\$${widget.addonData['addon_price']}',
                       style: CustomTextStyles.labelTextStyle.copyWith(
                         fontSize: 14,
                         color: textColor, // Apply the conditional color here
@@ -60,7 +75,7 @@ class _AddonItemState extends State<AddonItem> {
               padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
               decoration: BoxDecoration(
                 color: Color(0xffEDC0B2),
-                borderRadius: BorderRadius.circular(25)
+                borderRadius: BorderRadius.circular(25),
               ),
               child: Row(
                 children: [
@@ -104,3 +119,4 @@ class _AddonItemState extends State<AddonItem> {
     );
   }
 }
+

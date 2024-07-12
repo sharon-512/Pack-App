@@ -3,16 +3,16 @@ import 'package:flutter/widgets.dart';
 
 import '../custom_style.dart';
 
-
-
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
   final Map<String, dynamic> addonData;
+  final bool isSelected;
 
   const AddonItem({
     Key? key,
     required this.onTap,
-    required this.addonData, required bool isSelected,
+    required this.addonData,
+    required this.isSelected,
   }) : super(key: key);
 
   @override
@@ -37,86 +37,115 @@ class _AddonItemState extends State<AddonItem> {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: Color(0xffEDC0B2)),
         ),
-        child: Row(
-          children: [
-            SizedBox(width: 20),
-            Image.network(
-              widget.addonData['image_url'],
-              height: 50,
-              width: 50,
-            ),
-            Flexible(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 0, 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      widget.addonData['addon_name'],
-                      style: CustomTextStyles.labelTextStyle.copyWith(
-                        fontSize: 14,
-                        color: textColor, // Apply the conditional color here
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Image.network(
+                    widget.addonData['image_url'],
+                    height: 50,
+                    width: 50,
+                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      } else {
+                        return Container(
+                          width: 50,
+                          height: 50,
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                  : null,
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 50,
+                        height: 50,
+                        color: Colors.grey[200],
+                        child: Icon(
+                          Icons.error,
+                          color: Colors.red,
+                        ),
+                      );
+                    },
+                  ),
+                  SizedBox(width: 10),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        widget.addonData['addon_name'],
+                        style: CustomTextStyles.labelTextStyle.copyWith(
+                          fontSize: 14,
+                          color: textColor, // Apply the conditional color here
+                        ),
+                      ),
+                      Text(
+                        '\$${widget.addonData['addon_price']}',
+                        style: CustomTextStyles.labelTextStyle.copyWith(
+                          fontSize: 14,
+                          color: textColor, // Apply the conditional color here
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Color(0xffEDC0B2),
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          if (count > 0) count--;
+                        });
+                      },
+                      child: Icon(
+                        Icons.remove,
+                        size: 16,
+                        color: Colors.white,
                       ),
                     ),
+                    SizedBox(width: 10),
                     Text(
-                      '\$${widget.addonData['addon_price']}',
-                      style: CustomTextStyles.labelTextStyle.copyWith(
-                        fontSize: 14,
-                        color: textColor, // Apply the conditional color here
+                      '$count',
+                      style: TextStyle(fontSize: 14, color: Colors.white),
+                    ),
+                    SizedBox(width: 10),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          count++;
+                        });
+                      },
+                      child: Icon(
+                        Icons.add,
+                        size: 16,
+                        color: Colors.white,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-              decoration: BoxDecoration(
-                color: Color(0xffEDC0B2),
-                borderRadius: BorderRadius.circular(25),
-              ),
-              child: Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        if (count > 0) count--;
-                      });
-                    },
-                    child: Icon(
-                      Icons.remove,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    '$count',
-                    style: TextStyle(fontSize: 14, color: Colors.white),
-                  ),
-                  SizedBox(width: 10),
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        count++;
-                      });
-                    },
-                    child: Icon(
-                      Icons.add,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: 10),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 }
-

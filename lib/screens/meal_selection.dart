@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shimmer/shimmer.dart';
 
 import '../custom_style.dart';
 import '../widgets/common_button.dart';
@@ -74,70 +75,96 @@ class _MealSelectionState extends State<MealSelection> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Container(
-                padding: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 1.0,
-                  ),
-                ),
-                child: const Icon(
-                  Icons.arrow_back,
-                  size: 20,
-                ),
-              ),
-            ),
-            const SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Choose Your Meal\nDuration?',
-                    style: CustomTextStyles.titleTextStyle,
-                  ),
-                  const SizedBox(height: 50),
-                  // Options are generated here
-                  for (int i = 0; i < subPlans.length; i++)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedOption = i + 1; // +1 because options start from 1
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(vertical: 6),
-                        decoration: BoxDecoration(
-                          color: selectedOption == i + 1
-                              ? Color(0xFFEDC0B2)
-                              : Colors.transparent,
-                          border: Border.all(color: Color(0xFFEDC0B2)),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        height: 50,
-                        width: double.infinity,
-                        child: Center(
-                          child: Text(
-                            '${subPlans[i]['subplan_name']}',
-                            style: TextStyle(
-                              color: selectedOption == i + 1 ? Colors.white : Colors.black,
-                              fontFamily: 'Aeonik',
-                              fontSize: 18,
-                            ),
-                          ),
-                        ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 1.0,
                       ),
                     ),
-                ],
-              ),
+                    child: const Icon(
+                      Icons.arrow_back,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Choose Your Meal Duration?',
+                        style: CustomTextStyles.titleTextStyle,
+                      ),
+                      const SizedBox(height: 50),
+                      // Show shimmer effect while loading
+                      isLoading
+                          ? Column(
+                        children: List.generate(3, (index) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 6),
+                            height: 50,
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        )),
+                      )
+                          : Column(
+                        children: subPlans.map((subPlan) {
+                          int index = subPlans.indexOf(subPlan);
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedOption = index + 1; // +1 because options start from 1
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 6),
+                              decoration: BoxDecoration(
+                                color: selectedOption == index + 1
+                                    ? Color(0xFFEDC0B2)
+                                    : Colors.transparent,
+                                border: Border.all(color: Color(0xFFEDC0B2)),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              height: 50,
+                              width: double.infinity,
+                              child: Center(
+                                child: Text(
+                                  '${subPlan['subplan_name']}',
+                                  style: TextStyle(
+                                    color: selectedOption == index + 1 ? Colors.white : Colors.black,
+                                    fontFamily: 'Aeonik',
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             CommonButton(
               text: 'Continue',

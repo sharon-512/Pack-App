@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -39,8 +40,37 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
             SizedBox(width: 10),
             Image.network(
               widget.foodData['menu_image'],
-              width: 100,
-              height: 100,
+              width: 90,
+              height: 90,
+              fit: BoxFit.fill,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  width: 90,
+                  height: 90,
+                  color: Colors.grey[200],
+                  child: Icon(
+                    Icons.sms_failed_outlined,
+                    color: Colors.grey[700],
+                  ),
+                );
+              },
+              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                if (loadingProgress == null) {
+                  return child;
+                } else {
+                  return Container(
+                    width: 90,
+                    height: 90,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        value: loadingProgress.expectedTotalBytes != null
+                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                            : null,
+                      ),
+                    ),
+                  );
+                }
+              },
             ),
             Expanded(
               child: Padding(
@@ -61,8 +91,8 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                     ),
                     Row(
                       children: [
-                        SvgPicture.asset('assets/images/fire.svg'),
-                        SizedBox(width: 5),
+                        Image.asset('assets/images/fire2.png', height: 14,width: 13,),
+                        const SizedBox(width: 2),
                         Flexible(
                           child: Text(
                             '${widget.foodData['calories']} kcal • ${widget.foodData['weight']} g',

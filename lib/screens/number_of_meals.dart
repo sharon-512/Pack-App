@@ -8,10 +8,10 @@ import '../widgets/common_button.dart';
 import 'daily_nutrition.dart';
 
 class NumberOfMeals extends StatefulWidget {
-  final String subplanName;
+  final int subplanId;
   const NumberOfMeals({
     Key? key,
-    required this.subplanName,
+    required this.subplanId,
   }) : super(key: key);
 
   @override
@@ -24,10 +24,10 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
   @override
   void initState() {
     super.initState();
-    fetchMealOptions(widget.subplanName);
+    fetchMealOptions(widget.subplanId);
   }
 
-  Future<void> fetchMealOptions(String subplanName) async {
+  Future<void> fetchMealOptions(int subplanId) async {
     try {
       final response = await http
           .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
@@ -40,7 +40,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         for (var plan in data['plan']) {
           final subplans = plan['sub_plans'] as List<dynamic>;
           selectedSubplan = subplans.firstWhere(
-            (subplan) => subplan['subplan_name'] == subplanName,
+            (subplan) => subplan['subplan_id'] == subplanId,
             orElse: () => null,
           );
           if (selectedSubplan != null) {
@@ -168,7 +168,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => DailyNutrition(
-                            subplanName: widget.subplanName,
+                            subplanId: widget.subplanId,
                             mealtypeName: selectedMealType,
                           ),
                         ),

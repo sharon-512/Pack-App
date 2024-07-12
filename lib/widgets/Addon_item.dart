@@ -12,7 +12,7 @@ class AddonItem extends StatefulWidget {
   const AddonItem({
     Key? key,
     required this.onTap,
-    required this.addonData,
+    required this.addonData, required bool isSelected,
   }) : super(key: key);
 
   @override

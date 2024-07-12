@@ -143,15 +143,16 @@ class _MealSelectionState extends State<MealSelection> {
               text: 'Continue',
               onTap: () {
                 // Find the selected subplan based on selectedOption
-                String selectedSubplanName = subPlans[selectedOption - 1]['subplan_name'];
+                int selectedSubplanId = subPlans[selectedOption - 1]['subplan_id'];
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DatePicker(
-                      selectedSubplanName: selectedSubplanName,
+                      selectedSubplanId: selectedSubplanId,
                     ),
                   ),
                 );
+
               },
             ),
           ],

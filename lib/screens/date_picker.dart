@@ -6,9 +6,9 @@ import '../widgets/common_button.dart';
 import 'number_of_meals.dart';
 
 class DatePicker extends StatefulWidget {
-  final String selectedSubplanName;
+  final int selectedSubplanId;
 
-  const DatePicker({Key? key, required this.selectedSubplanName}) : super(key: key);
+  const DatePicker({Key? key, required this.selectedSubplanId}) : super(key: key);
 
   @override
   State<DatePicker> createState() => _DatePickerState();
@@ -145,7 +145,7 @@ class _DatePickerState extends State<DatePicker> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => NumberOfMeals(
-                          subplanName: widget.selectedSubplanName,
+                          subplanId: widget.selectedSubplanId,
                         ),
                       ),
                     );
@@ -161,34 +161,35 @@ class _DatePickerState extends State<DatePicker> {
 
   void updateEndDate() {
     if (selectedStartDate != null) {
-      DateTime endDate = calculateEndDate(selectedStartDate!, widget.selectedSubplanName);
+      DateTime endDate = calculateEndDate(selectedStartDate!, widget.selectedSubplanId);
       setState(() {
         end.text = DateFormat('EEEE, MMMM d, yyyy').format(endDate);
       });
     }
   }
 
-  DateTime calculateEndDate(DateTime startDate, String subplanName) {
+  DateTime calculateEndDate(DateTime startDate, int subplanId) {
     int daysToAdd = 7; // Default to 1 week
 
-    if (subplanName == '1 week') {
-      daysToAdd = 8;
-    } else if (subplanName == '2 weeks' || subplanName == '2 weekss') {
+    if (subplanId == 1) {
+      daysToAdd = 8; // Adjust daysToAdd based on subplanId
+    } else if (subplanId == 2) {
       daysToAdd = 16;
-    } else if (subplanName == '3 weeks'|| subplanName == 'three week') {
+    } else if (subplanId == 3) {
       daysToAdd = 24;
-    } else if (subplanName == '1 month') {
+    } else if (subplanId == 4) {
       daysToAdd = 30;
     }
 
     // Calculate end date excluding Fridays
     DateTime endDate = startDate.add(Duration(days: daysToAdd));
     if (endDate.weekday == DateTime.friday) {
-      endDate = endDate.add(Duration(days: 2)); // Skip to Saturday if end on Friday
+      endDate = endDate.add(Duration(days: 2)); // Skip to Saturday if ends on Friday
     }
 
     return endDate;
   }
+
 }
 
 void updateEndDateInSharedPreferences(String endText) async {
@@ -231,11 +232,20 @@ class DateSelectionField extends StatelessWidget {
             firstDate: disablePastDates ? DateTime.now() : DateTime(2000),
             lastDate: DateTime(2101),
             selectableDayPredicate: (DateTime date) {
+              if (date.year == DateTime.now().year &&
+                  date.month == DateTime.now().month &&
+                  date.day == DateTime.now().day) {
+                return true;
+              }
+
+              // Disable selection for all other Fridays
               if (disableFridays && date.weekday == DateTime.friday) {
                 return false;
               }
+
               return true;
             },
+
           );
           if (pickedDate != null) {
             String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(pickedDate);

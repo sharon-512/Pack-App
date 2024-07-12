@@ -6,13 +6,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 class FoodInfoCard extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
-  final Map<String, dynamic> foodData; // Add this line
+  final Map<String, dynamic> foodData;
 
   const FoodInfoCard({
     super.key,
     required this.isSelected,
     required this.onTap,
-    required this.foodData, // Add this line
+    required this.foodData,
   });
 
   @override
@@ -22,7 +22,6 @@ class FoodInfoCard extends StatefulWidget {
 class _FoodInfoCardState extends State<FoodInfoCard> {
   @override
   Widget build(BuildContext context) {
-    // Define the color based on the selection state
     Color textColor = widget.isSelected ? Color(0xff54423C) : Colors.black;
 
     return GestureDetector(
@@ -45,52 +44,60 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(10, 16, 0, 16),
+                padding: const EdgeInsets.fromLTRB(10, 16, 10, 16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Text(
-                      widget.foodData['menu_name'] ?? 'Food Name', // Use foodData here
-                      style: CustomTextStyles.labelTextStyle.copyWith(
-                        fontSize: 20,
-                        color: textColor, // Apply the conditional color here
+                    Flexible(
+                      child: Text(
+                        widget.foodData['menu_name'] ?? 'Food Name',
+                        style: CustomTextStyles.labelTextStyle.copyWith(
+                          fontSize: 20,
+                          color: textColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     Row(
                       children: [
                         SvgPicture.asset('assets/images/fire.svg'),
-                        Text(
-                          '${widget.foodData['calories']} kcal • ${widget.foodData['weight']} g',
-                          style: CustomTextStyles.subtitleTextStyle.copyWith(
-                            fontSize: 12,
-                            color: textColor, // Apply the conditional color here
+                        SizedBox(width: 5),
+                        Flexible(
+                          child: Text(
+                            '${widget.foodData['calories']} kcal • ${widget.foodData['weight']} g',
+                            style: CustomTextStyles.subtitleTextStyle.copyWith(
+                              fontSize: 12,
+                              color: textColor,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         NutritionBar(
                           color: const Color(0xffBBC392),
                           label: '${widget.foodData['protein']}g',
                           widthFactor: 25,
                           label2: ' Protein',
-                          isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
+                          isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffF7C648),
                           label: '${widget.foodData['carbs']}g',
                           widthFactor: 35,
                           label2: ' Carbs',
-                          isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
+                          isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffA8353A),
                           label: '${widget.foodData['fat']}g',
                           widthFactor: 20,
                           label2: ' Fat',
-                          isSelected: widget.isSelected, // Pass the conditional color to NutritionBar
+                          isSelected: widget.isSelected,
                         ),
                       ],
                     ),
@@ -110,19 +117,18 @@ class NutritionBar extends StatelessWidget {
   final String label;
   final String label2;
   final double widthFactor;
-  final bool isSelected; // Use a boolean to indicate selection
+  final bool isSelected;
 
   NutritionBar({
     required this.color,
     required this.label,
     required this.widthFactor,
     required this.label2,
-    required this.isSelected, // Pass isSelected instead of textColor
+    required this.isSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Determine the text color based on the selection state
     Color textColor = isSelected ? Color(0xff54423C) : Colors.black;
 
     return Container(
@@ -132,7 +138,7 @@ class NutritionBar extends StatelessWidget {
           RichText(
             text: TextSpan(
               style: TextStyle(
-                color: textColor, // Apply the conditional color here
+                color: textColor,
                 fontFamily: 'Aeonik',
                 fontWeight: FontWeight.w400,
                 fontSize: 10.0,
@@ -145,6 +151,7 @@ class NutritionBar extends StatelessWidget {
                 ),
               ],
             ),
+            overflow: TextOverflow.ellipsis,
           ),
           SizedBox(height: 5),
           Stack(

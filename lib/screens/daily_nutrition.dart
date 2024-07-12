@@ -11,12 +11,12 @@ import '../widgets/food_detail_container.dart';
 import '../screens/summary_screen.dart';
 
 class DailyNutrition extends StatefulWidget {
-  final String subplanName;
+  final int subplanId;
   final String mealtypeName;
 
   const DailyNutrition({
     Key? key,
-    required this.subplanName,
+    required this.subplanId,
     required this.mealtypeName,
   }) : super(key: key);
 
@@ -33,11 +33,35 @@ class _DailyNutritionState extends State<DailyNutrition> {
   late DateTime startDate;
   late DateTime endDate;
   bool _isLoading = true;
+  List<Map<String, dynamic>> selectedBreakfastItems = [];
+  List<Map<String, dynamic>> selectedLunchItems = [];
+  List<Map<String, dynamic>> selectedDinnerItems = [];
+  List<Map<String, dynamic>> selectedSnacksItems = [];
+  int selectedBreakfastCardIndex = -1;
+  int selectedBreakfastMenuId = -1;
+  int selectedLunchCardIndex = -1;
+  int selectedLunchMenuId = -1;
+  int selectedSnacksCardIndex = -1;
+  int selectedSnacksMenuId = -1;
+  int selectedDinnerCardIndex = -1;
+  int selectedDinnerMenuId = -1;
+  int selectedAddonsCardIndex = -1;
 
   @override
   void initState() {
     super.initState();
     fetchDatesFromSharedPreferences();
+    fetchAddons();
+  }
+
+  void selectFoodItem(Map<String, dynamic> item, List<Map<String, dynamic>> selectedItems) {
+    setState(() {
+      if (selectedItems.contains(item)) {
+        selectedItems.remove(item);
+      } else {
+        selectedItems.add(item);
+      }
+    });
   }
 
   Future<void> fetchDatesFromSharedPreferences() async {
@@ -62,10 +86,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
       });
     }
 
-    fetchFoodDetails(widget.subplanName, widget.mealtypeName);
+    fetchFoodDetails(widget.subplanId, widget.mealtypeName);
   }
 
-  Future<void> fetchFoodDetails(String subplanName, String mealtypeName) async {
+  Future<void> fetchFoodDetails(int subplanId, String mealtypeName) async {
     try {
       final response = await http
           .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
@@ -77,7 +101,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
         Map<String, dynamic>? selectedSubplan;
         for (var plan in data['plan']) {
           for (var subplan in plan['sub_plans']) {
-            if (subplan['subplan_name'] == subplanName) {
+            if (subplan['subplan_id'] == subplanId) {
               selectedSubplan = subplan;
               break;
             }
@@ -122,14 +146,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
-          addons = data['data'];
+          addons = data['data']; // Update addons data
+
+        print('sdhshdbvhdvbhdvbdkjv');
         });
       } else {
         throw Exception('Failed to load addons: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching addons: $e');
-      // Handle error as needed
     }
   }
 
@@ -241,6 +266,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             selectedFoodOption =
                                 index; // Update the selected item index
                           });
+                          if (selectedFoodOption == 4) {
+                            fetchAddons(); // Fetch addons when "Addons" is selected
+                          }
                         },
                         child: Container(
                           padding: EdgeInsets.symmetric(horizontal: 8),
@@ -280,80 +308,113 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 Expanded(
                   child: SingleChildScrollView(
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         if (selectedFoodOption == 0)
                           ...List.generate(
                             foodDetails?['BreakFast']?.length ?? 0,
                                 (index) => FoodInfoCard(
-                              isSelected: selectedCardIndex == index,
+                              isSelected: selectedBreakfastCardIndex == index,
                               onTap: () {
                                 setState(() {
-                                  selectedCardIndex = index;
+                                  if (selectedBreakfastCardIndex == index) {
+                                    // If already selected, deselect
+                                    selectedBreakfastCardIndex = -1;
+                                    selectedBreakfastMenuId = -1;
+                                  } else {
+                                    // Otherwise, select the new item
+                                    selectedBreakfastCardIndex = index;
+                                    selectedBreakfastMenuId = foodDetails?['BreakFast'][index]['menu_id'];
+                                  }
                                 });
                               },
                               foodData: foodDetails?['BreakFast'][index],
                             ),
                           ),
+
                         if (selectedFoodOption == 1)
                           ...List.generate(
                             foodDetails?['Lunch']?.length ?? 0,
                                 (index) => FoodInfoCard(
-                              isSelected: selectedCardIndex == index,
+                              isSelected: selectedLunchCardIndex == index,
                               onTap: () {
                                 setState(() {
-                                  selectedCardIndex = index;
+                                  if (selectedLunchCardIndex == index) {
+                                    // If already selected, deselect
+                                    selectedLunchCardIndex = -1;
+                                    selectedLunchMenuId = -1;
+                                  } else {
+                                    // Otherwise, select the new item
+                                    selectedLunchCardIndex = index;
+                                    selectedLunchMenuId = foodDetails?['Lunch'][index]['menu_id'];
+                                  }
                                 });
                               },
                               foodData: foodDetails?['Lunch'][index],
                             ),
                           ),
+
                         if (selectedFoodOption == 2)
                           ...List.generate(
                             foodDetails?['Snacks']?.length ?? 0,
                                 (index) => FoodInfoCard(
-                              isSelected: selectedCardIndex == index,
+                              isSelected: selectedSnacksCardIndex == index,
                               onTap: () {
                                 setState(() {
-                                  selectedCardIndex = index;
+                                  if (selectedSnacksCardIndex == index) {
+                                    // If already selected, deselect
+                                    selectedSnacksCardIndex = -1;
+                                    selectedSnacksMenuId = -1;
+                                  } else {
+                                    // Otherwise, select the new item
+                                    selectedSnacksCardIndex = index;
+                                    selectedSnacksMenuId = foodDetails?['Snacks'][index]['menu_id'];
+                                  }
                                 });
                               },
                               foodData: foodDetails?['Snacks'][index],
                             ),
                           ),
+
                         if (selectedFoodOption == 3)
                           ...List.generate(
                             foodDetails?['Dinner']?.length ?? 0,
                                 (index) => FoodInfoCard(
-                              isSelected: selectedCardIndex == index,
+                              isSelected: selectedDinnerCardIndex == index,
                               onTap: () {
                                 setState(() {
-                                  selectedCardIndex = index;
+                                  if (selectedDinnerCardIndex == index) {
+                                    // If already selected, deselect
+                                    selectedDinnerCardIndex = -1;
+                                    selectedDinnerMenuId = -1;
+                                  } else {
+                                    // Otherwise, select the new item
+                                    selectedDinnerCardIndex = index;
+                                    selectedDinnerMenuId = foodDetails?['Dinner'][index]['menu_id'];
+                                  }
                                 });
                               },
                               foodData: foodDetails?['Dinner'][index],
                             ),
                           ),
+
                         if (selectedFoodOption == 4)
-                          Expanded(
-                            child: ListView.builder(
-                              itemCount: foodDetails?['Addons']?.length ?? 0,
-                              itemBuilder: (context, index) {
-                                return AddonItem(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedCardIndex = index;
-                                    });
-                                  },
-                                  addonData: foodDetails?['Addons'][index],
-                                );
+                          ...List.generate(
+                            addons?.length ?? 0,
+                                (index) => AddonItem(
+                              isSelected: selectedAddonsCardIndex == index,
+                              onTap: () {
+                                setState(() {
+                                  selectedAddonsCardIndex = index;
+                                });
                               },
+                              addonData: addons?[index],
                             ),
                           ),
                       ],
                     ),
                   ),
                 ),
-
               ],
             ),
             CommonButton(
@@ -362,11 +423,17 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const SummaryScreen(),
+                    builder: (context) => SummaryScreen(
+                      selectedBreakfastMenuId: selectedBreakfastMenuId,
+                      selectedDinnerMenuId: selectedDinnerMenuId,
+                        selectedSnacksMenuId: selectedSnacksMenuId,
+                        selectedLunchMenuId: selectedLunchMenuId
+                    ),
                   ),
                 );
               },
             ),
+
           ],
         ),
       ),

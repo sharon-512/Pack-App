@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../custom_style.dart';
 import '../../../models/food_to_avoid_model.dart';
 import '../../../providers/food_to_avoid_provider.dart';
 import '../../../providers/user_registration_provider.dart';
 
 class SpecificFood2 extends StatefulWidget {
-  const SpecificFood2({super.key});
+  const SpecificFood2({Key? key}) : super(key: key);
 
   @override
   State<SpecificFood2> createState() => _SpecificFood2();
@@ -31,7 +32,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
 
     return Scaffold(
       body: foodProvider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? _buildShimmerEffect()
           : Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,6 +99,54 @@ class _SpecificFood2 extends State<SpecificFood2> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Center(
+            child: Text(
+              'Are there any specific\nfood to avoid?',
+              style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 32),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: 20),
+          Expanded(
+            child: GridView.builder(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1,
+              ),
+              itemCount: 6, // Display 6 shimmer items
+              itemBuilder: (context, index) {
+                return _buildShimmerContainer();
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildShimmerContainer() {
+    return Container(
+      height: 70,
+      width: 70,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
       ),
     );
   }

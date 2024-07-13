@@ -9,6 +9,7 @@ import '../widgets/Addon_item.dart';
 import '../widgets/common_button.dart';
 import '../widgets/food_detail_container.dart';
 import '../screens/summary_screen.dart';
+import 'package:shimmer/shimmer.dart'; // Import shimmer package
 
 class DailyNutrition extends StatefulWidget {
   final int subplanId;
@@ -147,8 +148,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
         final data = json.decode(response.body);
         setState(() {
           addons = data['data']; // Update addons data
-
-        print('sdhshdbvhdvbhdvbdkjv');
         });
       } else {
         throw Exception('Failed to load addons: ${response.statusCode}');
@@ -313,89 +312,109 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         if (selectedFoodOption == 0)
                           ...List.generate(
                             foodDetails?['BreakFast']?.length ?? 0,
-                                (index) => FoodInfoCard(
-                              isSelected: selectedBreakfastCardIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  if (selectedBreakfastCardIndex == index) {
-                                    // If already selected, deselect
-                                    selectedBreakfastCardIndex = -1;
-                                    selectedBreakfastMenuId = -1;
-                                  } else {
-                                    // Otherwise, select the new item
-                                    selectedBreakfastCardIndex = index;
-                                    selectedBreakfastMenuId = foodDetails?['BreakFast'][index]['menu_id'];
-                                  }
-                                });
-                              },
-                              foodData: foodDetails?['BreakFast'][index],
-                            ),
+                                (index) {
+                              if (foodDetails?['BreakFast'] == null || foodDetails?['BreakFast']!.isEmpty) {
+                                return _buildShimmerEffect(); // Placeholder when loading
+                              }
+                              return FoodInfoCard(
+                                isSelected: selectedBreakfastCardIndex == index,
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedBreakfastCardIndex == index) {
+                                      // If already selected, deselect
+                                      selectedBreakfastCardIndex = -1;
+                                      selectedBreakfastMenuId = -1;
+                                    } else {
+                                      // Otherwise, select the new item
+                                      selectedBreakfastCardIndex = index;
+                                      selectedBreakfastMenuId = foodDetails?['BreakFast'][index]['menu_id'];
+                                    }
+                                  });
+                                },
+                                foodData: foodDetails?['BreakFast'][index],
+                              );
+                            },
                           ),
 
                         if (selectedFoodOption == 1)
                           ...List.generate(
                             foodDetails?['Lunch']?.length ?? 0,
-                                (index) => FoodInfoCard(
-                              isSelected: selectedLunchCardIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  if (selectedLunchCardIndex == index) {
-                                    // If already selected, deselect
-                                    selectedLunchCardIndex = -1;
-                                    selectedLunchMenuId = -1;
-                                  } else {
-                                    // Otherwise, select the new item
-                                    selectedLunchCardIndex = index;
-                                    selectedLunchMenuId = foodDetails?['Lunch'][index]['menu_id'];
-                                  }
-                                });
-                              },
-                              foodData: foodDetails?['Lunch'][index],
-                            ),
+                                (index) {
+                              if (foodDetails?['Lunch'] == null || foodDetails?['Lunch']!.isEmpty) {
+                                return _buildShimmerEffect(); // Placeholder when loading
+                              }
+                              return FoodInfoCard(
+                                isSelected: selectedLunchCardIndex == index,
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedLunchCardIndex == index) {
+                                      // If already selected, deselect
+                                      selectedLunchCardIndex = -1;
+                                      selectedLunchMenuId = -1;
+                                    } else {
+                                      // Otherwise, select the new item
+                                      selectedLunchCardIndex = index;
+                                      selectedLunchMenuId = foodDetails?['Lunch'][index]['menu_id'];
+                                    }
+                                  });
+                                },
+                                foodData: foodDetails?['Lunch'][index],
+                              );
+                            },
                           ),
 
                         if (selectedFoodOption == 2)
                           ...List.generate(
                             foodDetails?['Snacks']?.length ?? 0,
-                                (index) => FoodInfoCard(
-                              isSelected: selectedSnacksCardIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  if (selectedSnacksCardIndex == index) {
-                                    // If already selected, deselect
-                                    selectedSnacksCardIndex = -1;
-                                    selectedSnacksMenuId = -1;
-                                  } else {
-                                    // Otherwise, select the new item
-                                    selectedSnacksCardIndex = index;
-                                    selectedSnacksMenuId = foodDetails?['Snacks'][index]['menu_id'];
-                                  }
-                                });
-                              },
-                              foodData: foodDetails?['Snacks'][index],
-                            ),
+                                (index) {
+                              if (foodDetails?['Snacks'] == null || foodDetails?['Snacks']!.isEmpty) {
+                                return _buildShimmerEffect(); // Placeholder when loading
+                              }
+                              return FoodInfoCard(
+                                isSelected: selectedSnacksCardIndex == index,
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedSnacksCardIndex == index) {
+                                      // If already selected, deselect
+                                      selectedSnacksCardIndex = -1;
+                                      selectedSnacksMenuId = -1;
+                                    } else {
+                                      // Otherwise, select the new item
+                                      selectedSnacksCardIndex = index;
+                                      selectedSnacksMenuId = foodDetails?['Snacks'][index]['menu_id'];
+                                    }
+                                  });
+                                },
+                                foodData: foodDetails?['Snacks'][index],
+                              );
+                            },
                           ),
 
                         if (selectedFoodOption == 3)
                           ...List.generate(
                             foodDetails?['Dinner']?.length ?? 0,
-                                (index) => FoodInfoCard(
-                              isSelected: selectedDinnerCardIndex == index,
-                              onTap: () {
-                                setState(() {
-                                  if (selectedDinnerCardIndex == index) {
-                                    // If already selected, deselect
-                                    selectedDinnerCardIndex = -1;
-                                    selectedDinnerMenuId = -1;
-                                  } else {
-                                    // Otherwise, select the new item
-                                    selectedDinnerCardIndex = index;
-                                    selectedDinnerMenuId = foodDetails?['Dinner'][index]['menu_id'];
-                                  }
-                                });
-                              },
-                              foodData: foodDetails?['Dinner'][index],
-                            ),
+                                (index) {
+                              if (foodDetails?['Dinner'] == null || foodDetails?['Dinner']!.isEmpty) {
+                                return _buildShimmerEffect(); // Placeholder when loading
+                              }
+                              return FoodInfoCard(
+                                isSelected: selectedDinnerCardIndex == index,
+                                onTap: () {
+                                  setState(() {
+                                    if (selectedDinnerCardIndex == index) {
+                                      // If already selected, deselect
+                                      selectedDinnerCardIndex = -1;
+                                      selectedDinnerMenuId = -1;
+                                    } else {
+                                      // Otherwise, select the new item
+                                      selectedDinnerCardIndex = index;
+                                      selectedDinnerMenuId = foodDetails?['Dinner'][index]['menu_id'];
+                                    }
+                                  });
+                                },
+                                foodData: foodDetails?['Dinner'][index],
+                              );
+                            },
                           ),
 
                         if (selectedFoodOption == 4)
@@ -426,14 +445,13 @@ class _DailyNutritionState extends State<DailyNutrition> {
                     builder: (context) => SummaryScreen(
                       selectedBreakfastMenuId: selectedBreakfastMenuId,
                       selectedDinnerMenuId: selectedDinnerMenuId,
-                        selectedSnacksMenuId: selectedSnacksMenuId,
-                        selectedLunchMenuId: selectedLunchMenuId
+                      selectedSnacksMenuId: selectedSnacksMenuId,
+                      selectedLunchMenuId: selectedLunchMenuId,
                     ),
                   ),
                 );
               },
             ),
-
           ],
         ),
       ),
@@ -442,6 +460,21 @@ class _DailyNutritionState extends State<DailyNutrition> {
 
   int calculateDaysDifference(DateTime start, DateTime end) {
     return end.difference(start).inDays;
+  }
+
+  Widget _buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 10),
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(10),
+        ),
+      ),
+    );
   }
 }
 

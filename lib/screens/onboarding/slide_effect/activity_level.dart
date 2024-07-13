@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import '../../../custom_style.dart';
 import '../../../models/activity_level_model.dart';
 import '../../../providers/activity_level_provider.dart';
@@ -32,7 +33,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
 
     return Scaffold(
       body: activityProvider.isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? _buildShimmerEffect()
           : Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,7 +68,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
         setState(() {
           _selectedIndex = index;
         });
-        _updateActivityLevel(activity.activityName); // Update activitylevel with selected activity name
+        _updateActivityLevel(activity.activityName); // Update activity level with selected activity name
       },
       child: Container(
         height: 90,
@@ -139,5 +140,42 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
       ),
     );
   }
-}
 
+  Widget _buildShimmerEffect() {
+    return Shimmer.fromColors(
+      baseColor: Colors.grey[300]!,
+      highlightColor: Colors.grey[100]!,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 15),
+          Center(
+            child: Text(
+              'How would you describe\nyour activity level?',
+              style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 32),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          SizedBox(height: 40),
+          Expanded(
+            child: ListView.builder(
+              itemCount: 5, // Display 5 shimmer items
+              itemBuilder: (context, index) {
+                return Container(
+                  height: 90,
+                  width: double.infinity,
+                  margin: EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

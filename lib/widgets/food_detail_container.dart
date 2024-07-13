@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
+
 class FoodInfoCard extends StatefulWidget {
   final bool isSelected;
   final VoidCallback onTap;
@@ -38,39 +41,43 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
         child: Row(
           children: [
             SizedBox(width: 10),
-            Image.network(
-              widget.foodData['menu_image'],
-              width: 90,
-              height: 90,
-              fit: BoxFit.fill,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  width: 90,
-                  height: 90,
-                  color: Colors.grey[200],
-                  child: Icon(
-                    Icons.sms_failed_outlined,
-                    color: Colors.grey[700],
-                  ),
-                );
-              },
-              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
+            ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: Image.network(
+                widget.foodData['menu_image'],
+                width: 90,
+                height: 90,
+                fit: BoxFit.fill,
+                errorBuilder: (context, error, stackTrace) {
                   return Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
                     width: 90,
                     height: 90,
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
+                    child: Icon(
+                      Icons.sms_failed_outlined,
+                      color: Colors.grey[700],
                     ),
                   );
-                }
-              },
+                },
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Shimmer.fromColors(
+                      baseColor: Colors.grey[300]!,
+                      highlightColor: Colors.grey[100]!,
+                      child: Container(
+                        width: 90,
+                        height: 90,
+                        color: Colors.white,
+                      ),
+                    );
+                  }
+                },
+              ),
             ),
             Expanded(
               child: Padding(
@@ -91,7 +98,7 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                     ),
                     Row(
                       children: [
-                        Image.asset('assets/images/fire2.png', height: 14,width: 13,),
+                        Image.asset('assets/images/fire2.png', height: 14, width: 13,),
                         const SizedBox(width: 2),
                         Flexible(
                           child: Text(
@@ -209,3 +216,4 @@ class NutritionBar extends StatelessWidget {
     );
   }
 }
+

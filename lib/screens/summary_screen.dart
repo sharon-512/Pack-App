@@ -350,14 +350,18 @@ class SummaryScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.network(
-                imageUrl,
-                width: 106,
-                height: 106,
-                errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
-              ),
-              SizedBox(
-                width: 10,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    imageUrl,
+                    width: 90,
+                    height: 90,
+                    fit: BoxFit.fill,
+                    errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                  ),
+                ),
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -384,15 +388,13 @@ class SummaryScreen extends StatelessWidget {
                     style: CustomTextStyles.subtitleTextStyle
                         .copyWith(fontSize: 12),
                   ),
-                  Flexible(
-                    child: Text(
-                      price,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                      style: CustomTextStyles.labelTextStyle.copyWith(
-                        letterSpacing: -0.16,
-                        fontSize: 14, // Adjust font size if necessary
-                      ),
+                  Text(
+                    price,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                    style: CustomTextStyles.labelTextStyle.copyWith(
+                      letterSpacing: -0.16,
+                      fontSize: 14, // Adjust font size if necessary
                     ),
                   ),
                 ],

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shimmer/shimmer.dart';
 
 import '../custom_style.dart';
 import '../widgets/common_button.dart';
@@ -21,6 +22,9 @@ class NumberOfMeals extends StatefulWidget {
 class _NumberOfMealsState extends State<NumberOfMeals> {
   int selectedOption = 0; // 0 for none, 1 for One Meal, 2 for Two Meal, etc.
   List<dynamic> mealOptions = [];
+  bool isLoading = true;
+  String? errorMessage;
+
   @override
   void initState() {
     super.initState();
@@ -51,15 +55,18 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         if (selectedSubplan != null && selectedSubplan['meal_plan'] != null) {
           setState(() {
             mealOptions =
-                List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
+            List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
+            isLoading = false;
           });
         }
       } else {
         throw Exception('Failed to load meal options: ${response.statusCode}');
       }
     } catch (e) {
-      print('Error fetching meal options: $e');
-      // Handle error as needed
+      setState(() {
+        errorMessage = 'Failed to load meal options: $e';
+        isLoading = false;
+      });
     }
   }
 
@@ -107,41 +114,57 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                         style: CustomTextStyles.titleTextStyle,
                       ),
                       const SizedBox(height: 50),
-                      // Display meal options dynamically
-                      for (int i = 0; i < mealOptions.length; i++)
-                        GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              selectedOption = i +
-                                  1; // +1 to match your meal options (1-based)
-                            });
-                          },
+                      // Display shimmer effect while loading
+                      isLoading
+                          ? Column(
+                        children: List.generate(3, (index) => Shimmer.fromColors(
+                          baseColor: Colors.grey[300]!,
+                          highlightColor: Colors.grey[100]!,
                           child: Container(
-                            margin: EdgeInsets.symmetric(
-                                vertical: 6, horizontal: 5),
-                            decoration: BoxDecoration(
-                              color: selectedOption == i + 1
-                                  ? Color(0xFFEDC0B2)
-                                  : Colors.transparent,
-                              border: Border.all(color: Color(0xFFEDC0B2)),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
+                            margin: EdgeInsets.symmetric(vertical: 6),
                             height: 50,
                             width: double.infinity,
-                            child: Center(
-                              child: Text(
-                                mealOptions[i]['mealtype_name'],
-                                style: TextStyle(
-                                  color: selectedOption == i + 1
-                                      ? Colors.white
-                                      : Colors.black,
-                                  fontFamily: 'Aeonik',
-                                  fontSize: 18,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                        )),
+                      )
+                          : Column(
+                        children: mealOptions.map((mealOption) {
+                          int index = mealOptions.indexOf(mealOption);
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedOption = index + 1; // +1 to match your meal options (1-based)
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
+                              decoration: BoxDecoration(
+                                color: selectedOption == index + 1
+                                    ? Color(0xFFEDC0B2)
+                                    : Colors.transparent,
+                                border: Border.all(color: Color(0xFFEDC0B2)),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              height: 50,
+                              width: double.infinity,
+                              child: Center(
+                                child: Text(
+                                  mealOption['mealtype_name'],
+                                  style: TextStyle(
+                                    color: selectedOption == index + 1 ? Colors.white : Colors.black,
+                                    fontFamily: 'Aeonik',
+                                    fontSize: 18,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
+                          );
+                        }).toList(),
+                      ),
                     ],
                   ),
                 ),
@@ -152,7 +175,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'You can freeze your plan through your profile. this is a weekly ongoing subscription. you can freeze up to 3 days',
+                    'You can freeze your plan through your profile. This is a weekly ongoing subscription. You can freeze up to 3 days.',
                     style: CustomTextStyles.labelTextStyle
                         .copyWith(fontSize: 11, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,

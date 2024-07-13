@@ -64,29 +64,38 @@ class _PacksState extends State<Packs> {
                                       MaterialPageRoute(builder: (context) => MealSelection(planId: plan.planId,)),
                                     );
                                   },
-                                  child: Stack(
-                                    alignment: Alignment.bottomLeft,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: Stack(
+                                      alignment: Alignment.bottomLeft,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: Colors.grey), // Placeholder color
+                                          alignment: Alignment.topRight,
+                                          child: ClipRRect(
                                             borderRadius: BorderRadius.circular(20),
-                                            color: Colors.grey), // Placeholder color
-                                        alignment: Alignment.topRight,
-                                        child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(20),
-                                            child: Image.network(plan.planImage, fit: BoxFit.cover)),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          plan.planName,
-                                          style: CustomTextStyles.titleTextStyle.copyWith(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white),
+                                            child: Image.network(
+                                              plan.planImage,
+                                              fit: BoxFit.fill,
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Text(
+                                            plan.planName,
+                                            style: CustomTextStyles.titleTextStyle.copyWith(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );
@@ -108,29 +117,38 @@ class _PacksState extends State<Packs> {
                                       MaterialPageRoute(builder: (context) => MealSelection(planId: plan.planId,)),
                                     );
                                   },
-                                  child: Stack(
-                                    alignment: Alignment.bottomLeft,
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: Stack(
+                                      alignment: Alignment.bottomLeft,
+                                      children: [
+                                        Container(
+                                          decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(20),
+                                              color: Colors.grey), // Placeholder color
+                                          alignment: Alignment.topRight,
+                                          child: ClipRRect(
                                             borderRadius: BorderRadius.circular(20),
-                                            color: Colors.grey), // Placeholder color
-                                        alignment: Alignment.topRight,
-                                        child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(20),
-                                            child: Image.network(plan.planImage, fit: BoxFit.cover)),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          plan.planName,
-                                          style: CustomTextStyles.titleTextStyle.copyWith(
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white),
+                                            child: Image.network(
+                                              plan.planImage,
+                                              fit: BoxFit.fill,
+                                              width: double.infinity,
+                                              height: double.infinity,
+                                            ),
+                                          ),
                                         ),
-                                      ),
-                                    ],
+                                        Padding(
+                                          padding: const EdgeInsets.all(12.0),
+                                          child: Text(
+                                            plan.planName,
+                                            style: CustomTextStyles.titleTextStyle.copyWith(
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.w500,
+                                                color: Colors.white),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               );

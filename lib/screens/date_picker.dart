@@ -212,8 +212,6 @@ class _DatePickerState extends State<DatePicker> {
       });
     }
   }
-
-
 }
 
 class DateSelectionField extends StatelessWidget {
@@ -239,8 +237,8 @@ class DateSelectionField extends StatelessWidget {
         onTap: () async {
           DateTime? pickedDate = await showDatePicker(
             context: context,
-            initialDate: DateTime.now(),
-            firstDate: disablePastDates ? DateTime.now() : DateTime(2000),
+            initialDate: DateTime.now().add(Duration(days: 2)), // Two days ahead
+            firstDate: disablePastDates ? DateTime.now().add(Duration(days: 2)) : DateTime(2000),
             lastDate: DateTime(2101),
             selectableDayPredicate: (DateTime date) {
               if (date.year == DateTime.now().year &&

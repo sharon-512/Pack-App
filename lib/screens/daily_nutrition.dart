@@ -211,6 +211,13 @@ class _DailyNutritionState extends State<DailyNutrition> {
                     itemBuilder: (context, index) {
                       // Calculate date for each index
                       DateTime currentDate = startDate.add(Duration(days: index));
+
+                      // Skip rendering if the current day is Friday
+                      if (currentDate.weekday == DateTime.friday) {
+                        return SizedBox.shrink(); // Returns an empty SizedBox to skip rendering
+                      }
+
+                      // Format date components
                       String text1 = DateFormat('MMM').format(currentDate);
                       String text2 = DateFormat('d').format(currentDate);
                       String text3 = DateFormat('E').format(currentDate);
@@ -237,6 +244,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                       );
                     },
                   ),
+
                 ),
                 const SizedBox(
                   height: 20,

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 import '../custom_style.dart';
 import '../widgets/common_button.dart';
 import 'number_of_meals.dart';
@@ -18,6 +21,39 @@ class _DatePickerState extends State<DatePicker> {
   final TextEditingController start = TextEditingController();
   final TextEditingController end = TextEditingController();
   DateTime? selectedStartDate;
+  int? dayCount;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSubplanDetails(widget.selectedSubplanId);
+  }
+
+  Future<void> fetchSubplanDetails(int subplanId) async {
+    try {
+      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        // Find the subplan using subplanId
+        for (var plan in data['plan']) {
+          for (var subplan in plan['sub_plans']) {
+            if (subplan['subplan_id'] == subplanId) {
+              setState(() {
+                dayCount = subplan['days_count'];
+              });
+              break;
+            }
+          }
+        }
+      } else {
+        throw Exception('Failed to load subplan details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching subplan details: $e');
+      // Handle error as needed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +108,7 @@ class _DatePickerState extends State<DatePicker> {
                       onDateSelected: (DateTime date) {
                         setState(() {
                           selectedStartDate = date;
-                          // Update end date based on selected start date and subplan name
+                          // Update end date based on selected start date and day count
                           updateEndDate();
                         });
                       },
@@ -105,8 +141,8 @@ class _DatePickerState extends State<DatePicker> {
                             borderSide: BorderSide(color: Color(0xFFEDC0B2)),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
-                          hintText: selectedStartDate != null
-                              ? DateFormat('EEEE, MMMM d, yyyy').format(selectedStartDate!)
+                          hintText: end.text.isNotEmpty
+                              ? end.text
                               : 'Select starting date first',
                           hintStyle: CustomTextStyles.hintTextStyle,
                           contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
@@ -140,7 +176,7 @@ class _DatePickerState extends State<DatePicker> {
                       DateFormat('EEEE, MMMM d, yyyy').format(selectedStartDate!),
                     );
                     await prefs.setString('endDate', end.text);
-                    print( end.text);
+                    print(end.text);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -160,49 +196,24 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   void updateEndDate() {
-    if (selectedStartDate != null) {
-      DateTime endDate = calculateEndDate(selectedStartDate!, widget.selectedSubplanId);
+    if (selectedStartDate != null && dayCount != null) {
+      DateTime endDate = selectedStartDate!;
+      int daysAdded = 1; // Start counting from day 1 (the start date)
+
+      while (daysAdded < dayCount!) {
+        endDate = endDate.add(Duration(days: 1));
+        if (endDate.weekday != DateTime.friday) {
+          daysAdded++;
+        }
+      }
+
       setState(() {
         end.text = DateFormat('EEEE, MMMM d, yyyy').format(endDate);
       });
     }
   }
 
-  DateTime calculateEndDate(DateTime startDate, int subplanId) {
-    int daysToAdd = 7; // Default to 1 week
 
-    if (subplanId == 1) {
-      daysToAdd = 8; // Adjust daysToAdd based on subplanId
-    } else if (subplanId == 2) {
-      daysToAdd = 16;
-    } else if (subplanId == 3) {
-      daysToAdd = 24;
-    } else if (subplanId == 4) {
-      daysToAdd = 30;
-    }
-
-    // Calculate end date excluding Fridays
-    DateTime endDate = startDate.add(Duration(days: daysToAdd));
-    if (endDate.weekday == DateTime.friday) {
-      endDate = endDate.add(Duration(days: 2)); // Skip to Saturday if ends on Friday
-    }
-
-    return endDate;
-  }
-
-}
-
-void updateEndDateInSharedPreferences(String endText) async {
-  final prefs = await SharedPreferences.getInstance();
-
-  // Parse endText to DateTime using DateFormat
-  DateTime endDate = DateFormat('EEEE, MMMM d, yyyy').parse(endText);
-
-  // Store endDate in SharedPreferences
-  await prefs.setString(
-    'endDate',
-    DateFormat('EEEE, MMMM d, yyyy').format(endDate),
-  );
 }
 
 class DateSelectionField extends StatelessWidget {
@@ -245,7 +256,6 @@ class DateSelectionField extends StatelessWidget {
 
               return true;
             },
-
           );
           if (pickedDate != null) {
             String formattedDate = DateFormat('EEEE, MMMM d, yyyy').format(pickedDate);

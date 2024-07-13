@@ -9,7 +9,7 @@ import '../widgets/Addon_item.dart';
 import '../widgets/common_button.dart';
 import '../widgets/food_detail_container.dart';
 import '../screens/summary_screen.dart';
-import 'package:shimmer/shimmer.dart'; // Import shimmer package
+import 'package:shimmer/shimmer.dart';
 
 class DailyNutrition extends StatefulWidget {
   final int subplanId;

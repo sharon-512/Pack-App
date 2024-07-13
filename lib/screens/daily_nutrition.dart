@@ -12,12 +12,12 @@ import '../screens/summary_screen.dart';
 
 class DailyNutrition extends StatefulWidget {
   final int subplanId;
-  final String mealtypeName;
+  final int mealtypeId;
 
   const DailyNutrition({
     Key? key,
     required this.subplanId,
-    required this.mealtypeName,
+    required this.mealtypeId,
   }) : super(key: key);
 
   @override
@@ -86,10 +86,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
       });
     }
 
-    fetchFoodDetails(widget.subplanId, widget.mealtypeName);
+    fetchFoodDetails(widget.subplanId, widget.mealtypeId);
   }
 
-  Future<void> fetchFoodDetails(int subplanId, String mealtypeName) async {
+  Future<void> fetchFoodDetails(int subplanId, int mealtypeId) async {
     try {
       final response = await http
           .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
@@ -113,7 +113,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
           // Find the meal type using mealtypeName
           Map<String, dynamic>? selectedMealType;
           for (var mealType in selectedSubplan['meal_plan']) {
-            if (mealType['mealtype_name'] == mealtypeName) {
+            if (mealType['mealtype_id'] == mealtypeId) {
               selectedMealType = mealType;
               break;
             }

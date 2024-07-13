@@ -162,14 +162,14 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                   text: 'Continue',
                   onTap: () {
                     if (selectedOption > 0) {
-                      String selectedMealType =
-                          mealOptions[selectedOption - 1]['mealtype_name'];
+                      int selectedMealType =
+                          mealOptions[selectedOption - 1]['mealtype_id'];
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DailyNutrition(
                             subplanId: widget.subplanId,
-                            mealtypeName: selectedMealType,
+                            mealtypeId: selectedMealType,
                           ),
                         ),
                       );

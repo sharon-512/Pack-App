@@ -55,86 +55,87 @@ class _EnterNumberState extends State<EnterNumber> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const SizedBox(height: 10),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: EdgeInsets.all(5),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 10),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Container(
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.black,
+                      width: 1.0,
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Welcome!\nto the plus pack',
+                style: CustomTextStyles.titleTextStyle,
+              ),
+              const SizedBox(height: 22),
+              Text('Enter your phone number to continue',
+                  style: CustomTextStyles.subtitleTextStyle),
+              const SizedBox(height: 40),
+              Row(
+                children: [
+                  Container(
+                    height: 48,
+                    alignment: Alignment.center,
+                    padding: const EdgeInsets.symmetric(horizontal: 14.0),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xffBEBEBE)),
                     ),
-                    child: const Icon(
-                      Icons.arrow_back,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Welcome!\nto the plus pack',
-                  style: CustomTextStyles.titleTextStyle,
-                ),
-                const SizedBox(height: 22),
-                Text('Enter your phone number to continue',
-                    style: CustomTextStyles.subtitleTextStyle),
-                const SizedBox(height: 40),
-                Row(
-                  children: [
-                    Container(
-                      height: 48,
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(horizontal: 14.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: const Color(0xffBEBEBE)),
-                      ),
-                      child: Text(
-                        '+974',
-                        style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 20),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: CommonTextField(
-                        hintText: 'your phone number',
-                        controller: mobileNumber,
-                        keyboardType: TextInputType.phone,
-                      ),
-                    ),
-                  ],
-                ),
-                if (_errorMessage != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
                     child: Text(
-                      _errorMessage!,
-                      style: TextStyle(color: Colors.red),
+                      '+974',
+                      style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 20),
                     ),
                   ),
-                SizedBox(height: 40),
-              ],
-            ),
-            CommonButton(
-              text: 'Continue',
-              onTap: _sendMobileNumber,
-              isLoading: _isLoading,
-            ),
-          ],
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: CommonTextField(
+                      hintText: 'your phone number',
+                      controller: mobileNumber,
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ),
+                ],
+              ),
+              if (_errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    _errorMessage!,
+                    style: TextStyle(color: Colors.red),
+                  ),
+                ),
+              SizedBox(height: 40),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton:
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: CommonButton(
+          text: 'Continue',
+          onTap: _sendMobileNumber,
+          isLoading: _isLoading,
         ),
       ),
     );

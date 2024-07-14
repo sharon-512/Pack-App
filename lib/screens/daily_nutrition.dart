@@ -450,12 +450,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => SummaryScreen(
-                      selectedBreakfastMenuId: selectedBreakfastMenuId,
-                      selectedDinnerMenuId: selectedDinnerMenuId,
-                      selectedSnacksMenuId: selectedSnacksMenuId,
-                      selectedLunchMenuId: selectedLunchMenuId,
-                    ),
+                    builder: (context) => SummaryScreen(),
                   ),
                 );
               },

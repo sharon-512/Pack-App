@@ -130,15 +130,20 @@ class _EnterOtpState extends State<EnterOtp> {
                             ),
                           ),
                           SizedBox(width: 10),
-                          Container(
-                            padding: EdgeInsets.all(14),
-                            height: 48,
-                            width: 48,
-                            decoration: BoxDecoration(
-                              color: Color(0xffFEC66F),
-                              borderRadius: BorderRadius.circular(8),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              padding: EdgeInsets.all(14),
+                              height: 48,
+                              width: 48,
+                              decoration: BoxDecoration(
+                                color: Color(0xffFEC66F),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: SvgPicture.asset('assets/images/pencil.svg'),
                             ),
-                            child: SvgPicture.asset('assets/images/pencil.svg'),
                           ),
                         ],
                       ),

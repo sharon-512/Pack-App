@@ -188,12 +188,15 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                     if (selectedOption > 0) {
                       int selectedMealType =
                       mealOptions[selectedOption - 1]['mealtype_id'];
+                      int totalMeals =
+                      mealOptions[selectedOption - 1]['mealtype_name'];
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => DailyNutrition(
                             subplanId: widget.subplanId,
                             mealtypeId: selectedMealType,
+                            numberofMeals: totalMeals
                           ),
                         ),
                       );

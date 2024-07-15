@@ -14,11 +14,13 @@ import 'package:shimmer/shimmer.dart';
 class DailyNutrition extends StatefulWidget {
   final int subplanId;
   final int mealtypeId;
+  final int numberofMeals;
 
   const DailyNutrition({
     Key? key,
     required this.subplanId,
     required this.mealtypeId,
+    required this.numberofMeals
   }) : super(key: key);
 
   @override

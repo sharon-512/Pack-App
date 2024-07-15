@@ -24,6 +24,7 @@ Future<void> main() async {
       ],
       child: MyApp(),
     ),
+
   );
 }
 
@@ -42,7 +43,7 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
       ),
-      home:  ImageSequenceAnimation(),
+      home:  BottomNavbar(),
     );
   }
 }

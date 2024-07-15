@@ -451,10 +451,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => SummaryScreen(
-                      selectedBreakfastMenuId: selectedBreakfastMenuId,
-                      selectedDinnerMenuId: selectedDinnerMenuId,
-                      selectedSnacksMenuId: selectedSnacksMenuId,
-                      selectedLunchMenuId: selectedLunchMenuId,
+                      // selectedBreakfastMenuId: selectedBreakfastMenuId,
+                      // selectedDinnerMenuId: selectedDinnerMenuId,
+                      // selectedSnacksMenuId: selectedSnacksMenuId,
+                      // selectedLunchMenuId: selectedLunchMenuId,
                     ),
                   ),
                 );

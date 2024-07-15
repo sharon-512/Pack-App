@@ -39,12 +39,12 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        // Assuming data['plan'] is a list, find the plan with matching subplan_name
+        // Assuming data['plan'] is a list, find the plan with matching subplan_id
         Map<String, dynamic>? selectedSubplan;
         for (var plan in data['plan']) {
           final subplans = plan['sub_plans'] as List<dynamic>;
           selectedSubplan = subplans.firstWhere(
-            (subplan) => subplan['subplan_id'] == subplanId,
+                (subplan) => subplan['subplan_id'] == subplanId,
             orElse: () => null,
           );
           if (selectedSubplan != null) {
@@ -153,13 +153,14 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                               width: double.infinity,
                               child: Center(
                                 child: Text(
-                                  mealOption['mealtype_name'],
+                                  '${mealOption['mealtype_name']} meal', // Displaying integer with meal type name
                                   style: TextStyle(
                                     color: selectedOption == index + 1 ? Colors.white : Colors.black,
                                     fontFamily: 'Aeonik',
                                     fontSize: 18,
                                   ),
                                 ),
+
                               ),
                             ),
                           );
@@ -186,7 +187,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                   onTap: () {
                     if (selectedOption > 0) {
                       int selectedMealType =
-                          mealOptions[selectedOption - 1]['mealtype_id'];
+                      mealOptions[selectedOption - 1]['mealtype_id'];
                       Navigator.push(
                         context,
                         MaterialPageRoute(

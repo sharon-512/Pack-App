@@ -4,6 +4,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:pack_app/providers/activity_level_provider.dart';
 import 'package:pack_app/providers/food_to_avoid_provider.dart';
 import 'package:pack_app/providers/user_registration_provider.dart';
+import 'package:pack_app/screens/Dashboard/nav_bar.dart';
 import 'package:pack_app/screens/onboarding/enter_details.dart';
 import 'package:pack_app/widgets/Animation.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
       ),
-      home: ImageSequenceAnimation(),
+      home:  BottomNavbar(),
     );
   }
 }

@@ -82,31 +82,45 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
         child: Row(
           children: [
             SizedBox(width: 10),
-            Image.network(
-              activity.imageUrl,
+            Container(
               height: 70,
               width: 70,
-              fit: BoxFit.fill,
-              loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                if (loadingProgress == null) {
-                  return child;
-                } else {
-                  return Image.asset(
-                    'assets/images/default.png', // Path to your default image
-                    height: 70,
-                    width: 70,
-                    fit: BoxFit.fill,
-                  );
-                }
-              },
-              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
-                return Image.asset(
-                  'assets/images/default.png', // Path to your default image
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.grey[300], // Background color while loading
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  activity.imageUrl,
                   height: 70,
                   width: 70,
                   fit: BoxFit.fill,
-                );
-              },
+                  loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) {
+                      return child;
+                    } else {
+                      return Shimmer.fromColors(
+                        baseColor: Colors.grey[300]!,
+                        highlightColor: Colors.grey[100]!,
+                        child: Container(
+                          height: 70,
+                          width: 70,
+                          color: Colors.white,
+                        ),
+                      );
+                    }
+                  },
+                  errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                    return Image.asset(
+                      'assets/images/default.png', // Path to your default image
+                      height: 70,
+                      width: 70,
+                      fit: BoxFit.fill,
+                    );
+                  },
+                ),
+              ),
             ),
             SizedBox(width: 10),
             Padding(

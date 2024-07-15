@@ -108,68 +108,70 @@ class _EnterDetailsState extends State<EnterDetails> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
         child: Form(
           key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 500,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 40),
-                    Text(
-                      'Enter your details',
-                      style: CustomTextStyles.titleTextStyle,
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'First Name',
-                      style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    CommonTextField(
-                      hintText: 'Enter your first name',
-                      controller: nameController,
-                      validator: _validateName, // Use the validation method here
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Last Name',
-                      style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    CommonTextField(
-                      hintText: 'Enter your last name',
-                      controller: lastNameController,
-                      validator: _validateLastName, // Use the validation method here
-                    ),
-                    const SizedBox(height: 20),
-                    Text(
-                      'Email',
-                      style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
-                    ),
-                    const SizedBox(height: 8),
-                    CommonTextField(
-                      hintText: 'Enter your email',
-                      controller: emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: _validateEmail, // Use the validation method here
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: MediaQuery.of(context).size.height*0.75,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 40),
+                      Text(
+                        'Enter your details',
+                        style: CustomTextStyles.titleTextStyle,
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'First Name',
+                        style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      CommonTextField(
+                        hintText: 'Enter your first name',
+                        controller: nameController,
+                        validator: _validateName, // Use the validation method here
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Last Name',
+                        style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      CommonTextField(
+                        hintText: 'Enter your last name',
+                        controller: lastNameController,
+                        validator: _validateLastName, // Use the validation method here
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Email',
+                        style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                      ),
+                      const SizedBox(height: 8),
+                      CommonTextField(
+                        hintText: 'Enter your email',
+                        controller: emailController,
+                        keyboardType: TextInputType.emailAddress,
+                        validator: _validateEmail, // Use the validation method here
+                      ),
+
+                    ],
+                  ),
                 ),
-              ),
-              CommonButton(
-                text: 'Continue',
-                onTap: _registerUser,
-                isLoading: _isLoading,
-              ),
-            ],
+                CommonButton(
+                  text: 'Continue',
+                  onTap: _registerUser,
+                  isLoading: _isLoading,
+                ),
+              ],
+            ),
           ),
         ),
       ),

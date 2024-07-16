@@ -7,6 +7,7 @@ import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:hive/hive.dart';
 import 'package:pack_app/models/user_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/authentication.dart';
 import 'enter_details.dart';
 
@@ -53,6 +54,9 @@ class _EnterOtpState extends State<EnterOtp> {
         // await userBox.put('currentUser', user);
         //print('User details stored: $user');
         // Navigate to the home page or dashboard
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // Store authentication status
+
         Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavbar(),));
       } else if (response['status_code'] == 2) {
         setState(() {

@@ -4,6 +4,7 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:pack_app/providers/activity_level_provider.dart';
 import 'package:pack_app/providers/food_to_avoid_provider.dart';
 import 'package:pack_app/providers/user_registration_provider.dart';
+
 import 'package:pack_app/widgets/Animation.dart';
 import 'package:provider/provider.dart';
 

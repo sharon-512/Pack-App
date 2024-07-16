@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:pack_app/screens/Dashboard/profile_and_other_options/privacy_policy.dart';
 import 'package:pack_app/screens/Dashboard/profile_and_other_options/terms_and_conditions.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../onboarding/start_screen.dart';
 import 'Add_new_address.dart';
@@ -14,7 +15,10 @@ import 'my_subscriptions.dart';
 
 class ProfileMenuScreen extends StatelessWidget {
   const ProfileMenuScreen({super.key});
-
+  void _clearSharedPreferences(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn'); // Remove the isLoggedIn key from shared preferences
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,8 +68,11 @@ class ProfileMenuScreen extends StatelessWidget {
                 // Add more menu items if needed
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 30),
-                  child: GestureDetector(
-                    onTap: () => _navigateTo(context, StartScreen()),
+                  child:  GestureDetector(
+                    onTap: () {
+                      _clearSharedPreferences(context); // Call the method to clear shared preferences
+                      _navigateTo(context, StartScreen()); // Navigate to your logout screen or any other screen
+                    },
                     child: Text(
                       'Logout',
                       style: TextStyle(

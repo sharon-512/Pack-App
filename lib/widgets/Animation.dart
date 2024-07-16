@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pack_app/screens/Dashboard/nav_bar.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
 import '../screens/onboarding/start_screen.dart';
@@ -30,14 +32,26 @@ class _ImageSequenceAnimationState extends State<ImageSequenceAnimation> {
       setState(() {
         if (_index == imagePaths.length - 1) {
           timer.cancel();
-          Future.delayed(Duration(seconds: 1), () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => StartScreen()));
+          // Check login status and navigate accordingly
+          Future.delayed(Duration(seconds: 1), () async {
+            final isLoggedIn = await checkLoggedInStatus();
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => isLoggedIn ? BottomNavbar() : StartScreen(),
+              ),
+            );
           });
         } else {
           _index = (_index + 1) % imagePaths.length;
         }
       });
     });
+  }
+
+  Future<bool> checkLoggedInStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    return isLoggedIn;
   }
 
   @override

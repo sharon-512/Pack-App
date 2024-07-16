@@ -169,6 +169,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
   Widget build(BuildContext context) {
     final int limit = widget.numberofMeals;
 
+    // Check if selections are complete for all days
+    bool isSelectionComplete = dailySelections.every((selection) =>
+    selection['breakfast'] != null &&
+        selection['lunch'] != null &&
+        selection['snacks'] != null &&
+        selection['dinner'] != null &&
+        selection['addons'].isNotEmpty
+    );
+
     if (_isLoading) {
       return Scaffold(
         body: Center(
@@ -261,8 +270,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                       print('513 -ve ---> $selectedCount');
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
-                                      //if (selectedBreakfastCardIndex == -1)
-                                        selectedCount++;
+                                      selectedCount++;
                                       print('513 +ve---> $selectedCount');
                                       dailySelections[selectedDay]['breakfast'] = foodDetails?['BreakFast'][index];
                                       selectedBreakfastCardIndex = index;
@@ -293,8 +301,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
-                                      //if (selectedBreakfastCardIndex == -1)
-                                        selectedCount++;
+                                      selectedCount++;
                                       dailySelections[selectedDay]['lunch'] = foodDetails?['Lunch'][index];
                                       selectedBreakfastCardIndex = index;
                                       selectedBreakfastMenuId = foodDetails?['Lunch'][index]['menu_id'];
@@ -303,8 +310,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 },
                                 foodData: foodDetails?['Lunch'][index],
                               );
-
-                                },
+                            },
                           ),
                         if (selectedFoodOption == 2)
                           ...List.generate(
@@ -325,8 +331,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
-                                      //if (selectedBreakfastCardIndex == -1)
-                                        selectedCount++;
+                                      selectedCount++;
                                       dailySelections[selectedDay]['snacks'] = foodDetails?['Snacks'][index];
                                       selectedBreakfastCardIndex = index;
                                       selectedBreakfastMenuId = foodDetails?['Snacks'][index]['menu_id'];
@@ -335,8 +340,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 },
                                 foodData: foodDetails?['Snacks'][index],
                               );
-
-                                },
+                            },
                           ),
                         if (selectedFoodOption == 3)
                           ...List.generate(
@@ -357,8 +361,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
-                                      //if (selectedBreakfastCardIndex == -1)
-                                        selectedCount++;
+                                      selectedCount++;
                                       dailySelections[selectedDay]['dinner'] = foodDetails?['Dinner'][index];
                                       selectedBreakfastCardIndex = index;
                                       selectedBreakfastMenuId = foodDetails?['Dinner'][index]['menu_id'];
@@ -367,8 +370,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 },
                                 foodData: foodDetails?['Dinner'][index],
                               );
-
-                                },
+                            },
                           ),
                         if (selectedFoodOption == 4)
                           ...List.generate(
@@ -401,22 +403,48 @@ class _DailyNutritionState extends State<DailyNutrition> {
             CommonButton(
               text: 'Continue',
               onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SummaryScreen(
-                      // selectedBreakfastMenuId: selectedBreakfastMenuId,
-                      // selectedDinnerMenuId: selectedDinnerMenuId,
-                      // selectedSnacksMenuId: selectedSnacksMenuId,
-                      // selectedLunchMenuId: selectedLunchMenuId,
+                bool isComplete = true;
+
+                // Check if the required number of meals are selected for each day
+                for (var selection in dailySelections) {
+                  int selectedCount = 0;
+
+                  // Count selected meals for the current day
+                  if (selection['breakfast'] != null) selectedCount++;
+                  if (selection['lunch'] != null) selectedCount++;
+                  if (selection['snacks'] != null) selectedCount++;
+                  if (selection['dinner'] != null) selectedCount++;
+                  // Check if selected count matches numberofMeals
+                  if (selectedCount != widget.numberofMeals) {
+                    isComplete = false;
+                    break;
+                  }
+                }
+
+                if (isComplete) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SummaryScreen(),
                     ),
-                  ),
-                );
+                  );
+                } else {
+                  // Optionally show a message or handle incomplete selection
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Please select meals for each day.'),
+                      duration: Duration(seconds: 2), // Adjust duration as needed
+
+                    ),
+                  );
+                }
               },
             ),
+
           ],
         ),
       ),
     );
   }
+
 }

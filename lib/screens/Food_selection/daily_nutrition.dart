@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pack_app/screens/Food_selection/widgets/Addon_item.dart';
-import 'package:pack_app/screens/Food_selection/widgets/custom_container.dart';
+import 'package:pack_app/screens/Food_selection/widgets/date_selection.dart';
 import 'package:pack_app/screens/Food_selection/widgets/food_detail_container.dart';
+import 'package:pack_app/screens/Food_selection/widgets/food_option.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
-
-
-import 'package:shimmer/shimmer.dart';
 
 import '../../custom_style.dart';
 import '../../widgets/Shimmer.dart';
@@ -215,100 +213,27 @@ class _DailyNutritionState extends State<DailyNutrition> {
                   style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 30),
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  height: 92,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: dailySelections.length,
-                    itemBuilder: (context, index) {
-                      DateTime currentDate = dailySelections[index]['date'];
-                      String text1 = DateFormat('MMM').format(currentDate);
-                      String text2 = DateFormat('d').format(currentDate);
-                      String text3 = DateFormat('E').format(currentDate);
-
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedCount = 0;
-                            print('512 ---> $selectedCount');
-                            selectedDay = index;
-                          });
-                        },
-                        child: Row(
-                          children: [
-                            CustomContainer(
-                              isSelected: index == selectedDay,
-                              text1: text1,
-                              text2: text2,
-                              text3: text3,
-                            ),
-                            SizedBox(width: 10)
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                DateSelection(
+                  selectedDay: selectedDay,
+                  dailySelections: dailySelections,
+                  onDateSelected: (index) {
+                    setState(() {
+                      selectedCount = 0;
+                      selectedDay = index;
+                    });
+                  },
                 ),
                 const SizedBox(height: 20),
-                Container(
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xffFFF7E2),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(5, (index) {
-                      // Define a list of food options
-                      List<String> foodOptions = [
-                        'Breakfast',
-                        'Lunch',
-                        'Snacks',
-                        'Dinner',
-                        'Addons'
-                      ];
-
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedFoodOption =
-                                index; // Update the selected item index
-                          });
-                          if (selectedFoodOption == 4) {
-                            fetchAddons(); // Fetch addons when "Addons" is selected
-                          }
-                        },
-                        child: Container(
-                          padding: EdgeInsets.symmetric(horizontal: 8),
-                          decoration: BoxDecoration(
-                            color: selectedFoodOption == index
-                                ? const Color(0xFFFEC66F)
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(
-                              color: selectedFoodOption == index
-                                  ? const Color(0xFFFEC66F)
-                                  : Colors.transparent, // Same border color for all
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              foodOptions[index],
-                              style: TextStyle(
-                                color: selectedFoodOption == index
-                                    ? Colors.black
-                                    : const Color(0xFFA89B87),
-                                fontSize: 13,
-                                fontFamily: 'Aeonik',
-                                letterSpacing: 0.14,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    }),
-                  ),
+                FoodOptions(
+                  selectedFoodOption: selectedFoodOption,
+                  onSelectFoodOption: (index) {
+                    setState(() {
+                      selectedFoodOption = index;
+                    });
+                    if (selectedFoodOption == 4) {
+                      fetchAddons();
+                    }
+                  },
                 ),
                 const SizedBox(height: 20),
                 Expanded(
@@ -495,4 +420,3 @@ class _DailyNutritionState extends State<DailyNutrition> {
     );
   }
 }
-

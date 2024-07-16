@@ -358,15 +358,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                     if (dailySelections[selectedDay]['lunch'] == foodDetails?['Lunch'][index]) {
                                       // If already selected, deselect
                                       dailySelections[selectedDay]['lunch'] = null;
-                                      selectedBreakfastCardIndex = -1;
-                                      selectedBreakfastMenuId = -1;
+                                      selectedLunchCardIndex = -1;
+                                      selectedLunchMenuId = -1;
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
                                       selectedCount++;
                                       dailySelections[selectedDay]['lunch'] = foodDetails?['Lunch'][index];
-                                      selectedBreakfastCardIndex = index;
-                                      selectedBreakfastMenuId = foodDetails?['Lunch'][index]['menu_id'];
+                                      selectedLunchCardIndex = index;
+                                      selectedLunchMenuId = foodDetails?['Lunch'][index]['menu_id'];
                                     }
                                   });
                                 },
@@ -388,15 +388,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                     if (dailySelections[selectedDay]['snacks'] == foodDetails?['Snacks'][index]) {
                                       // If already selected, deselect
                                       dailySelections[selectedDay]['snacks'] = null;
-                                      selectedBreakfastCardIndex = -1;
-                                      selectedBreakfastMenuId = -1;
+                                      selectedSnacksCardIndex = -1;
+                                      selectedSnacksMenuId = -1;
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
                                       selectedCount++;
                                       dailySelections[selectedDay]['snacks'] = foodDetails?['Snacks'][index];
-                                      selectedBreakfastCardIndex = index;
-                                      selectedBreakfastMenuId = foodDetails?['Snacks'][index]['menu_id'];
+                                      selectedSnacksCardIndex = index;
+                                      selectedSnacksMenuId = foodDetails?['Snacks'][index]['menu_id'];
                                     }
                                   });
                                 },
@@ -418,15 +418,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                     if (dailySelections[selectedDay]['dinner'] == foodDetails?['Dinner'][index]) {
                                       // If already selected, deselect
                                       dailySelections[selectedDay]['dinner'] = null;
-                                      selectedBreakfastCardIndex = -1;
-                                      selectedBreakfastMenuId = -1;
+                                      selectedDinnerCardIndex = -1;
+                                      selectedDinnerMenuId = -1;
                                       selectedCount--;
                                     } else if (selectedCount < limit) {
                                       // Otherwise, select the new item if limit not reached
                                       selectedCount++;
                                       dailySelections[selectedDay]['dinner'] = foodDetails?['Dinner'][index];
-                                      selectedBreakfastCardIndex = index;
-                                      selectedBreakfastMenuId = foodDetails?['Dinner'][index]['menu_id'];
+                                      selectedDinnerCardIndex = index;
+                                      selectedDinnerMenuId = foodDetails?['Dinner'][index]['menu_id'];
                                     }
                                   });
                                 },

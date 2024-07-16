@@ -48,12 +48,12 @@ class _EnterOtpState extends State<EnterOtp> {
           ),
         );
       } else if (response['status_code'] == 1) {
-        // Already existing user
-        // final userBox = Hive.box<User>('userBox');
-        // final user = User.fromJson(response['user']);
-        // await userBox.put('currentUser', user);
-        //print('User details stored: $user');
-        // Navigate to the home page or dashboard
+        //Already existing user
+        final userBox = Hive.box<User>('userBox');
+        final user = User.fromJson(response['user']);
+        await userBox.put('currentUser', user);
+        print('User details stored: $user');
+        //Navigate to the home page or dashboard
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true); // Store authentication status
 

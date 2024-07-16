@@ -14,6 +14,7 @@ Future<void> main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>('userBox');
+  await Hive.openBox('bannersBox');
   runApp(
     MultiProvider(
       providers: [

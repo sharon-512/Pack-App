@@ -1,9 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive/hive.dart';
 import '../../../providers/user_registration_provider.dart';
 import '../../../services/registraction.dart';
 import '../../../widgets/progress_bar.dart';
@@ -13,6 +13,7 @@ import 'dob2_selection.dart';
 import 'food_to_avoid.dart';
 import 'gender_selection.dart';
 import 'height_selection.dart';
+import '../../../models/user_model.dart'; // Assuming UserModel class for user data
 
 class OnboardingScreen extends StatefulWidget {
   @override
@@ -106,7 +107,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           curve: Curves.easeInOut,
                         );
                       } else {
-                        _registerUser();
+                        await _registerUser();
                       }
                     },
                     text: 'Continue',
@@ -121,37 +122,32 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  void _registerUser() async {
-
+  Future<void> _registerUser() async {
     setState(() {
       isLoading = true;
     });
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
-      // Print user details (for testing purposes)
-
-      print('512 -- User Details:');
-      print('First Name: ${userProvider.user.firstName}');
-      print('Last Name: ${userProvider.user.lastName}');
-      print('Email: ${userProvider.user.email}');
-      print('Mobile Number: ${userProvider.user.mobileNumber}');
-      print('Height: ${userProvider.user.height}');
-      print('Weight: ${userProvider.user.weight}');
-      print('Age: ${userProvider.user.age}');
-      print('Gender: ${userProvider.user.gender}');
-      print('Activity Level: ${userProvider.user.activityLevel}');
-      print('Food to Avoid: ${userProvider.user.foodAvoid}');
-
       final response = await _registrationService.newRegister(userProvider.user);
 
       if (response['response_code'] == 3) {
+        // Registration successful, navigate to home or dashboard
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => BottomNavbar(),
           ),
         );
+
+        // Store authentication status
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true);
+
+        // Store user details locally using Hive
+        final userBox = await Hive.openBox<User>('userBox');
+        final user = User.fromJson(response['user']);
+        await userBox.put('currentUser', user); // Assuming toUserModel converts to UserModel
       } else if (response['response_code'] == 0) {
         _showErrorSnackBar('Existing email ID');
       } else {

@@ -124,7 +124,7 @@ class MySubscriptions extends StatelessWidget {
                               Text(
                                 '28 days',
                                 style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 24,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ),

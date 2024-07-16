@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import '../../../custom_style.dart';
-
 
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
   final Map<String, dynamic> addonData;
   final bool isSelected;
+  final Function(double totalPrice) onCountChange;
 
   const AddonItem({
     Key? key,
     required this.onTap,
     required this.addonData,
     required this.isSelected,
+    required this.onCountChange,
   }) : super(key: key);
 
   @override
@@ -25,8 +25,7 @@ class _AddonItemState extends State<AddonItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Define the color based on the selection state
-    Color textColor = Colors.black;
+    double addonPrice = double.parse(widget.addonData['addon_price']);
 
     return GestureDetector(
       onTap: widget.onTap,
@@ -88,14 +87,21 @@ class _AddonItemState extends State<AddonItem> {
                         widget.addonData['addon_name'],
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 14,
-                          color: textColor, // Apply the conditional color here
+                          color: Colors.black,
                         ),
                       ),
                       Text(
-                        '\$${widget.addonData['addon_price']}',
+                        'Price: \$${addonPrice.toStringAsFixed(2)}',
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 14,
-                          color: textColor, // Apply the conditional color here
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'Total: \$${(addonPrice * count).toStringAsFixed(2)}',
+                        style: CustomTextStyles.labelTextStyle.copyWith(
+                          fontSize: 14,
+                          color: Colors.black,
                         ),
                       ),
                     ],
@@ -114,6 +120,7 @@ class _AddonItemState extends State<AddonItem> {
                       onTap: () {
                         setState(() {
                           if (count > 0) count--;
+                          widget.onCountChange(addonPrice * count);
                         });
                       },
                       child: Icon(
@@ -132,6 +139,7 @@ class _AddonItemState extends State<AddonItem> {
                       onTap: () {
                         setState(() {
                           count++;
+                          widget.onCountChange(addonPrice * count);
                         });
                       },
                       child: Icon(

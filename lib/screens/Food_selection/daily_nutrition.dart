@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -37,6 +39,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   List<dynamic>? addons;
   late DateTime startDate;
   late DateTime endDate;
+  String foodPrice = '';
   bool _isLoading = true;
   int selectedBreakfastCardIndex = -1;
   int selectedBreakfastMenuId = -1;
@@ -47,7 +50,8 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int selectedDinnerCardIndex = -1;
   int selectedDinnerMenuId = -1;
   int selectedAddonsCardIndex = -1;
-
+  int selectedPlanId = -1;
+  String selectedPlanName = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
 
@@ -56,6 +60,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
     super.initState();
     fetchDatesFromSharedPreferences();
     fetchAddons();
+    fetchFoodPrice(widget.subplanId, widget.mealtypeId);
   }
 
   Future<void> fetchDatesFromSharedPreferences() async {
@@ -102,6 +107,63 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int calculateDaysDifference(DateTime start, DateTime end) {
     return end.difference(start).inDays;
   }
+
+  Future<void> fetchFoodPrice(int subplanId, int mealtypeId) async {
+    try {
+      final response = await http.get(
+          Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+
+        // Find the selected subplan
+        Map<String, dynamic>? selectedSubplan;
+        for (var plan in data['plan']) {
+          for (var subplan in plan['sub_plans']) {
+            if (subplan['subplan_id'] == subplanId) {
+              selectedSubplan = subplan;
+              selectedPlanId = plan['plan_id']; // Store the plan_id here
+              selectedPlanName = plan['plan_name']; // Store the plan_name here
+              break;
+            }
+          }
+          if (selectedSubplan != null) break;
+        }
+
+        if (selectedSubplan != null) {
+          // Find the selected meal type within the selected subplan
+          Map<String, dynamic>? selectedMealType;
+          for (var mealType in selectedSubplan['meal_plan']) {
+            if (mealType['mealtype_id'] == mealtypeId) {
+              selectedMealType = mealType;
+              break;
+            }
+          }
+
+          if (selectedMealType != null) {
+            // Extract the price as a string from the selected meal type
+            String? price = selectedMealType['products']['price'];
+            setState(() {
+              foodPrice = price!; // Assign the price to state variable
+              // Assign plan details to state variables
+            });
+            print('Price fetched: $foodPrice');
+            print('Selected Plan ID: $selectedPlanId');
+            print('Selected Plan Name: $selectedPlanName');
+          } else {
+            throw Exception('Selected meal type not found');
+          }
+        } else {
+          throw Exception('Selected subplan not found');
+        }
+      } else {
+        throw Exception('Failed to load food details: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching food details: $e');
+    }
+  }
+
 
   Future<void> fetchFoodDetails(int subplanId, int mealtypeId) async {
     try {
@@ -422,10 +484,18 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 }
 
                 if (isComplete) {
+                  printSelectedFoodDetails();
+                  print(foodPrice);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => SummaryScreen(),
+                      builder: (context) => SummaryScreen(
+                        planId: selectedPlanId,
+                        foodPrice: foodPrice,
+                        subplanId: widget.subplanId,
+                        mealtypeId: widget.mealtypeId,
+                        planName: selectedPlanName
+                      ),
                     ),
                   );
                 } else {
@@ -445,6 +515,18 @@ class _DailyNutritionState extends State<DailyNutrition> {
         ),
       ),
     );
+  }
+
+  void printSelectedFoodDetails() {
+    for (var selection in dailySelections) {
+      print('Date: ${selection['date']}');
+      print('Breakfast: ${selection['breakfast']}');
+      print('Lunch: ${selection['lunch']}');
+      print('Snacks: ${selection['snacks']}');
+      print('Dinner: ${selection['dinner']}');
+      print('Addons: ${selection['addons']}');
+      print('-------------------------');
+    }
   }
 
 }

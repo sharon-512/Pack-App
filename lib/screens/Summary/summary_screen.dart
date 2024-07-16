@@ -1,13 +1,38 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
+import 'package:http/http.dart' as http;
 
 import '../../custom_style.dart';
 
+class SummaryScreen extends StatefulWidget {
+  final String foodPrice;
+  final String planName;
+  final int planId;
+  final int subplanId;
+  final int mealtypeId;
+  const SummaryScreen(
+      {Key? key,
+      required this.foodPrice,
+      required this.planId,
+      required this.subplanId,
+      required this.mealtypeId,
+      required this.planName})
+      : super(key: key);
 
-class SummaryScreen extends StatelessWidget {
-  const SummaryScreen({Key? key}) : super(key: key);
+  @override
+  State<SummaryScreen> createState() => _SummaryScreenState();
+}
+
+class _SummaryScreenState extends State<SummaryScreen> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -24,11 +49,11 @@ class SummaryScreen extends StatelessWidget {
                 children: [
                   Column(
                     children: [
-                      SelectedItem('Weight loss seekers', '3000 QR'),
+                      SelectedItem(widget.planName, '${widget.foodPrice} QR'),
                       const SizedBox(
                         height: 15,
                       ),
-                      Addon('Spindrift Lemon', '100 QR'),
+                      Addon(widget.planName, '100 QR'),
                       const SizedBox(
                         height: 20,
                       ),
@@ -44,14 +69,16 @@ class SummaryScreen extends StatelessWidget {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color: Color(0xff000000).withOpacity(.07)),
+                                      color:
+                                          Color(0xff000000).withOpacity(.07)),
                                   // Active border color
                                   borderRadius: BorderRadius.circular(
                                       8.0), // Set the radius here
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color: Color(0xff000000).withOpacity(.07)),
+                                      color:
+                                          Color(0xff000000).withOpacity(.07)),
                                   // Normal border color
                                   borderRadius: BorderRadius.circular(
                                       8.0), // Set the radius here
@@ -96,8 +123,8 @@ class SummaryScreen extends StatelessWidget {
                       Container(
                         height: 158,
                         decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Color(0xff000000).withOpacity(.07)),
+                            border: Border.all(
+                                color: Color(0xff000000).withOpacity(.07)),
                             borderRadius: BorderRadius.circular(28)),
                         child: Padding(
                           padding: const EdgeInsets.all(25),
@@ -105,22 +132,24 @@ class SummaryScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Weight loss seekers',
+                                    widget.planName,
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '3000 QR',
+                                    '${widget.foodPrice} QR',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
                                 ],
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Add ons',
@@ -138,7 +167,8 @@ class SummaryScreen extends StatelessWidget {
                                 color: Color(0xff000000).withOpacity(.09),
                               ),
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',

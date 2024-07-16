@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:pack_app/screens/Summary/widgets/addon.dart';
+import 'package:pack_app/screens/Summary/widgets/selectedItem.dart';
 import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
@@ -49,11 +51,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                 children: [
                   Column(
                     children: [
-                      SelectedItem(widget.planName, '${widget.foodPrice} QR'),
+                      SelectedItem(plan: widget.planName, price: widget.foodPrice),
                       const SizedBox(
                         height: 15,
                       ),
-                      Addon(widget.planName, '100 QR'),
+                      Addon(plan: widget.planName, price: '100'),
                       const SizedBox(
                         height: 20,
                       ),
@@ -132,8 +134,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     widget.planName,
@@ -148,8 +149,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 ],
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Add ons',
@@ -157,7 +157,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '100 QR',
+                                    '100 QR', // Assuming add-ons price is a fixed 100 QR
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -167,8 +167,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 color: Color(0xff000000).withOpacity(.09),
                               ),
                               Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',
@@ -176,7 +175,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '3100 QR',
+                                    '${(int.parse(widget.foodPrice) + 100)} QR', // Calculate the subtotal
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -186,6 +185,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                           ),
                         ),
                       )
+
                     ],
                   ),
                   CommonButton(
@@ -202,158 +202,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
               ),
             ),
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget SelectedItem(String plan, String price) {
-    return Container(
-      height: 143,
-      decoration: BoxDecoration(
-          border: Border.all(color: Color(0xff000000).withOpacity(.07)),
-          borderRadius: BorderRadius.circular(28)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/images/foodcard1.png',
-                // Placeholder for spaghetti image
-                width: 106,
-                height: 106,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Plan name',
-                    style: CustomTextStyles.subtitleTextStyle
-                        .copyWith(fontSize: 12),
-                  ),
-                  Text(
-                    plan,
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(letterSpacing: -.16),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Price',
-                    style: CustomTextStyles.subtitleTextStyle
-                        .copyWith(fontSize: 12),
-                  ),
-                  Text(
-                    price,
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(letterSpacing: -.16),
-                  )
-                ],
-              ),
-            ],
-          ),
-          Container(
-            height: 143,
-            width: 50,
-            decoration: const BoxDecoration(
-                color: Color(0xff124734),
-                //border: Border.all(color: ),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(28),
-                    topRight: Radius.circular(28))),
-            alignment: Alignment.center,
-            child: const RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  'View Plan',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Aeonik'),
-                )),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget Addon(String plan, String price) {
-    return Container(
-      height: 100,
-      decoration: BoxDecoration(
-          border:
-              Border.all(color: Color(0xff000000).withOpacity(.07), width: 1),
-          borderRadius: BorderRadius.circular(28)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Image.asset(
-                'assets/images/addon.png', // Placeholder for spaghetti image
-                width: 106,
-                height: 106,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Plan name',
-                    style: CustomTextStyles.subtitleTextStyle
-                        .copyWith(fontSize: 12),
-                  ),
-                  Text(
-                    plan,
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(letterSpacing: -.16),
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    'Price',
-                    style: CustomTextStyles.subtitleTextStyle
-                        .copyWith(fontSize: 12),
-                  ),
-                  Text(
-                    price,
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(letterSpacing: -.16),
-                  )
-                ],
-              ),
-            ],
-          ),
-          Container(
-            height: 143,
-            width: 50,
-            decoration: BoxDecoration(
-                color: Color(0xff124734),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(28),
-                    topRight: Radius.circular(28))),
-            alignment: Alignment.center,
-            child: const RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  'View',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Aeonik'),
-                )),
-          )
         ],
       ),
     );

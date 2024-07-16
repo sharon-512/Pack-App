@@ -3,9 +3,8 @@ import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/screens/Dashboard/Home_page/widget/selected_pack_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
-import '../../../widgets/food_detail_container.dart';
 import '../../../widgets/selected_food_card.dart';
-import '../../meal_selection.dart';
+import '../../Mealselection/meal_selection.dart';
 
 
 class HomePage extends StatefulWidget {

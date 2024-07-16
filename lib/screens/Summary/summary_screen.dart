@@ -3,7 +3,8 @@ import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
-import '../custom_style.dart';
+import '../../custom_style.dart';
+
 
 class SummaryScreen extends StatelessWidget {
   const SummaryScreen({Key? key}) : super(key: key);

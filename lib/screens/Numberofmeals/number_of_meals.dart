@@ -4,9 +4,10 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
-import '../custom_style.dart';
-import '../widgets/common_button.dart';
-import 'daily_nutrition.dart';
+import '../../custom_style.dart';
+import '../../widgets/common_button.dart';
+import '../Food_selection/daily_nutrition.dart';
+
 
 class NumberOfMeals extends StatefulWidget {
   final int subplanId;

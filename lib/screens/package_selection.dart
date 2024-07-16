@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 
-import 'meal_selection.dart';
+import 'Mealselection/meal_selection.dart';
 
 class PackageSelection extends StatelessWidget {
   const PackageSelection({super.key});

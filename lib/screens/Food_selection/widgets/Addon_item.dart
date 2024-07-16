@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
-import '../custom_style.dart';
+import '../../../custom_style.dart';
+
 
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;

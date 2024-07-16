@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:pack_app/screens/Food_selection/widgets/Addon_item.dart';
+import 'package:pack_app/screens/Food_selection/widgets/custom_container.dart';
+import 'package:pack_app/screens/Food_selection/widgets/food_detail_container.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-import '../custom_style.dart';
-import '../widgets/Addon_item.dart';
-import '../widgets/common_button.dart';
-import '../widgets/food_detail_container.dart';
-import '../screens/summary_screen.dart';
+
 import 'package:shimmer/shimmer.dart';
+
+import '../../custom_style.dart';
+import '../../widgets/Shimmer.dart';
+import '../../widgets/common_button.dart';
+import '../Summary/summary_screen.dart';
 
 class DailyNutrition extends StatefulWidget {
   final int subplanId;
@@ -317,7 +321,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             foodDetails?['BreakFast']?.length ?? 0,
                                 (index) {
                               if (foodDetails?['BreakFast'] == null || foodDetails?['BreakFast']!.isEmpty) {
-                                return _buildShimmerEffect(); // Placeholder when loading
+                                return ShimmerEffect(); // Placeholder when loading
                               }
                               return FoodInfoCard(
                                 isSelected: dailySelections[selectedDay]['breakfast'] == foodDetails?['BreakFast'][index],
@@ -350,7 +354,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             foodDetails?['Lunch']?.length ?? 0,
                                 (index) {
                               if (foodDetails?['Lunch'] == null || foodDetails?['Lunch']!.isEmpty) {
-                                return _buildShimmerEffect(); // Placeholder when loading
+                                return ShimmerEffect(); // Placeholder when loading
                               }
                               return FoodInfoCard(
                                 isSelected: dailySelections[selectedDay]['lunch'] == foodDetails?['Lunch'][index],
@@ -382,7 +386,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             foodDetails?['Snacks']?.length ?? 0,
                                 (index) {
                               if (foodDetails?['Snacks'] == null || foodDetails?['Snacks']!.isEmpty) {
-                                return _buildShimmerEffect(); // Placeholder when loading
+                                return ShimmerEffect(); // Placeholder when loading
                               }
                               return FoodInfoCard(
                                 isSelected: dailySelections[selectedDay]['snacks'] == foodDetails?['Snacks'][index],
@@ -414,7 +418,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             foodDetails?['Dinner']?.length ?? 0,
                                 (index) {
                               if (foodDetails?['Dinner'] == null || foodDetails?['Dinner']!.isEmpty) {
-                                return _buildShimmerEffect(); // Placeholder when loading
+                                return ShimmerEffect(); // Placeholder when loading
                               }
                               return FoodInfoCard(
                                 isSelected: dailySelections[selectedDay]['dinner'] == foodDetails?['Dinner'][index],
@@ -446,9 +450,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
                             addons?.length ?? 0,
                                 (index) {
                               if (addons == null || addons!.isEmpty) {
-                                return _buildShimmerEffect(); // Placeholder when loading
+                                return ShimmerEffect(); // Placeholder when loading
                               }
-                              return FoodInfoCard(
+                              return AddonItem(
                                 isSelected: dailySelections[selectedDay]['addons'].contains(addons![index]),
                                 onTap: () {
                                   setState(() {
@@ -459,7 +463,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                     }
                                   });
                                 },
-                                foodData: addons![index],
+                                addonData: addons![index],
                               );
                             },
                           ),
@@ -490,79 +494,5 @@ class _DailyNutritionState extends State<DailyNutrition> {
       ),
     );
   }
-
-  Widget _buildShimmerEffect() {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16.0),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey[300]!,
-        highlightColor: Colors.grey[100]!,
-        child: Container(
-          width: double.infinity,
-          height: 120.0,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16.0),
-          ),
-        ),
-      ),
-    );
-  }
 }
 
-
-class CustomContainer extends StatelessWidget {
-  final bool isSelected;
-  final String text1;
-  final String text2;
-  final String text3;
-
-  const CustomContainer({
-    Key? key,
-    required this.isSelected,
-    required this.text1,
-    required this.text2,
-    required this.text3,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      width: 69,
-      decoration: BoxDecoration(
-        color: isSelected ? const Color(0xFFEDC0B2) : Colors.transparent,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: const Color(0xFFEDC0B2), // Thicker border if selected
-        ),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            text1,
-            style: CustomTextStyles.labelTextStyle.copyWith(
-              color: isSelected ? Colors.white : Colors.black,
-            ),
-          ),
-          Text(
-            text2,
-            style: CustomTextStyles.labelTextStyle.copyWith(
-              fontSize: 24,
-              color: isSelected ? Colors.white : Colors.black,
-            ),
-          ),
-          Text(
-            text3,
-            style: CustomTextStyles.labelTextStyle.copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.w400,
-              color: isSelected ? Colors.white : const Color(0xffABABAB),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}

@@ -4,10 +4,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
-import '../custom_style.dart';
-import '../widgets/common_button.dart';
-import 'date_picker.dart';
-import 'number_of_meals.dart'; // Import NumberOfMeals page
+import '../../custom_style.dart';
+import '../../widgets/common_button.dart';
+import '../Datepicker/date_picker.dart';
 
 class MealSelection extends StatefulWidget {
   final int planId;

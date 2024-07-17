@@ -71,7 +71,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Addon(plan: widget.planName, price: '100'),
+                      Addon(plan: widget.planName, price: '$addonPrice',),
                       const SizedBox(
                         height: 20,
                       ),

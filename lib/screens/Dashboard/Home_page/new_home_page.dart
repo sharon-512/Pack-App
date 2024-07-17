@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:pack_app/custom_style.dart';
+import 'package:pack_app/screens/Dashboard/Home_page/widget/banner_card.dart';
 import 'package:pack_app/screens/Dashboard/Home_page/widget/selected_pack_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../models/user_model.dart';
 import '../../../widgets/selected_food_card.dart';
 import '../../Mealselection/meal_selection.dart';
 
@@ -19,6 +22,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final userBox = Hive.box<User>('userBox');
+    final user = userBox.get('currentUser');
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
@@ -48,7 +53,7 @@ class _HomePageState extends State<HomePage> {
                             children: [
                               Image.asset('assets/images/hand_emoji.png'),
                               Text(
-                                'Hello! Mariam',
+                                'Hello! ${user?.firstname}',
                                 style: CustomTextStyles.labelTextStyle.copyWith(
                                     color: Color(0xffD7D7D7), fontSize: 12),
                               ),
@@ -200,7 +205,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(
                     height: 10,
                   ),
-                  BookYourDailyNutrition(context),
+                  BannerCardWidget(),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10),
                     child: Text(
@@ -231,10 +236,10 @@ class _HomePageState extends State<HomePage> {
                       controller: _pageController, // PageController
                       count: 3, // The number of dots
                       effect: WormEffect(
-                        activeDotColor: Colors.grey,
-                        dotColor: Colors.grey[300]!,
-                        dotHeight: 8,
-                        dotWidth: 8
+                          activeDotColor: Colors.grey,
+                          dotColor: Colors.grey[300]!,
+                          dotHeight: 8,
+                          dotWidth: 8
                       ),
                     ),
                   ),

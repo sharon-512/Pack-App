@@ -1,15 +1,14 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pack_app/screens/Summary/widgets/addon.dart';
 import 'package:pack_app/screens/Summary/widgets/selectedItem.dart';
 import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../custom_style.dart';
-import '../../services/apiPost.dart';
 
 class SummaryScreen extends StatefulWidget {
   final String foodPrice;
@@ -19,6 +18,7 @@ class SummaryScreen extends StatefulWidget {
   final int mealtypeId;
   final double addonPrice;
   final List<Map<String, dynamic>> dailySelections;
+  final List<Map<String, dynamic>> selectedAddons; // Add this line
 
   const SummaryScreen({
     Key? key,
@@ -29,6 +29,7 @@ class SummaryScreen extends StatefulWidget {
     required this.planName,
     required this.addonPrice,
     required this.dailySelections,
+    required this.selectedAddons, // Add this line
   }) : super(key: key);
 
   @override
@@ -37,6 +38,10 @@ class SummaryScreen extends StatefulWidget {
 
 class _SummaryScreenState extends State<SummaryScreen> {
   List<Map<String, dynamic>> dailySelections = [];
+  List<Map<String, dynamic>> selectedAddons = [];
+  late DateTime startDate;
+  late DateTime endDate;
+  bool _isLoading = true;
   void addDailySelections(Map<String, dynamic> selection) {
     dailySelections.add(selection);
   }
@@ -44,7 +49,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   void initState() {
     super.initState();
+    fetchDatesFromSharedPreferences();
     dailySelections = widget.dailySelections;
+    selectedAddons = widget.selectedAddons;
   }
 
   @override
@@ -218,12 +225,62 @@ class _SummaryScreenState extends State<SummaryScreen> {
       ),
     );
   }
+
+  Future<void> fetchDatesFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedStartDate = prefs.getString('startDate');
+    final storedEndDate = prefs.getString('endDate');
+
+    if (storedStartDate != null && storedEndDate != null) {
+      try {
+        setState(() {
+          // Parse date strings into DateTime objects
+          startDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedStartDate);
+          endDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedEndDate);
+          _isLoading = false;
+        });
+
+        // Format DateTime objects to string in "yyyy-MM-dd" format
+        final formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+        final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+
+        // Print the parsed and formatted dates (optional)
+        print('Parsed Start Date: $formattedStartDate');
+        print('Parsed End Date: $formattedEndDate');
+      } catch (e) {
+        print('Error parsing dates: $e');
+        // Handle the error appropriately, e.g., set default dates
+        setState(() {
+          startDate = DateTime.now();
+          endDate = DateTime.now();
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        startDate = DateTime.now();
+        endDate = DateTime.now();
+        _isLoading = false;
+      });
+
+      // Format DateTime objects to string in "yyyy-MM-dd" format
+      final formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+      final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+
+      // Print the default dates (optional)
+      print('Default Start Date: $formattedStartDate');
+      print('Default End Date: $formattedEndDate');
+    }
+  }
+
   void _placeOrder() async {
     try {
+
+      await fetchDatesFromSharedPreferences();
       String token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYjRkMDY2OTFlZjA5NTAyOGZmMDBlODUxNTQ0YjExNjIwZjk3YmZhNTdjNjdiYmQ2NjgyNmZhZmFhMTBjMTY1ZjVkYjA1OWQ3YThiMzIzMGUiLCJpYXQiOjE3MjA4NzkwOTkuMDAyMjQwODk2MjI0OTc1NTg1OTM3NSwibmJmIjoxNzIwODc5MDk5LjAwMjI0MzA0MTk5MjE4NzUsImV4cCI6MTc1MjQxNTA5OS4wMDAzODY5NTMzNTM4ODE4MzU5Mzc1LCJzdWIiOiIxOSIsInNjb3BlcyI6W119.SvasUJyXmh_3d3YfXIWO-QYHZZdfPWUX4CqVogft9SFwZXPqKlCBloz-z-x-2AJq1bhXvvK_owJWaEHKgiEVd3vWc8wI1XcCYkKAn2U2Q81LcPgRn-jjviANCa7pHIu3sbGYbAHz5b_zU6O92mzKXo7cvrEBwXqaJWFcb7p-ekrdrnsKDP8Ox6yWg_AjdOjwj8Q3-yVfWBBqZxhPizeeAJK6q-VTIm8uOLiIhqHHE4rwXQx6Np99aXEV-oYujOYl0Vl4IpsvnkYqFBBbPghPPhUThahXPmJTTlfMMy_NuglCOj9QHW--KnAarNMZFw1PHZCWRQJBCK3SzFfrn6h_XnP3-d9fiSVmBuvvWpBmrBG9bg_NFcyjwk3lcaer5C0d5ES10iKj3R029MBaGJ96PFc4NIGh8N4x0glzdQSYdzbWFvLBCEbX5ru9RtN95-BOY52Sr33mQf6zSLb0Lc4L7rIglvLjIm_IasT6LvRdJdqOyj-ZdF_Z-9h-kJAm8O8A8L8jUz6_2uRGneuqzasIXWThZFAgNUeyvYQ2JjwZN0tBv5ffz-UB8ud-o_fj8mO0iApCOfAhA1xHqqh7GPnbX-KEWWrfWzum9xGJ4Qi8_c8KUlAnPjdn5PV1zey_rlGXqnPPGQ_zzEbr2QfQIfZWrJsiAfQDsd4w4eJRbKW_R28';
-      String planFrom = '2024-06-13';
-      String planTo = '2024-06-26';
-      String productId = '1';
+      String planFrom = DateFormat('yyyy-MM-dd').format(startDate);
+      String planTo = DateFormat('yyyy-MM-dd').format(endDate);
+      String productId = widget.planId as String;
 
       // Prepare menu from dailySelections
       List<Map<String, dynamic>> menu = [];
@@ -237,12 +294,13 @@ class _SummaryScreenState extends State<SummaryScreen> {
         });
       }
 
-      // Prepare addon list (example, adjust as per your logic)
-      List<Map<String, dynamic>> addon = [
-        {"id": "1", "quantity": "2"},
-        {"id": "2", "quantity": "2"},
-      ];
-
+      List<Map<String, dynamic>> addon = [];
+      for (var addonItem in widget.selectedAddons) {
+        addon.add({
+          "id": addonItem['id'],
+          "quantity": addonItem['quantity'],
+        });
+      }
       // Prepare form data for the POST request
       var formData = {
         'plan_from': planFrom,
@@ -251,7 +309,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
         'menu': jsonEncode(menu),
         'addon': jsonEncode(addon),
       };
-print(jsonEncode(menu));
+
       // Make the POST request with automatic redirection handling
       var apiUrl = 'https://interfuel.qa/packupadmin/api/save-order';
       var response = await http.post(
@@ -265,6 +323,7 @@ print(jsonEncode(menu));
 
       // Handle response
       if (response.statusCode == 200) {
+        print(widget.selectedAddons);
         print('Order saved successfully.');
         print('Response: ${response.body}');
         // Navigate to CheckoutScreen or handle success as needed
@@ -284,5 +343,4 @@ print(jsonEncode(menu));
       // Handle network or other errors
     }
   }
-
 }

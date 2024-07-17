@@ -54,6 +54,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   String selectedPlanName = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
+  List<Map<String, dynamic>> addonSelection = [];
   double totalPrice = 0.0;
 
   @override
@@ -537,8 +538,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 if (isComplete) {
                   printSelectedFoodDetails();
                   print(foodPrice);
+                  List<Map<String, dynamic>> selectedAddons = transformSelectedAddons();
                   List<Map<String, dynamic>> transformedSelections = transformDailySelections();
                   print(transformedSelections);
+                  print(selectedAddons);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -550,6 +553,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         planName: selectedPlanName,
                         addonPrice: totalAddonPrice,
                         dailySelections: transformedSelections,
+                        selectedAddons: selectedAddons,
                       ),
                     ),
                   );
@@ -569,6 +573,28 @@ class _DailyNutritionState extends State<DailyNutrition> {
         ),
       ),
     );
+  }
+
+
+  List<Map<String, dynamic>> transformSelectedAddons() {
+    List<Map<String, dynamic>> addonsList = [];
+
+    for (var selection in addonSelection) {
+      for (var addon in selection['addons']) {
+        // Find existing addon in addonsList
+        int existingIndex = addonsList.indexWhere((a) => a['id'] == addon['id']);
+
+        if (existingIndex != -1) {
+          // If addon exists, update its quantity
+          addonsList[existingIndex]['quantity'] += 1;
+        } else {
+          // If addon doesn't exist, add it to addonsList
+          addonsList.add({'id': addon['id'].toString(), 'quantity': 1});
+        }
+      }
+    }
+
+    return addonsList;
   }
 
 

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../providers/user_registration_provider.dart';
 import '../../../services/registraction.dart';
@@ -146,6 +147,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       final response = await _registrationService.newRegister(userProvider.user);
 
       if (response['response_code'] == 3) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // Store authentication status
         Navigator.push(
           context,
           MaterialPageRoute(

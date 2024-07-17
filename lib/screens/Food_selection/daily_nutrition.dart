@@ -606,7 +606,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
         'lunch': selection['lunch'] != null ? selection['lunch']['menu_id'].toString() : '',
         'snacks': selection['snacks'] != null ? selection['snacks']['menu_id'].toString() : '',
         'dinner': selection['dinner'] != null ? selection['dinner']['menu_id'].toString() : '',
-        'addons': selection['addons'].isNotEmpty ? selection['addons'].map((addon) => addon['id'].toString()).join(',') : ''
       };
     }).toList();
   }

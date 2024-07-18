@@ -54,7 +54,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   String selectedPlanName = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
-  List<Map<String, dynamic>> addonSelection = [];
+  List<Map<String, dynamic>> selectedAddons = [];
   double totalPrice = 0.0;
 
   @override
@@ -489,25 +489,42 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 return ShimmerEffect(); // Placeholder when loading
                               }
                               return AddonItem(
-                                  isSelected: dailySelections[selectedDay]
-                                          ['addons']
-                                      .contains(addons![index]),
-                                  onTap: () {
-                                    setState(() {
-                                      if (dailySelections[selectedDay]['addons']
-                                          .contains(addons![index])) {
-                                        dailySelections[selectedDay]['addons']
-                                            .remove(addons![index]);
-                                      } else {
-                                        dailySelections[selectedDay]['addons']
-                                            .add(addons![index]);
-                                      }
+                                isSelected: dailySelections[selectedDay]
+                                        ['addons']
+                                    .contains(addons![index]),
+                                onTap: () {
+                                  setState(() {
+                                    if (dailySelections[selectedDay]['addons']
+                                        .contains(addons![index])) {
+                                      dailySelections[selectedDay]['addons']
+                                          .remove(addons![index]);
+                                    } else {
+                                      dailySelections[selectedDay]['addons']
+                                          .add(addons![index]);
+                                    }
+                                  });
+                                },
+                                addonData: addons![index],
+                                onCountChange: (addonId, quantity, totalPrice) {
+                                  // Handle the callback here to pass addonId, quantity, and totalPrice
+                                  print(
+                                      'Addon ID: $addonId, Quantity: $quantity, Total Price: $totalPrice');
+                                  // You can store or use this data as needed
+
+                                  // Format selectedAddons into addon structure
+                                  List<Map<String, dynamic>> addon = [];
+                                  for (var addonItem in selectedAddons) {
+                                    addon.add({
+                                      "id": addonItem['id'],
+                                      "quantity": addonItem['quantity'],
                                     });
-                                  },
-                                  addonData: addons![index],
-                                  onCountChange: handleAddonPriceChange);
+                                  }
+                                  // Now addon contains the desired structure
+                                  print(addon);
+                                },
+                              );
                             },
-                          ),
+                          )
                       ],
                     ),
                   ),
@@ -536,10 +553,11 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 }
 
                 if (isComplete) {
-                  printSelectedFoodDetails();
                   print(foodPrice);
-                  List<Map<String, dynamic>> selectedAddons = transformSelectedAddons();
-                  List<Map<String, dynamic>> transformedSelections = transformDailySelections();
+                  List<Map<String, dynamic>> selectedAddons =
+                      transformSelectedAddons();
+                  List<Map<String, dynamic>> transformedSelections =
+                      transformDailySelections();
                   print(transformedSelections);
                   print(selectedAddons);
                   Navigator.push(
@@ -575,21 +593,23 @@ class _DailyNutritionState extends State<DailyNutrition> {
     );
   }
 
-
   List<Map<String, dynamic>> transformSelectedAddons() {
     List<Map<String, dynamic>> addonsList = [];
 
-    for (var selection in addonSelection) {
-      for (var addon in selection['addons']) {
+    // Iterate over each day's addon selection
+    for (var daySelection in dailySelections) {
+      // Iterate over addons selected for each day
+      for (var addon in daySelection['addons']) {
         // Find existing addon in addonsList
-        int existingIndex = addonsList.indexWhere((a) => a['id'] == addon['id']);
+        int existingIndex =
+            addonsList.indexWhere((a) => a['id'] == addon['id']);
 
         if (existingIndex != -1) {
           // If addon exists, update its quantity
           addonsList[existingIndex]['quantity'] += 1;
         } else {
           // If addon doesn't exist, add it to addonsList
-          addonsList.add({'id': addon['id'].toString(), 'quantity': 1});
+          addonsList.add({'id': addon['id'], 'quantity': 1});
         }
       }
     }
@@ -597,15 +617,22 @@ class _DailyNutritionState extends State<DailyNutrition> {
     return addonsList;
   }
 
-
   List<Map<String, dynamic>> transformDailySelections() {
     return dailySelections.map((selection) {
       return {
         'date': DateFormat('dd-MM-yyyy').format(selection['date']),
-        'breakfast': selection['breakfast'] != null ? selection['breakfast']['menu_id'].toString() : '',
-        'lunch': selection['lunch'] != null ? selection['lunch']['menu_id'].toString() : '',
-        'snacks': selection['snacks'] != null ? selection['snacks']['menu_id'].toString() : '',
-        'dinner': selection['dinner'] != null ? selection['dinner']['menu_id'].toString() : '',
+        'breakfast': selection['breakfast'] != null
+            ? selection['breakfast']['menu_id'].toString()
+            : '',
+        'lunch': selection['lunch'] != null
+            ? selection['lunch']['menu_id'].toString()
+            : '',
+        'snacks': selection['snacks'] != null
+            ? selection['snacks']['menu_id'].toString()
+            : '',
+        'dinner': selection['dinner'] != null
+            ? selection['dinner']['menu_id'].toString()
+            : '',
       };
     }).toList();
   }

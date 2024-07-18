@@ -54,8 +54,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
   String selectedPlanName = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
-  List<Map<String, dynamic>> selectedAddons = [];
+  List<Map<String, dynamic>> selectedAddonsFinal = [];
   double totalPrice = 0.0;
+  double totalAddonPriceFinal = 0.0;
 
   @override
   void initState() {
@@ -65,14 +66,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
     fetchFoodPrice(widget.subplanId, widget.mealtypeId);
   }
 
-  double totalAddonPrice = 0.0;
-
-  void handleAddonPriceChange(double totalPrice) {
-    setState(() {
-      totalAddonPrice = totalPrice;
-    });
-    print(totalAddonPrice);
-  }
 
   Future<void> fetchDatesFromSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -507,21 +500,35 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 addonData: addons![index],
                                 onCountChange: (addonId, quantity, totalPrice) {
                                   // Handle the callback here to pass addonId, quantity, and totalPrice
-                                  print(
-                                      'Addon ID: $addonId, Quantity: $quantity, Total Price: $totalPrice');
-                                  // You can store or use this data as needed
+                                  print('Addon ID: $addonId, Quantity: $quantity, Total Price: $totalPrice');
 
-                                  // Format selectedAddons into addon structure
-                                  List<Map<String, dynamic>> addon = [];
-                                  for (var addonItem in selectedAddons) {
-                                    addon.add({
-                                      "id": addonItem['id'],
-                                      "quantity": addonItem['quantity'],
+                                  // Check if addonId already exists in selectedAddons
+                                  int existingIndex = selectedAddonsFinal.indexWhere((addon) => addon['id'] == addonId);
+
+                                  if (existingIndex != -1) {
+                                    // If addon exists, update its quantity
+                                    setState(() {
+                                      selectedAddonsFinal[existingIndex]['quantity'] = quantity;
+                                    });
+                                  } else {
+                                    // If addon doesn't exist, add it to selectedAddons
+                                    setState(() {
+                                      selectedAddonsFinal.add({'id': addonId, 'quantity': quantity});
                                     });
                                   }
-                                  // Now addon contains the desired structure
-                                  print(addon);
+                                  double totalAddonPrice = 0.0;
+                                  for (var addon in selectedAddonsFinal) {
+                                    totalAddonPrice += totalPrice; // Add totalPrice of each addon
+                                  }
+                                  setState(() {
+                                    this.totalAddonPriceFinal = totalAddonPrice;
+                                  });
+                                  // Print updated selectedAddons (for debugging)
+                                  print('Updated selectedAddons: $selectedAddonsFinal');
+                                  print('Total Addon Price: $totalAddonPrice');
+
                                 },
+
                               );
                             },
                           )
@@ -569,9 +576,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         subplanId: widget.subplanId,
                         mealtypeId: widget.mealtypeId,
                         planName: selectedPlanName,
-                        addonPrice: totalAddonPrice,
+                        addonPrice: totalAddonPriceFinal,
                         dailySelections: transformedSelections,
-                        selectedAddons: selectedAddons,
+                        selectedAddons: selectedAddonsFinal,
                       ),
                     ),
                   );

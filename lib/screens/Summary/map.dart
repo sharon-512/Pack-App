@@ -38,19 +38,30 @@ class _MapSelectionScreenState extends State<MapSelectionScreen> {
           GoogleMap(
             onMapCreated: _onMapCreated,
             initialCameraPosition: CameraPosition(
-              target: LatLng(25.276987, 55.296249),
-              zoom: 14.0,
+              target: LatLng(25.3548, 51.1839), // Center of Qatar
+              zoom: 10.0, // Adjust the initial zoom level as needed
             ),
             onTap: _onTap,
             markers: _selectedLocation != null
                 ? {
-                    Marker(
-                      markerId: MarkerId('selected-location'),
-                      position: _selectedLocation!,
-                    ),
-                  }
+              Marker(
+                markerId: MarkerId('selected-location'),
+                position: _selectedLocation!,
+              ),
+            }
                 : {},
+            // Restrict user interaction and visible area to Qatar
+            liteModeEnabled: false, // Enables full-featured maps
+            myLocationButtonEnabled: true, // Show button to move to current location
+            mapType: MapType.normal, // Use normal map view
+            cameraTargetBounds: CameraTargetBounds(
+              LatLngBounds(
+                southwest: LatLng(24.3963, 50.6977), // Bottom-left boundary (latitude, longitude)
+                northeast: LatLng(26.5108, 51.2156), // Top-right boundary (latitude, longitude)
+              ),
+            ),
           ),
+
           Positioned(
             bottom: 0,
             left: 0,

@@ -6,7 +6,7 @@ class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
   final Map<String, dynamic>? addonData;
   final bool isSelected;
-  final Function(String addonId, int quantity, double totalPrice) onCountChange;
+  final Function(int addonId, int quantity, double totalPrice) onCountChange;
 
   const AddonItem({
     Key? key,
@@ -33,7 +33,7 @@ class _AddonItemState extends State<AddonItem> {
         ? double.parse(widget.addonData!['addon_price'])
         : 0.0; // Default value if addon_price is null or cannot be parsed
 
-    String addonId = widget.addonData!['addon_id'] ?? ''; // Default value for addon_id
+    int addonId = widget.addonData!['id'] ?? ''; // Default value for addon_id
 
     return GestureDetector(
       onTap: () {

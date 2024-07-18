@@ -53,6 +53,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
     fetchDatesFromSharedPreferences();
     dailySelections = widget.dailySelections;
     selectedAddons = widget.selectedAddons;
+    print(selectedAddons);
   }
 
   @override
@@ -79,6 +80,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       const SizedBox(
                         height: 15,
                       ),
+                      if (addonPrice != 0)
                       Addon(
                         plan: widget.planName,
                         price: '$addonPrice',
@@ -176,6 +178,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   ),
                                 ],
                               ),
+                              if (addonPrice != 0)
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
@@ -197,7 +200,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',
@@ -211,6 +214,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   ),
                                 ],
                               ),
+
                             ],
                           ),
                         ),

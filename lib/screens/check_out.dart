@@ -1,16 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
 import '../custom_style.dart';
+import 'Summary/map.dart';
 import 'add_address.dart';
-import 'map_selection_screen.dart';
 
-class CheckOutScreen extends StatelessWidget {
+class CheckOutScreen extends StatefulWidget {
   const CheckOutScreen({Key? key}) : super(key: key);
 
+  @override
+  State<CheckOutScreen> createState() => _CheckOutScreenState();
+}
+String _selectedAddress = 'Marina Twin Tower, Lusail';
+
+class _CheckOutScreenState extends State<CheckOutScreen> {
   @override
   Widget build(BuildContext context) {
     final TextEditingController code = TextEditingController();
@@ -36,8 +43,7 @@ class CheckOutScreen extends StatelessWidget {
                       Container(
                         height: 56,
                         decoration: BoxDecoration(
-                            border:
-                                Border.all(color: Color(0xff000000).withOpacity(.07)),
+                            border: Border.all(color: Color(0xff000000).withOpacity(.07)),
                             borderRadius: BorderRadius.circular(17)),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -47,20 +53,15 @@ class CheckOutScreen extends StatelessWidget {
                               Row(
                                 children: [
                                   Icon(Icons.location_on_rounded),
-                                  SizedBox(
-                                    width: 8,
-                                  ),
+                                  SizedBox(width: 8),
                                   Text(
-                                    'Marina Twin Tower, Lusail',
+                                    _selectedAddress,
                                     style: CustomTextStyles.titleTextStyle.copyWith(
                                         fontSize: 14, fontWeight: FontWeight.w500),
                                   ),
                                 ],
                               ),
-                              Icon(
-                                Icons.arrow_drop_down_rounded,
-                                size: 28,
-                              )
+                              Icon(Icons.arrow_drop_down_rounded, size: 28),
                             ],
                           ),
                         ),
@@ -68,24 +69,39 @@ class CheckOutScreen extends StatelessWidget {
                       const SizedBox(
                         height: 12,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.add_circle,
-                            color: Color(0xff124734),
-                          ),
-                          SizedBox(
-                            width: 8,
-                          ),
-                          Text(
-                            'Add new address',
-                            style: CustomTextStyles.titleTextStyle.copyWith(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xff124734)),
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MapSelectionScreen(),
+                            ),
+                          );
+                          if (result != null) {
+                            setState(() {
+                              _selectedAddress = result['address'];
+                            });
+                          }
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_circle,
+                              color: Color(0xff124734),
+                            ),
+                            SizedBox(
+                              width: 8,
+                            ),
+                            Text(
+                              'Add new address',
+                              style: CustomTextStyles.titleTextStyle.copyWith(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xff124734)),
+                            ),
+                          ],
+                        ),
                       ),
                       const SizedBox(
                         height: 20,

@@ -4,9 +4,9 @@ import '../../../custom_style.dart';
 
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
-  final Map<String, dynamic> addonData;
+  final Map<String, dynamic>? addonData;
   final bool isSelected;
-  final Function(double totalPrice) onCountChange;
+  final Function(int addonId, int quantity, double totalPrice) onCountChange;
 
   const AddonItem({
     Key? key,
@@ -25,10 +25,21 @@ class _AddonItemState extends State<AddonItem> {
 
   @override
   Widget build(BuildContext context) {
-    double addonPrice = double.parse(widget.addonData['addon_price']);
+    if (widget.addonData == null) {
+      return Container(); // Handle case where addonData is null
+    }
+
+    double addonPrice = widget.addonData!['addon_price'] != null
+        ? double.parse(widget.addonData!['addon_price'])
+        : 0.0; // Default value if addon_price is null or cannot be parsed
+
+    int addonId = widget.addonData!['id'] ?? ''; // Default value for addon_id
 
     return GestureDetector(
-      onTap: widget.onTap,
+      onTap: () {
+        widget.onTap(); // Call onTap callback defined in the parent widget
+        widget.onCountChange(addonId, count, addonPrice * count);
+      },
       child: Container(
         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
         height: 85,
@@ -45,7 +56,7 @@ class _AddonItemState extends State<AddonItem> {
               Row(
                 children: [
                   Image.network(
-                    widget.addonData['image_url'],
+                    widget.addonData!['image_url'] ?? '', // Default value for image_url
                     height: 50,
                     width: 50,
                     loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
@@ -84,7 +95,7 @@ class _AddonItemState extends State<AddonItem> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        widget.addonData['addon_name'],
+                        widget.addonData!['addon_name'] ?? '', // Default value for addon_name
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 14,
                           color: Colors.black,
@@ -120,7 +131,7 @@ class _AddonItemState extends State<AddonItem> {
                       onTap: () {
                         setState(() {
                           if (count > 0) count--;
-                          widget.onCountChange(addonPrice * count);
+                          widget.onCountChange(addonId, count, addonPrice * count);
                         });
                       },
                       child: Icon(
@@ -139,7 +150,7 @@ class _AddonItemState extends State<AddonItem> {
                       onTap: () {
                         setState(() {
                           count++;
-                          widget.onCountChange(addonPrice * count);
+                          widget.onCountChange(addonId, count, addonPrice * count);
                         });
                       },
                       child: Icon(

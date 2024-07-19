@@ -4,6 +4,8 @@ import 'package:pack_app/widgets/common_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../../providers/user_registration_provider.dart';
 import '../../../services/registraction.dart';
 import '../../../widgets/progress_bar.dart';
@@ -129,10 +131,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
 
     try {
+      // Print user details (for testing purposes)
+
+      print('512 -- User Details:');
+      print('First Name: ${userProvider.user.firstName}');
+      print('Last Name: ${userProvider.user.lastName}');
+      print('Email: ${userProvider.user.email}');
+      print('Mobile Number: ${userProvider.user.mobileNumber}');
+      print('Height: ${userProvider.user.height}');
+      print('Weight: ${userProvider.user.weight}');
+      print('Age: ${userProvider.user.age}');
+      print('Gender: ${userProvider.user.gender}');
+      print('Activity Level: ${userProvider.user.activityLevel}');
+      print('Food to Avoid: ${userProvider.user.foodAvoid}');
+
       final response = await _registrationService.newRegister(userProvider.user);
 
       if (response['response_code'] == 3) {
-        // Registration successful, navigate to home or dashboard
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // Store authentication status
         Navigator.push(
           context,
           MaterialPageRoute(

@@ -54,7 +54,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
   String selectedPlanName = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
+  List<Map<String, dynamic>> selectedAddonsFinal = [];
   double totalPrice = 0.0;
+  double totalAddonPriceFinal = 0.0;
 
   @override
   void initState() {
@@ -64,14 +66,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
     fetchFoodPrice(widget.subplanId, widget.mealtypeId);
   }
 
-  double totalAddonPrice = 0.0;
-
-  void handleAddonPriceChange(double totalPrice) {
-    setState(() {
-      totalAddonPrice = totalPrice;
-    });
-    print(totalAddonPrice);
-  }
 
   Future<void> fetchDatesFromSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -488,25 +482,56 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                 return ShimmerEffect(); // Placeholder when loading
                               }
                               return AddonItem(
-                                  isSelected: dailySelections[selectedDay]
-                                          ['addons']
-                                      .contains(addons![index]),
-                                  onTap: () {
+                                isSelected: dailySelections[selectedDay]
+                                        ['addons']
+                                    .contains(addons![index]),
+                                onTap: () {
+                                  setState(() {
+                                    if (dailySelections[selectedDay]['addons']
+                                        .contains(addons![index])) {
+                                      dailySelections[selectedDay]['addons']
+                                          .remove(addons![index]);
+                                    } else {
+                                      dailySelections[selectedDay]['addons']
+                                          .add(addons![index]);
+                                    }
+                                  });
+                                },
+                                addonData: addons![index],
+                                onCountChange: (addonId, quantity, totalPrice) {
+                                  // Handle the callback here to pass addonId, quantity, and totalPrice
+                                  print('Addon ID: $addonId, Quantity: $quantity, Total Price: $totalPrice');
+
+                                  // Check if addonId already exists in selectedAddons
+                                  int existingIndex = selectedAddonsFinal.indexWhere((addon) => addon['id'] == addonId);
+
+                                  if (existingIndex != -1) {
+                                    // If addon exists, update its quantity
                                     setState(() {
-                                      if (dailySelections[selectedDay]['addons']
-                                          .contains(addons![index])) {
-                                        dailySelections[selectedDay]['addons']
-                                            .remove(addons![index]);
-                                      } else {
-                                        dailySelections[selectedDay]['addons']
-                                            .add(addons![index]);
-                                      }
+                                      selectedAddonsFinal[existingIndex]['quantity'] = quantity;
                                     });
-                                  },
-                                  addonData: addons![index],
-                                  onCountChange: handleAddonPriceChange);
+                                  } else {
+                                    // If addon doesn't exist, add it to selectedAddons
+                                    setState(() {
+                                      selectedAddonsFinal.add({'id': addonId, 'quantity': quantity});
+                                    });
+                                  }
+                                  double totalAddonPrice = 0.0;
+                                  for (var addon in selectedAddonsFinal) {
+                                    totalAddonPrice += totalPrice; // Add totalPrice of each addon
+                                  }
+                                  setState(() {
+                                    this.totalAddonPriceFinal = totalAddonPrice;
+                                  });
+                                  // Print updated selectedAddons (for debugging)
+                                  print('Updated selectedAddons: $selectedAddonsFinal');
+                                  print('Total Addon Price: $totalAddonPrice');
+
+                                },
+
+                              );
                             },
-                          ),
+                          )
                       ],
                     ),
                   ),
@@ -535,10 +560,13 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 }
 
                 if (isComplete) {
-                  printSelectedFoodDetails();
                   print(foodPrice);
-                  List<Map<String, dynamic>> transformedSelections = transformDailySelections();
+                  List<Map<String, dynamic>> selectedAddons =
+                      transformSelectedAddons();
+                  List<Map<String, dynamic>> transformedSelections =
+                      transformDailySelections();
                   print(transformedSelections);
+                  print(selectedAddons);
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -548,8 +576,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         subplanId: widget.subplanId,
                         mealtypeId: widget.mealtypeId,
                         planName: selectedPlanName,
-                        addonPrice: totalAddonPrice,
+                        addonPrice: totalAddonPriceFinal,
                         dailySelections: transformedSelections,
+                        selectedAddons: selectedAddonsFinal,
                       ),
                     ),
                   );
@@ -571,16 +600,46 @@ class _DailyNutritionState extends State<DailyNutrition> {
     );
   }
 
+  List<Map<String, dynamic>> transformSelectedAddons() {
+    List<Map<String, dynamic>> addonsList = [];
+
+    // Iterate over each day's addon selection
+    for (var daySelection in dailySelections) {
+      // Iterate over addons selected for each day
+      for (var addon in daySelection['addons']) {
+        // Find existing addon in addonsList
+        int existingIndex =
+            addonsList.indexWhere((a) => a['id'] == addon['id']);
+
+        if (existingIndex != -1) {
+          // If addon exists, update its quantity
+          addonsList[existingIndex]['quantity'] += 1;
+        } else {
+          // If addon doesn't exist, add it to addonsList
+          addonsList.add({'id': addon['id'], 'quantity': 1});
+        }
+      }
+    }
+
+    return addonsList;
+  }
 
   List<Map<String, dynamic>> transformDailySelections() {
     return dailySelections.map((selection) {
       return {
         'date': DateFormat('dd-MM-yyyy').format(selection['date']),
-        'breakfast': selection['breakfast'] != null ? selection['breakfast']['menu_id'].toString() : '',
-        'lunch': selection['lunch'] != null ? selection['lunch']['menu_id'].toString() : '',
-        'snacks': selection['snacks'] != null ? selection['snacks']['menu_id'].toString() : '',
-        'dinner': selection['dinner'] != null ? selection['dinner']['menu_id'].toString() : '',
-        'addons': selection['addons'].isNotEmpty ? selection['addons'].map((addon) => addon['id'].toString()).join(',') : ''
+        'breakfast': selection['breakfast'] != null
+            ? selection['breakfast']['menu_id'].toString()
+            : '',
+        'lunch': selection['lunch'] != null
+            ? selection['lunch']['menu_id'].toString()
+            : '',
+        'snacks': selection['snacks'] != null
+            ? selection['snacks']['menu_id'].toString()
+            : '',
+        'dinner': selection['dinner'] != null
+            ? selection['dinner']['menu_id'].toString()
+            : '',
       };
     }).toList();
   }

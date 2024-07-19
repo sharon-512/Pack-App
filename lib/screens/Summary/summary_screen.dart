@@ -1,13 +1,13 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:pack_app/screens/Summary/widgets/addon.dart';
 import 'package:pack_app/screens/Summary/widgets/selectedItem.dart';
 import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../custom_style.dart';
 import '../../services/apiPost.dart';
 
@@ -19,6 +19,7 @@ class SummaryScreen extends StatefulWidget {
   final int mealtypeId;
   final double addonPrice;
   final List<Map<String, dynamic>> dailySelections;
+  final List<Map<String, dynamic>> selectedAddons; // Add this line
 
   const SummaryScreen({
     Key? key,
@@ -29,6 +30,7 @@ class SummaryScreen extends StatefulWidget {
     required this.planName,
     required this.addonPrice,
     required this.dailySelections,
+    required this.selectedAddons, // Add this line
   }) : super(key: key);
 
   @override
@@ -37,6 +39,10 @@ class SummaryScreen extends StatefulWidget {
 
 class _SummaryScreenState extends State<SummaryScreen> {
   List<Map<String, dynamic>> dailySelections = [];
+  List<Map<String, dynamic>> selectedAddons = [];
+  late DateTime startDate;
+  late DateTime endDate;
+  bool _isLoading = true;
   void addDailySelections(Map<String, dynamic> selection) {
     dailySelections.add(selection);
   }
@@ -44,7 +50,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
   @override
   void initState() {
     super.initState();
+    fetchDatesFromSharedPreferences();
     dailySelections = widget.dailySelections;
+    selectedAddons = widget.selectedAddons;
+    print(selectedAddons);
   }
 
   @override
@@ -71,7 +80,11 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       const SizedBox(
                         height: 15,
                       ),
-                      Addon(plan: widget.planName, price: '100'),
+                      if (addonPrice != 0)
+                      Addon(
+                        plan: widget.planName,
+                        price: '$addonPrice',
+                      ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -88,7 +101,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color:
-                                      Color(0xff000000).withOpacity(.07)),
+                                          Color(0xff000000).withOpacity(.07)),
                                   // Active border color
                                   borderRadius: BorderRadius.circular(
                                       8.0), // Set the radius here
@@ -96,7 +109,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
                                       color:
-                                      Color(0xff000000).withOpacity(.07)),
+                                          Color(0xff000000).withOpacity(.07)),
                                   // Normal border color
                                   borderRadius: BorderRadius.circular(
                                       8.0), // Set the radius here
@@ -104,7 +117,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 hintText: 'Enter promo code',
                                 hintStyle: CustomTextStyles.hintTextStyle,
                                 contentPadding:
-                                EdgeInsets.symmetric(horizontal: 12.0),
+                                    EdgeInsets.symmetric(horizontal: 12.0),
                               ),
                               keyboardType: TextInputType.phone,
                             ),
@@ -123,7 +136,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 // Background color as black
                                 shape: RoundedRectangleBorder(
                                   borderRadius:
-                                  BorderRadius.circular(15), // Radius as 15
+                                      BorderRadius.circular(15), // Radius as 15
                                 ),
                               ),
                               child: Text(
@@ -151,7 +164,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     widget.planName,
@@ -165,9 +178,10 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   ),
                                 ],
                               ),
+                              if (addonPrice != 0)
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Add ons',
@@ -200,6 +214,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   ),
                                 ],
                               ),
+
                             ],
                           ),
                         ),
@@ -207,9 +222,21 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     ],
                   ),
                   CommonButton(
-                    text: 'Check Out',
-                    onTap: _placeOrder, // Call the _placeOrder method here
-                  )
+                      text: 'Check Out',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>  CheckOutScreen(
+                              dailySelections: widget.dailySelections,
+                              selectedAddons: widget.selectedAddons,
+                              planId: widget.planId,
+                              subTotal: subTotal.toString(),
+                            ),
+                          ),
+                        );
+                      } // Call the _placeOrder method here
+                      )
                 ],
               ),
             ),
@@ -218,71 +245,51 @@ class _SummaryScreenState extends State<SummaryScreen> {
       ),
     );
   }
-  void _placeOrder() async {
-    try {
-      String token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiYjRkMDY2OTFlZjA5NTAyOGZmMDBlODUxNTQ0YjExNjIwZjk3YmZhNTdjNjdiYmQ2NjgyNmZhZmFhMTBjMTY1ZjVkYjA1OWQ3YThiMzIzMGUiLCJpYXQiOjE3MjA4NzkwOTkuMDAyMjQwODk2MjI0OTc1NTg1OTM3NSwibmJmIjoxNzIwODc5MDk5LjAwMjI0MzA0MTk5MjE4NzUsImV4cCI6MTc1MjQxNTA5OS4wMDAzODY5NTMzNTM4ODE4MzU5Mzc1LCJzdWIiOiIxOSIsInNjb3BlcyI6W119.SvasUJyXmh_3d3YfXIWO-QYHZZdfPWUX4CqVogft9SFwZXPqKlCBloz-z-x-2AJq1bhXvvK_owJWaEHKgiEVd3vWc8wI1XcCYkKAn2U2Q81LcPgRn-jjviANCa7pHIu3sbGYbAHz5b_zU6O92mzKXo7cvrEBwXqaJWFcb7p-ekrdrnsKDP8Ox6yWg_AjdOjwj8Q3-yVfWBBqZxhPizeeAJK6q-VTIm8uOLiIhqHHE4rwXQx6Np99aXEV-oYujOYl0Vl4IpsvnkYqFBBbPghPPhUThahXPmJTTlfMMy_NuglCOj9QHW--KnAarNMZFw1PHZCWRQJBCK3SzFfrn6h_XnP3-d9fiSVmBuvvWpBmrBG9bg_NFcyjwk3lcaer5C0d5ES10iKj3R029MBaGJ96PFc4NIGh8N4x0glzdQSYdzbWFvLBCEbX5ru9RtN95-BOY52Sr33mQf6zSLb0Lc4L7rIglvLjIm_IasT6LvRdJdqOyj-ZdF_Z-9h-kJAm8O8A8L8jUz6_2uRGneuqzasIXWThZFAgNUeyvYQ2JjwZN0tBv5ffz-UB8ud-o_fj8mO0iApCOfAhA1xHqqh7GPnbX-KEWWrfWzum9xGJ4Qi8_c8KUlAnPjdn5PV1zey_rlGXqnPPGQ_zzEbr2QfQIfZWrJsiAfQDsd4w4eJRbKW_R28';
-      String planFrom = '2024-06-13';
-      String planTo = '2024-06-26';
-      String productId = '1';
 
-      // Prepare menu from dailySelections
-      List<Map<String, dynamic>> menu = [];
-      for (var selection in widget.dailySelections) {
-        menu.add({
-          "date": selection['date'],
-          "breakfast": selection['breakfast'],
-          "lunch": selection['lunch'],
-          "snacks": selection['snacks'],
-          "dinner": selection['dinner'],
+  Future<void> fetchDatesFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedStartDate = prefs.getString('startDate');
+    final storedEndDate = prefs.getString('endDate');
+
+    if (storedStartDate != null && storedEndDate != null) {
+      try {
+        setState(() {
+          // Parse date strings into DateTime objects
+          startDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedStartDate);
+          endDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedEndDate);
+          _isLoading = false;
+        });
+
+        // Format DateTime objects to string in "yyyy-MM-dd" format
+        final formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+        final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
+
+        // Print the parsed and formatted dates (optional)
+        print('Parsed Start Date: $formattedStartDate');
+        print('Parsed End Date: $formattedEndDate');
+      } catch (e) {
+        print('Error parsing dates: $e');
+        // Handle the error appropriately, e.g., set default dates
+        setState(() {
+          startDate = DateTime.now();
+          endDate = DateTime.now();
+          _isLoading = false;
         });
       }
+    } else {
+      setState(() {
+        startDate = DateTime.now();
+        endDate = DateTime.now();
+        _isLoading = false;
+      });
 
-      // Prepare addon list (example, adjust as per your logic)
-      List<Map<String, dynamic>> addon = [
-        {"id": "1", "quantity": "2"},
-        {"id": "2", "quantity": "2"},
-      ];
+      // Format DateTime objects to string in "yyyy-MM-dd" format
+      final formattedStartDate = DateFormat('yyyy-MM-dd').format(startDate);
+      final formattedEndDate = DateFormat('yyyy-MM-dd').format(endDate);
 
-      // Prepare form data for the POST request
-      var formData = {
-        'plan_from': planFrom,
-        'plan_to': planTo,
-        'product_id': productId,
-        'menu': jsonEncode(menu),
-        'addon': jsonEncode(addon),
-      };
-print(jsonEncode(menu));
-      // Make the POST request with automatic redirection handling
-      var apiUrl = 'https://interfuel.qa/packupadmin/api/save-order';
-      var response = await http.post(
-        Uri.parse(apiUrl),
-        body: formData,
-        headers: {
-          'Authorization': 'Bearer $token',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      );
-
-      // Handle response
-      if (response.statusCode == 200) {
-        print('Order saved successfully.');
-        print('Response: ${response.body}');
-        // Navigate to CheckoutScreen or handle success as needed
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const CheckOutScreen(),
-          ),
-        );
-      } else {
-        print('Failed to save order. Error: ${response.statusCode}');
-        print('Response: ${response.body}');
-        // Handle error scenario
-      }
-    } catch (e) {
-      print('Error placing order: $e');
-      // Handle network or other errors
+      // Print the default dates (optional)
+      print('Default Start Date: $formattedStartDate');
+      print('Default End Date: $formattedEndDate');
     }
   }
-
 }

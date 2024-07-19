@@ -234,17 +234,26 @@ class DateSelectionField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
+      child:InkWell(
         onTap: () async {
+          DateTime now = DateTime.now();
+          DateTime initialDate;
+
+          if (now.weekday == DateTime.wednesday) {
+            initialDate = now.add(Duration(days: 3));
+          } else {
+            initialDate = now.add(Duration(days: 2));
+          }
+
           DateTime? pickedDate = await showDatePicker(
             context: context,
-            initialDate: DateTime.now().add(Duration(days: 2)), // Two days ahead
-            firstDate: disablePastDates ? DateTime.now().add(Duration(days: 2)) : DateTime(2000),
+            initialDate: initialDate,
+            firstDate: disablePastDates ? initialDate : DateTime(2000),
             lastDate: DateTime(2101),
             selectableDayPredicate: (DateTime date) {
-              if (date.year == DateTime.now().year &&
-                  date.month == DateTime.now().month &&
-                  date.day == DateTime.now().day) {
+              if (date.year == now.year &&
+                  date.month == now.month &&
+                  date.day == now.day) {
                 return true;
               }
 
@@ -285,7 +294,8 @@ class DateSelectionField extends StatelessWidget {
             readOnly: true,
           ),
         ),
-      ),
+      )
+
     );
   }
 }

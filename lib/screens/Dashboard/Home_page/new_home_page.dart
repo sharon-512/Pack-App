@@ -236,10 +236,10 @@ class _HomePageState extends State<HomePage> {
                       controller: _pageController, // PageController
                       count: 3, // The number of dots
                       effect: WormEffect(
-                        activeDotColor: Colors.grey,
-                        dotColor: Colors.grey[300]!,
-                        dotHeight: 8,
-                        dotWidth: 8
+                          activeDotColor: Colors.grey,
+                          dotColor: Colors.grey[300]!,
+                          dotHeight: 8,
+                          dotWidth: 8
                       ),
                     ),
                   ),

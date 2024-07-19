@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:pack_app/screens/payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
@@ -142,7 +143,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           final result =  Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>  MapSelectionScreen(),
+                              builder: (context) =>  AddAddress(),
                             ),
                           );
                         },
@@ -412,6 +413,11 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         productId: widget.planId.toString(),
         dailySelections: widget.dailySelections,
         selectedAddons: widget.selectedAddons,
+        address: 'Your address here',
+        streetNo: 'Your street number here',
+        buildingNo: 'Your building number here',
+        flatNo: 'Your flat number here',
+        mobileNo: 'Your mobile number here',
       );
 
       if (result['success']) {
@@ -421,7 +427,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const AddAddress(),
+            builder: (context) =>  PaymentScreen(),
           ),
         );
       } else {

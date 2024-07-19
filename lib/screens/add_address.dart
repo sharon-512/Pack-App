@@ -1,7 +1,8 @@
+// add_address.dart
 import 'package:flutter/material.dart';
-import 'package:pack_app/screens/payment.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'Summary/map.dart';
 import 'package:pack_app/widgets/common_button.dart';
-
 import '../custom_style.dart';
 import '../widgets/info_container.dart';
 
@@ -14,6 +15,35 @@ class AddAddress extends StatefulWidget {
 
 class _AddAddressState extends State<AddAddress> {
   int _selectedIndex = 0;
+  LatLng? _selectedLocation;
+  late TextEditingController addressline;
+  final TextEditingController streetNumber = TextEditingController();
+  final TextEditingController houseName = TextEditingController();
+  final TextEditingController flatNumber = TextEditingController();
+  final TextEditingController name = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    addressline = TextEditingController(text: 'Select a location');
+  }
+
+  void _handleLocationSelected(LatLng location, String address) {
+    setState(() {
+      _selectedLocation = location;
+      addressline.text = address;
+    });
+  }
+
+  @override
+  void dispose() {
+    addressline.dispose();
+    streetNumber.dispose();
+    houseName.dispose();
+    flatNumber.dispose();
+    name.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,9 +55,7 @@ class _AddAddressState extends State<AddAddress> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(
-                height: 25,
-              ),
+              const SizedBox(height: 25),
               Stack(
                 children: [
                   GestureDetector(
@@ -59,10 +87,11 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 20,
+              const SizedBox(height: 20),
+              MapWidget(
+                initialLocation: LatLng(25.276987, 51.520008), // Center of Doha
+                onLocationSelected: _handleLocationSelected,
               ),
-              Image.asset('assets/images/map.png'),
               const SizedBox(height: 20),
               Text(
                 'Delivery Address',
@@ -95,8 +124,8 @@ class _AddAddressState extends State<AddAddress> {
                           i == 0
                               ? 'Home'
                               : i == 1
-                                  ? 'Office'
-                                  : 'Other',
+                              ? 'Office'
+                              : 'Other',
                           style: TextStyle(
                               color: _selectedIndex == i
                                   ? Colors.white
@@ -109,37 +138,41 @@ class _AddAddressState extends State<AddAddress> {
                     ),
                 ],
               ),
-              const AddressWidget(
+              AddressWidget(
                 label: 'Address Line',
-                address: 'Marina Twin Tower, Lusail',
+                address: addressline.text,
+                textEditingController: addressline,
               ),
-              const AddressWidget(
+              AddressWidget(
                 label: 'Street Number',
                 address: 'Ex: 10th street',
+                textEditingController: streetNumber,
               ),
-              const Row(
+              Row(
                 children: [
                   Expanded(
                     child: AddressWidget(
                       label: 'House/Floor Number',
                       address: 'Ex: 02',
+                      textEditingController: houseName,
                     ),
                   ),
-                  SizedBox(
-                    width: 20,
-                  ),
+                  SizedBox(width: 20),
                   Expanded(
-                      child: AddressWidget(
-                    label: '',
-                    address: 'Ex: 2B',
-                  ))
+                    child: AddressWidget(
+                      label: '',
+                      address: 'Ex: 2B',
+                      textEditingController: flatNumber,
+                    ),
+                  ),
                 ],
               ),
               AddressWidget(
                 label: 'Contact Person Name',
                 address: 'Muhammed Sheharin',
                 hintStyle:
-                    CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                textEditingController: name,
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -155,8 +188,7 @@ class _AddAddressState extends State<AddAddress> {
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(horizontal: 18.0),
                     decoration: BoxDecoration(
-                      border:
-                          Border.all(color: Color(0xff000000).withOpacity(.07)),
+                      border: Border.all(color: Color(0xff000000).withOpacity(.07)),
                       borderRadius: BorderRadius.circular(17),
                     ),
                     alignment: Alignment.centerLeft,
@@ -168,9 +200,7 @@ class _AddAddressState extends State<AddAddress> {
                           style: CustomTextStyles.labelTextStyle
                               .copyWith(fontSize: 14),
                         ),
-                        SizedBox(
-                          width: 4,
-                        ),
+                        SizedBox(width: 4),
                         Text(
                           '32165426',
                           style: CustomTextStyles.labelTextStyle
@@ -184,13 +214,9 @@ class _AddAddressState extends State<AddAddress> {
                   CommonButton(
                     text: 'Add Address',
                     onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PaymentScreen(),
-                          ));
+                      // Handle address addition here
                     },
-                  )
+                  ),
                 ],
               ),
             ],

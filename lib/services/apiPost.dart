@@ -1,5 +1,3 @@
-// api_service.dart
-
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -12,6 +10,11 @@ class ApiService {
     required String productId,
     required List<Map<String, dynamic>> dailySelections,
     required List<Map<String, dynamic>> selectedAddons,
+    required String address,
+    required String streetNo,
+    required String buildingNo,
+    required String flatNo,
+    required String mobileNo,
   }) async {
     try {
       String planFrom = DateFormat('yyyy-MM-dd').format(startDate);
@@ -44,6 +47,11 @@ class ApiService {
         'product_id': productId,
         'menu': jsonEncode(menu),
         'addon': jsonEncode(addon),
+        'address': address,
+        'street_no': streetNo,
+        'building_no': buildingNo,
+        'flat_no': flatNo,
+        'mobile_no': mobileNo,
       };
 
       // Make the POST request with automatic redirection handling

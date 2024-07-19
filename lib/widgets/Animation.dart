@@ -37,7 +37,7 @@ class _ImageSequenceAnimationState extends State<ImageSequenceAnimation> {
             final isLoggedIn = await checkLoggedInStatus();
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (context) => isLoggedIn ? BottomNavbar() : StartScreen(),
+                builder: (context) => isLoggedIn ? BottomNavbar(selectedIndex: 0,) : StartScreen(),
               ),
             );
           });

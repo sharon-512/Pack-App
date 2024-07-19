@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/common_textfield.dart';
+
+import '../../../models/user_model.dart';
 
 class EditProfileScreen extends StatelessWidget {
   EditProfileScreen({super.key});
@@ -11,6 +14,8 @@ class EditProfileScreen extends StatelessWidget {
   TextEditingController numberController = TextEditingController(text: "+974 3344 5566");
   @override
   Widget build(BuildContext context) {
+    final userBox = Hive.box<User>('userBox');
+    final user = userBox.get('currentUser');
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,8 +46,8 @@ class EditProfileScreen extends StatelessWidget {
                         backgroundColor: Colors.white,
                         child: Image.asset('assets/images/profile_pic2.png',fit: BoxFit.fill,)
                     ),
-                    const Text(
-                      'Mariam Ahmed',
+                    Text(
+                      '${user?.firstname} ${user?.lastname}',
                       style: TextStyle(
                         fontFamily: 'Aeonik',
                         fontWeight: FontWeight.w500,
@@ -51,7 +56,8 @@ class EditProfileScreen extends StatelessWidget {
                         color: Colors.white
                       ),
                     ),
-                    const Text('+974 3344 6568',
+                    Text(
+                      '+974 ${user!.mobno.toString()}',
                       style: TextStyle(
                           fontFamily: 'Aeonik',
                           fontWeight: FontWeight.w500,

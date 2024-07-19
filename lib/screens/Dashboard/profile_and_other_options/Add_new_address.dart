@@ -15,6 +15,11 @@ class AddNewAddress extends StatefulWidget {
 
 class _AddNewAddressState extends State<AddNewAddress> {
   int _selectedIndex = 0;
+  late TextEditingController addressline;
+  late TextEditingController streetNumber;
+  late TextEditingController houseName;
+  late TextEditingController flatNumber;
+  late TextEditingController name;
 
   @override
   Widget build(BuildContext context) {
@@ -77,20 +82,23 @@ class _AddNewAddressState extends State<AddNewAddress> {
                           ),
                       ],
                     ),
-                    const AddressWidget(
+                    AddressWidget(
                       label: 'Address Line',
                       address: 'Marina Twin Tower, Lusail',
+                      textEditingController: addressline,
                     ),
-                    const AddressWidget(
+                    AddressWidget(
                       label: 'Street Number',
                       address: 'Ex: 10th street',
+                      textEditingController: streetNumber,
                     ),
-                    const Row(
+                    Row(
                       children: [
                         Expanded(
                           child: AddressWidget(
                             label: 'House/Floor Number',
                             address: 'Ex: 02',
+                            textEditingController: houseName,
                           ),
                         ),
                         SizedBox(
@@ -100,6 +108,7 @@ class _AddNewAddressState extends State<AddNewAddress> {
                             child: AddressWidget(
                               label: '',
                               address: 'Ex: 2B',
+                              textEditingController: flatNumber,
                             ))
                       ],
                     ),
@@ -108,6 +117,7 @@ class _AddNewAddressState extends State<AddNewAddress> {
                       address: 'Muhammed Sheharin',
                       hintStyle:
                       CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                      textEditingController: name,
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,

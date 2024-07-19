@@ -62,14 +62,22 @@ class CustomNavItem extends StatelessWidget {
 
 
 class BottomNavbar extends StatefulWidget {
-  const BottomNavbar({Key? key}) : super(key: key);
+  final int selectedIndex;
+
+  const BottomNavbar({Key? key, this.selectedIndex = 2}) : super(key: key);
 
   @override
   State<BottomNavbar> createState() => _BottomNavbarState();
 }
 
 class _BottomNavbarState extends State<BottomNavbar> {
-  int _selectedIndex = 2;
+  late int _selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.selectedIndex;
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -154,4 +162,5 @@ class _BottomNavbarState extends State<BottomNavbar> {
     );
   }
 }
+
 

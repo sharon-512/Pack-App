@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../providers/user_registration_provider.dart';
 import '../../../services/registraction.dart';
 import '../../../widgets/progress_bar.dart';
@@ -156,11 +155,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             builder: (context) => BottomNavbar(),
           ),
         );
-
-        // Store authentication status
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setBool('isLoggedIn', true);
-
         // Store user details locally using Hive
         final userBox = await Hive.openBox<User>('userBox');
         final user = User.fromJson(response['user']);

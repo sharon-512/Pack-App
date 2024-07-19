@@ -19,6 +19,7 @@ class AddressWidget extends StatelessWidget {
   final String address;
   final TextStyle labelStyle;
   final TextStyle hintStyle;
+  final TextEditingController textEditingController;
 
   const AddressWidget({
     Key? key,
@@ -26,6 +27,7 @@ class AddressWidget extends StatelessWidget {
     this.address = '',
     this.labelStyle = _defaultLabelStyle,
     this.hintStyle = _defaultHintStyle,
+    required this.textEditingController,
   }) : super(key: key);
 
   @override
@@ -52,6 +54,7 @@ class AddressWidget extends StatelessWidget {
               hintText: address, // Use 'address' as hint text
               hintStyle: hintStyle,
             ),
+            controller: textEditingController,
           ),
         ),
         const SizedBox(height: 15),

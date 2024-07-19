@@ -142,7 +142,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           final result =  Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>  MapSelectionScreen(),
+                              builder: (context) =>  AddAddress(),
                             ),
                           );
                         },

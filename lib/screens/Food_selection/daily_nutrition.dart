@@ -56,7 +56,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   List<Map<String, dynamic>> dailySelections = [];
   List<Map<String, dynamic>> selectedAddonsFinal = [];
   double totalPrice = 0.0;
-  double totalAddonPriceFinal = 0.0;
+  double subtotalAddonPrice = 0.0;
 
   @override
   void initState() {
@@ -64,8 +64,21 @@ class _DailyNutritionState extends State<DailyNutrition> {
     fetchDatesFromSharedPreferences();
     fetchAddons();
     fetchFoodPrice(widget.subplanId, widget.mealtypeId);
+    clearSharedPreferences();
   }
 
+  Future<void> clearSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('subtotalAddonPrice');
+    print('Shared preferences cleared');
+  }
+
+  Future<void> updateSubtotalAddonPrice(double totalPrice) async {
+    final prefs = await SharedPreferences.getInstance();
+    subtotalAddonPrice = (prefs.getDouble('subtotalAddonPrice') ?? 0.0) + totalPrice;
+    await prefs.setDouble('subtotalAddonPrice', subtotalAddonPrice);
+    print('Updated Subtotal Addon Price in SharedPreferences: $subtotalAddonPrice');
+  }
 
   Future<void> fetchDatesFromSharedPreferences() async {
     final prefs = await SharedPreferences.getInstance();
@@ -516,16 +529,8 @@ class _DailyNutritionState extends State<DailyNutrition> {
                                       selectedAddonsFinal.add({'id': addonId, 'quantity': quantity});
                                     });
                                   }
-                                  double totalAddonPrice = 0.0;
-                                  for (var addon in selectedAddonsFinal) {
-                                    totalAddonPrice += totalPrice; // Add totalPrice of each addon
-                                  }
-                                  setState(() {
-                                    this.totalAddonPriceFinal = totalAddonPrice;
-                                  });
                                   // Print updated selectedAddons (for debugging)
                                   print('Updated selectedAddons: $selectedAddonsFinal');
-                                  print('Total Addon Price: $totalAddonPrice');
 
                                 },
 
@@ -540,7 +545,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
             ),
             CommonButton(
               text: 'Continue',
-              onTap: () {
+              onTap: () async {
                 bool isComplete = true;
 
                 // Check if the required number of meals are selected for each day
@@ -565,6 +570,8 @@ class _DailyNutritionState extends State<DailyNutrition> {
                       transformSelectedAddons();
                   List<Map<String, dynamic>> transformedSelections =
                       transformDailySelections();
+                  final prefs = await SharedPreferences.getInstance();
+                  final subtotalAddonPrice = prefs.getDouble('subtotalAddonPrice') ?? 0;
                   print(transformedSelections);
                   print(selectedAddons);
                   Navigator.push(
@@ -576,12 +583,13 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         subplanId: widget.subplanId,
                         mealtypeId: widget.mealtypeId,
                         planName: selectedPlanName,
-                        addonPrice: totalAddonPriceFinal,
+                        addonPrice: subtotalAddonPrice,
                         dailySelections: transformedSelections,
                         selectedAddons: selectedAddonsFinal,
                       ),
                     ),
                   );
+                  print(subtotalAddonPrice);
                 } else {
                   // Optionally show a message or handle incomplete selection
                   ScaffoldMessenger.of(context).showSnackBar(

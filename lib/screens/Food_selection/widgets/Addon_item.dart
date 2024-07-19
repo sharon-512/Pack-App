@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../custom_style.dart';
 
@@ -22,6 +23,34 @@ class AddonItem extends StatefulWidget {
 
 class _AddonItemState extends State<AddonItem> {
   int count = 0;
+  double subtotalAddonPrice = 0.0;
+  List<Map<String, dynamic>> selectedAddonsFinal = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSubtotalAddonPrice();
+  }
+
+  Future<void> _loadSubtotalAddonPrice() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      subtotalAddonPrice = prefs.getDouble('subtotalAddonPrice') ?? 0.0;
+    });
+  }
+
+  Future<void> _updateSubtotalAddonPrice(double totalPrice) async {
+    final prefs = await SharedPreferences.getInstance();
+    double currentTotal = prefs.getDouble('subtotalAddonPrice') ?? 0.0;
+    currentTotal += totalPrice;
+    await prefs.setDouble('subtotalAddonPrice', currentTotal);
+    setState(() {
+      subtotalAddonPrice = currentTotal;
+    });
+    print('Subtotal Addon Price: $subtotalAddonPrice');
+    // Print the current value in shared preferences
+    print('Current Subtotal Addon Price in Shared Preferences: ${prefs.getDouble('subtotalAddonPrice')}');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +67,7 @@ class _AddonItemState extends State<AddonItem> {
     return GestureDetector(
       onTap: () {
         widget.onTap(); // Call onTap callback defined in the parent widget
-        widget.onCountChange(addonId, count, addonPrice * count);
+        widget.onCountChange(addonId, count, addonPrice);
       },
       child: Container(
         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
@@ -130,8 +159,11 @@ class _AddonItemState extends State<AddonItem> {
                     GestureDetector(
                       onTap: () {
                         setState(() {
-                          if (count > 0) count--;
-                          widget.onCountChange(addonId, count, addonPrice * count);
+                          if (count > 0) {
+                            count--;
+                            widget.onCountChange(addonId, count, addonPrice);
+                            _updateSubtotalAddonPrice(-addonPrice);
+                          }
                         });
                       },
                       child: Icon(
@@ -150,7 +182,8 @@ class _AddonItemState extends State<AddonItem> {
                       onTap: () {
                         setState(() {
                           count++;
-                          widget.onCountChange(addonId, count, addonPrice * count);
+                          widget.onCountChange(addonId, count, addonPrice);
+                          _updateSubtotalAddonPrice(addonPrice);
                         });
                       },
                       child: Icon(

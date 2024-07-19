@@ -32,7 +32,8 @@ class _DatePickerState extends State<DatePicker> {
 
   Future<void> fetchSubplanDetails(int subplanId) async {
     try {
-      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+      final response = await http.get(
+          Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -48,7 +49,8 @@ class _DatePickerState extends State<DatePicker> {
           }
         }
       } else {
-        throw Exception('Failed to load subplan details: ${response.statusCode}');
+        throw Exception(
+            'Failed to load subplan details: ${response.statusCode}');
       }
     } catch (e) {
       print('Error fetching subplan details: $e');
@@ -146,7 +148,8 @@ class _DatePickerState extends State<DatePicker> {
                               ? end.text
                               : 'Select starting date first',
                           hintStyle: CustomTextStyles.hintTextStyle,
-                          contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
+                          contentPadding: EdgeInsets.symmetric(
+                              horizontal: 12.0),
                         ),
                       ),
                     ),
@@ -174,16 +177,18 @@ class _DatePickerState extends State<DatePicker> {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setString(
                       'startDate',
-                      DateFormat('EEEE, MMMM d, yyyy').format(selectedStartDate!),
+                      DateFormat('EEEE, MMMM d, yyyy').format(
+                          selectedStartDate!),
                     );
                     await prefs.setString('endDate', end.text);
                     print(end.text);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => NumberOfMeals(
-                          subplanId: widget.selectedSubplanId,
-                        ),
+                        builder: (context) =>
+                            NumberOfMeals(
+                              subplanId: widget.selectedSubplanId,
+                            ),
                       ),
                     );
                   },
@@ -198,15 +203,7 @@ class _DatePickerState extends State<DatePicker> {
 
   void updateEndDate() {
     if (selectedStartDate != null && dayCount != null) {
-      DateTime endDate = selectedStartDate!;
-      int daysAdded = 1; // Start counting from day 1 (the start date)
-
-      while (daysAdded < dayCount!) {
-        endDate = endDate.add(Duration(days: 1));
-        if (endDate.weekday != DateTime.friday) {
-          daysAdded++;
-        }
-      }
+      DateTime endDate = selectedStartDate!.add(Duration(days: dayCount! - 1));
 
       setState(() {
         end.text = DateFormat('EEEE, MMMM d, yyyy').format(endDate);
@@ -215,7 +212,7 @@ class _DatePickerState extends State<DatePicker> {
   }
 }
 
-class DateSelectionField extends StatelessWidget {
+  class DateSelectionField extends StatelessWidget {
   DateSelectionField({
     Key? key,
     required this.hintText,

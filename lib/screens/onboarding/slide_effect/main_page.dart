@@ -159,7 +159,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final userBox = await Hive.openBox<User>('userBox');
         final user = User.fromJson(response['user']);
         await userBox.put('currentUser', user); // Assuming toUserModel converts to UserModel
-
+        String userId = user.id.toString();
+        final SharedPreferences() = await SharedPreferences.getInstance();
+        await prefs.setString('bearerToken', response['token']); // Store the token
+        await prefs.setString('userId', userId); // Store the user ID
       } else if (response['response_code'] == 0) {
         _showErrorSnackBar('Existing email ID');
       } else {

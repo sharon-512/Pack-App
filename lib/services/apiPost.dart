@@ -15,7 +15,7 @@ class ApiService {
     required String streetNo,
     required String buildingNo,
     required String flatNo,
-    required String mobileNo,
+    required String mobileNo, required String price,
   }) async {
     try {
 
@@ -50,6 +50,7 @@ class ApiService {
         'product_id': productId,
         'menu': jsonEncode(menu),
         'addon': jsonEncode(addon),
+        'price': price,
         'address': address,
         'street_no': streetNo,
         'building_no': buildingNo,

@@ -409,7 +409,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void _placeOrder() async {
     final double foodPrice = double.parse(widget.foodPrice);
     final double addonPrice = widget.addonPrice;
-    double subTotal = foodPrice + addonPrice + _deliveryFee;
+    double finalAmount = foodPrice + addonPrice + _deliveryFee;
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -431,6 +431,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         productId: widget.planId.toString(),
         dailySelections: widget.dailySelections,
         selectedAddons: widget.selectedAddons,
+        price: finalAmount.toString(),
         address: _selectedAddress ?? 'Your address here',
         streetNo: _streetNumber ?? 'Your street number here',
         buildingNo: _buildingNo ?? 'Your building number here',
@@ -445,7 +446,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentScreen(
-              subTotal: subTotal,
+              subTotal: finalAmount,
               planName: widget.planName,),
           ),
         );

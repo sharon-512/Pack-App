@@ -102,7 +102,7 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                         const SizedBox(width: 2),
                         Flexible(
                           child: Text(
-                            '${widget.foodData['kcal']} kcal • ${widget.foodData['weight']} g',
+                            '${widget.foodData['kcal']} kcal',
                             style: CustomTextStyles.subtitleTextStyle.copyWith(
                               fontSize: 12,
                               color: textColor,
@@ -118,21 +118,21 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                         NutritionBar(
                           color: const Color(0xffBBC392),
                           label: '${widget.foodData['protien']}g',
-                          widthFactor: 25,
+                          widthFactor: widget.foodData['protien'],
                           label2: ' Protein',
                           isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffF7C648),
                           label: '${widget.foodData['carb']}g',
-                          widthFactor: 35,
+                          widthFactor: widget.foodData['carb'],
                           label2: ' Carbs',
                           isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffA8353A),
                           label: '${widget.foodData['fat']}g',
-                          widthFactor: 20,
+                          widthFactor: widget.foodData['fat'],
                           label2: ' Fat',
                           isSelected: widget.isSelected,
                         ),

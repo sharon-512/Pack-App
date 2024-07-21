@@ -56,6 +56,7 @@ class _EnterOtpState extends State<EnterOtp> {
         //Navigate to the home page or dashboard
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true); // Store authentication status
+        await prefs.setString('bearerToken', response['token']); // Store the token
 
         Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavbar(),));
       } else if (response['status_code'] == 2) {

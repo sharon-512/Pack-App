@@ -52,6 +52,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   int selectedAddonsCardIndex = -1;
   int selectedPlanId = -1;
   String selectedPlanName = '';
+  String planImage = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
   List<Map<String, dynamic>> selectedAddonsFinal = [];
@@ -141,6 +142,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
               selectedSubplan = subplan;
               selectedPlanId = plan['plan_id']; // Store the plan_id here
               selectedPlanName = plan['plan_name']; // Store the plan_name here
+              planImage = plan['plan_image'];
               break;
             }
           }
@@ -586,6 +588,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         addonPrice: subtotalAddonPrice,
                         dailySelections: transformedSelections,
                         selectedAddons: selectedAddonsFinal,
+                        planImage: planImage,
                       ),
                     ),
                   );

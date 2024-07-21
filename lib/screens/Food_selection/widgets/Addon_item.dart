@@ -131,14 +131,14 @@ class _AddonItemState extends State<AddonItem> {
                         ),
                       ),
                       Text(
-                        'Price: \$${addonPrice.toStringAsFixed(2)}',
+                        'Price: ${addonPrice.toStringAsFixed(2)} QR',
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 14,
                           color: Colors.black,
                         ),
                       ),
                       Text(
-                        'Total: \$${(addonPrice * count).toStringAsFixed(2)}',
+                        'Total: ${(addonPrice * count).toStringAsFixed(2)} QR',
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 14,
                           color: Colors.black,

@@ -14,6 +14,7 @@ import '../../services/apiPost.dart';
 class SummaryScreen extends StatefulWidget {
   final String foodPrice;
   final String planName;
+  final String planImage;
   final int planId;
   final int subplanId;
   final int mealtypeId;
@@ -30,7 +31,8 @@ class SummaryScreen extends StatefulWidget {
     required this.planName,
     required this.addonPrice,
     required this.dailySelections,
-    required this.selectedAddons, // Add this line
+    required this.selectedAddons,
+    required this.planImage, // Add this line
   }) : super(key: key);
 
   @override
@@ -76,15 +78,18 @@ class _SummaryScreenState extends State<SummaryScreen> {
                   Column(
                     children: [
                       SelectedItem(
-                          plan: widget.planName, price: widget.foodPrice),
+                        plan: widget.planName,
+                        price: widget.foodPrice,
+                        image: widget.planImage
+                      ),
                       const SizedBox(
                         height: 15,
                       ),
                       if (addonPrice != 0)
-                      Addon(
-                        plan: 'Addons',
-                        price: '$addonPrice',
-                      ),
+                        Addon(
+                          plan: 'Addons',
+                          price: '$addonPrice',
+                        ),
                       const SizedBox(
                         height: 20,
                       ),
@@ -179,28 +184,28 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 ],
                               ),
                               if (addonPrice != 0)
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Add ons',
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                  Text(
-                                    '$addonPrice QR', // Assuming add-ons price is a fixed 100 QR
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                ],
-                              ),
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Add ons',
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      '$addonPrice QR', // Assuming add-ons price is a fixed 100 QR
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
                               Divider(
                                 color: Color(0xff000000).withOpacity(.09),
                               ),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',
@@ -214,7 +219,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   ),
                                 ],
                               ),
-
                             ],
                           ),
                         ),
@@ -227,7 +231,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>  CheckOutScreen(
+                            builder: (context) => CheckOutScreen(
                               dailySelections: widget.dailySelections,
                               selectedAddons: widget.selectedAddons,
                               planId: widget.planId,

@@ -41,6 +41,16 @@ class _EnterOtpState extends State<EnterOtp> {
       });
 
       if (response['status_code'] == 0) {
+        final userBox = Hive.box<User>('userBox');
+        final user = User.fromJson(response['user']);
+        await userBox.put('currentUser', user);
+        print('User details stored: $user');
+        String userId = user.id.toString();
+        //Navigate to the home page or dashboard
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool('isLoggedIn', true); // Store authentication status
+        await prefs.setString('bearerToken', response['token']); // Store the token
+        await prefs.setString('userId', userId); // Store the user ID
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -53,10 +63,12 @@ class _EnterOtpState extends State<EnterOtp> {
         final user = User.fromJson(response['user']);
         await userBox.put('currentUser', user);
         print('User details stored: $user');
+        String userId = user.id.toString();
         //Navigate to the home page or dashboard
         final prefs = await SharedPreferences.getInstance();
         await prefs.setBool('isLoggedIn', true); // Store authentication status
         await prefs.setString('bearerToken', response['token']); // Store the token
+        await prefs.setString('userId', userId); // Store the user ID
 
         Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavbar(),));
       } else if (response['status_code'] == 2) {

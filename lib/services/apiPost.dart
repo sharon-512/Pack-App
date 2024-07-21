@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 
 class ApiService {
   static Future<Map<String, dynamic>> placeOrder({
+    required String userId,
     required String token,
     required DateTime startDate,
     required DateTime endDate,
@@ -17,6 +18,7 @@ class ApiService {
     required String mobileNo,
   }) async {
     try {
+
       String planFrom = DateFormat('yyyy-MM-dd').format(startDate);
       String planTo = DateFormat('yyyy-MM-dd').format(endDate);
 
@@ -42,6 +44,7 @@ class ApiService {
 
       // Prepare form data for the POST request
       var formData = {
+        'user_id': userId,
         'plan_from': planFrom,
         'plan_to': planTo,
         'product_id': productId,

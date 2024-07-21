@@ -414,13 +414,18 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     try {
       final prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('bearerToken');
-
+      String? userId = prefs.getString('userId');
+      if (userId == null) {
+        print('No id');
+        return;
+      }
       if (token == null) {
         print('Token not found in SharedPreferences');
         return;
       }
       var result = await ApiService.placeOrder(
         token: token,
+        userId: userId,
         startDate: startDate,
         endDate: endDate,
         productId: widget.planId.toString(),

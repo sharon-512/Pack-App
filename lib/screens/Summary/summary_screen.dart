@@ -82,7 +82,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                       ),
                       if (addonPrice != 0)
                       Addon(
-                        plan: widget.planName,
+                        plan: 'Addons',
                         price: '$addonPrice',
                       ),
                       const SizedBox(
@@ -232,6 +232,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               selectedAddons: widget.selectedAddons,
                               planId: widget.planId,
                               subTotal: subTotal.toString(),
+                              foodPrice: widget.foodPrice,
+                              addonPrice: widget.addonPrice,
+                              planName: widget.planName,
                             ),
                           ),
                         );

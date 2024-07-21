@@ -26,10 +26,10 @@ class UserRegistrationModel {
 
   Map<String, dynamic> toJson() {
     return {
-      'first_name': firstName,
-      'last_name': lastName,
+      'firstname': firstName,
+      'lastname': lastName,
       'email': email,
-      'mobile_number': mobileNumber,
+      'mobno': mobileNumber,
       'height': height,
       'weight': weight,
       'age': age,

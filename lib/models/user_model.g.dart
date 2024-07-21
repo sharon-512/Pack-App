@@ -22,12 +22,12 @@ class UserAdapter extends TypeAdapter<User> {
       firstname: fields[2] as String,
       lastname: fields[3] as String,
       image: fields[4] as String,
-      mobno: fields[5] as String,
+      mobno: fields[5] as String?,
       address: fields[6] as String?,
       areaName: fields[7] as String?,
-      height: fields[8] as double?,
-      weight: fields[9] as double?,
-      age: fields[10] as int?,
+      height: fields[8] as String?,
+      weight: fields[9] as String?,
+      age: fields[10] as String?,
       gender: fields[11] as String?,
     );
   }

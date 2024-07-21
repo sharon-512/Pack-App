@@ -29,13 +29,13 @@ class User {
   final String? areaName;
 
   @HiveField(8)
-  final double? height;
+  final String? height;
 
   @HiveField(9)
-  final double? weight;
+  final String? weight;
 
   @HiveField(10)
-  final int? age;
+  final String? age;
 
   @HiveField(11)
   final String? gender;
@@ -65,8 +65,8 @@ class User {
       mobno: json['mobno']?.toString(),
       address: json['address'],
       areaName: json['area_name'],
-      height: json['height']?.toDouble(),
-      weight: json['weight']?.toDouble(),
+      height: json['height'],
+      weight: json['weight'],
       age: json['age'],
       gender: json['gender'],
     );

@@ -6,6 +6,7 @@ import 'package:pack_app/providers/food_to_avoid_provider.dart';
 import 'package:pack_app/providers/user_registration_provider.dart';
 
 import 'package:pack_app/widgets/Animation.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'models/user_model.dart';
@@ -15,6 +16,8 @@ Future<void> main() async {
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>('userBox');
   await Hive.openBox('bannersBox');
+  WidgetsFlutterBinding.ensureInitialized();
+  await Permission.location.request();
   runApp(
     MultiProvider(
       providers: [

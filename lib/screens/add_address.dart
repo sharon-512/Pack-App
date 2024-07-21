@@ -1,10 +1,14 @@
-// add_address.dart
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'Summary/map.dart';
-import 'package:pack_app/widgets/common_button.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:hive/hive.dart';
+import 'package:permission_handler/permission_handler.dart';
+import '../models/user_model.dart';
+import '../widgets/common_button.dart';
 import '../custom_style.dart';
 import '../widgets/info_container.dart';
+import 'Summary/map.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);
@@ -14,18 +18,60 @@ class AddAddress extends StatefulWidget {
 }
 
 class _AddAddressState extends State<AddAddress> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   int _selectedIndex = 0;
   LatLng? _selectedLocation;
   late TextEditingController addressline;
   final TextEditingController streetNumber = TextEditingController();
   final TextEditingController houseName = TextEditingController();
   final TextEditingController flatNumber = TextEditingController();
-  final TextEditingController name = TextEditingController();
+  late TextEditingController name;
+  late TextEditingController contactNumber;
 
   @override
   void initState() {
     super.initState();
-    addressline = TextEditingController(text: 'Select a location');
+    final userBox = Hive.box<User>('userBox');
+    final user = userBox.get('currentUser');
+    addressline = TextEditingController(text: 'Fetching current location...');
+    name = TextEditingController(text: user!.firstname);
+    contactNumber = TextEditingController(text: user.mobno);
+    _requestLocationPermission();
+  }
+
+  Future<void> _requestLocationPermission() async {
+    var status = await Permission.location.status;
+    if (status.isDenied) {
+      status = await Permission.location.request();
+    }
+    if (status.isGranted) {
+      _fetchCurrentLocation();
+    } else {
+      setState(() {
+        addressline.text = 'Location permission denied';
+      });
+    }
+  }
+
+  Future<void> _fetchCurrentLocation() async {
+    try {
+      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      _selectedLocation = LatLng(position.latitude, position.longitude);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      if (placemarks.isNotEmpty) {
+        setState(() {
+          addressline.text = '${placemarks.first.street ?? ''}, ${placemarks.first.locality ?? ''}, ${placemarks.first.country ?? ''}';
+        });
+      } else {
+        setState(() {
+          addressline.text = 'Unknown address';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        addressline.text = 'Error fetching location';
+      });
+    }
   }
 
   void _handleLocationSelected(LatLng location, String address) {
@@ -42,28 +88,38 @@ class _AddAddressState extends State<AddAddress> {
     houseName.dispose();
     flatNumber.dispose();
     name.dispose();
+    contactNumber.dispose();
     super.dispose();
+  }
+
+  void _addAddress() {
+    if (_formKey.currentState!.validate()) {
+      final addressDetails = {
+        'address': addressline.text,
+        'streetNo': streetNumber.text,
+        'buildingNo': houseName.text,
+        'flatNo': flatNumber.text,
+        'mobileNo': contactNumber.text,
+      };
+      Navigator.pop(context, addressDetails);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
-        child: SingleChildScrollView(
+    return SafeArea(
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
               Stack(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
+                    onTap: () => Navigator.pop(context),
                     child: Container(
-                      padding: EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(5),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
@@ -81,143 +137,188 @@ class _AddAddressState extends State<AddAddress> {
                   Center(
                     child: Text(
                       'Add Address',
-                      style: CustomTextStyles.titleTextStyle
-                          .copyWith(fontSize: 24),
+                      style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 24),
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 20),
-              MapWidget(
-                initialLocation: LatLng(25.276987, 51.520008), // Center of Doha
-                onLocationSelected: _handleLocationSelected,
+              SizedBox(
+                height: 250,
+                child: MapWidget(
+                  initialLocation: _selectedLocation ?? const LatLng(25.276987, 51.520008), // Center of Doha
+                  onLocationSelected: _handleLocationSelected,
+                ),
               ),
               const SizedBox(height: 20),
-              Text(
-                'Delivery Address',
-                style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 16),
-              ),
-              const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  for (int i = 0; i < 3; i++)
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _selectedIndex = i;
-                        });
-                      },
-                      child: Container(
-                        width: 80,
-                        height: 37,
-                        margin: EdgeInsets.fromLTRB(0, 0, 10, 20),
-                        decoration: BoxDecoration(
-                          color: _selectedIndex == i
-                              ? Color(0xFFEDC0B2)
-                              : Colors.transparent,
-                          border: Border.all(color: Color(0xFFEDC0B2)),
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          i == 0
-                              ? 'Home'
-                              : i == 1
-                              ? 'Office'
-                              : 'Other',
-                          style: TextStyle(
-                              color: _selectedIndex == i
-                                  ? Colors.white
-                                  : Colors.black,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'Aeonik',
-                              fontSize: 14),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-              AddressWidget(
-                label: 'Address Line',
-                address: addressline.text,
-                textEditingController: addressline,
-              ),
-              AddressWidget(
-                label: 'Street Number',
-                address: 'Ex: 10th street',
-                textEditingController: streetNumber,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: AddressWidget(
-                      label: 'House/Floor Number',
-                      address: 'Ex: 02',
-                      textEditingController: houseName,
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  Expanded(
-                    child: AddressWidget(
-                      label: '',
-                      address: 'Ex: 2B',
-                      textEditingController: flatNumber,
-                    ),
-                  ),
-                ],
-              ),
-              AddressWidget(
-                label: 'Contact Person Name',
-                address: 'Muhammed Sheharin',
-                hintStyle:
-                CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
-                textEditingController: name,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Contact Number',
-                    style: CustomTextStyles.labelTextStyle
-                        .copyWith(fontSize: 12, fontWeight: FontWeight.w400),
-                  ),
-                  const SizedBox(height: 8),
-                  Container(
-                    height: 44,
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xff000000).withOpacity(.07)),
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    child: Row(
+              Form(
+                key: _formKey,
+                child: Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset('assets/images/flag.png'),
                         Text(
-                          '  +974',
-                          style: CustomTextStyles.labelTextStyle
-                              .copyWith(fontSize: 14),
+                          'Delivery Address',
+                          style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 16),
                         ),
-                        SizedBox(width: 4),
-                        Text(
-                          '32165426',
-                          style: CustomTextStyles.labelTextStyle
-                              .copyWith(fontSize: 14, color: Color(0xffB1B1B1)),
+                        const SizedBox(height: 15),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            for (int i = 0; i < 3; i++)
+                              GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    _selectedIndex = i;
+                                  });
+                                },
+                                child: Container(
+                                  width: 80,
+                                  height: 37,
+                                  margin: const EdgeInsets.fromLTRB(0, 0, 10, 20),
+                                  decoration: BoxDecoration(
+                                    color: _selectedIndex == i
+                                        ? const Color(0xFFEDC0B2)
+                                        : Colors.transparent,
+                                    border: Border.all(color: const Color(0xFFEDC0B2)),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    i == 0 ? 'Home' : i == 1 ? 'Office' : 'Other',
+                                    style: TextStyle(
+                                      color: _selectedIndex == i ? Colors.white : Colors.black,
+                                      fontWeight: FontWeight.w500,
+                                      fontFamily: 'Aeonik',
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                        AddressWidget(
+                          label: 'Address Line',
+                          address: addressline.text,
+                          textEditingController: addressline,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the address line';
+                            }
+                            return null;
+                          },
+                        ),
+                        AddressWidget(
+                          label: 'Street Number',
+                          address: 'Ex: 10th street',
+                          textEditingController: streetNumber,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the street number';
+                            }
+                            return null;
+                          },
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AddressWidget(
+                                label: 'House/Floor Number',
+                                address: 'Ex: 02',
+                                textEditingController: houseName,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter the house/floor number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              child: AddressWidget(
+                                label: 'Flat Number',
+                                address: 'Ex: 2B',
+                                textEditingController: flatNumber,
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter the flat number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        AddressWidget(
+                          label: 'Contact Person Name',
+                          address: 'Muhammed Sheharin',
+                          hintStyle: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                          textEditingController: name,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter the contact person name';
+                            }
+                            return null;
+                          },
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Contact Number',
+                              style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w400),
+                            ),
+                            const SizedBox(height: 8),
+                            Container(
+                              height: 44,
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                              decoration: BoxDecoration(
+                                border: Border.all(color: const Color(0xff000000).withOpacity(.07)),
+                                borderRadius: BorderRadius.circular(17),
+                              ),
+                              alignment: Alignment.centerLeft,
+                              child: Row(
+                                children: [
+                                  Image.asset('assets/images/flag.png'),
+                                  Text(
+                                    '  +974',
+                                    style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: TextFormField(
+                                      controller: contactNumber,
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: '30567890',
+                                        hintStyle: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return 'Please enter the contact number';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        CommonButton(
+                          text: 'Continue',
+                          onTap: _addAddress,
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 15),
-                  const SizedBox(height: 20),
-                  CommonButton(
-                    text: 'Add Address',
-                    onTap: () {
-                      // Handle address addition here
-                    },
-                  ),
-                ],
+                ),
               ),
             ],
           ),

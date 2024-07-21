@@ -159,6 +159,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         final userBox = await Hive.openBox<User>('userBox');
         final user = User.fromJson(response['user']);
         await userBox.put('currentUser', user); // Assuming toUserModel converts to UserModel
+
       } else if (response['response_code'] == 0) {
         _showErrorSnackBar('Existing email ID');
       } else {

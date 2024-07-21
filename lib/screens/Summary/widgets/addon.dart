@@ -35,11 +35,11 @@ class Addon extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Plan name',
-                    style: CustomTextStyles.subtitleTextStyle
-                        .copyWith(fontSize: 12),
-                  ),
+                  // Text(
+                  //   'Plan name',
+                  //   style: CustomTextStyles.subtitleTextStyle
+                  //       .copyWith(fontSize: 12),
+                  // ),
                   Text(
                     plan,
                     style: CustomTextStyles.labelTextStyle

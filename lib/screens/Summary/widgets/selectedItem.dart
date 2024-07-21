@@ -64,25 +64,30 @@ class SelectedItem extends StatelessWidget {
               ),
             ],
           ),
-          Container(
-            height: 143,
-            width: 50,
-            decoration: const BoxDecoration(
-                color: Color(0xff124734),
-                borderRadius: BorderRadius.only(
-                    bottomRight: Radius.circular(28),
-                    topRight: Radius.circular(28))),
-            alignment: Alignment.center,
-            child: const RotatedBox(
-                quarterTurns: 3,
-                child: Text(
-                  'View Plan',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'Aeonik'),
-                )),
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Container(
+              height: 143,
+              width: 50,
+              decoration: const BoxDecoration(
+                  color: Color(0xff124734),
+                  borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(28),
+                      topRight: Radius.circular(28))),
+              alignment: Alignment.center,
+              child: const RotatedBox(
+                  quarterTurns: 3,
+                  child: Text(
+                    'View Plan',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        fontFamily: 'Aeonik'),
+                  )),
+            ),
           )
         ],
       ),

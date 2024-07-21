@@ -1,18 +1,35 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 import 'package:pack_app/custom_style.dart';
-import 'package:pack_app/screens/onboarding/start_screen.dart';
+import 'package:pack_app/screens/Dashboard/nav_bar.dart';
+
+import '../models/user_model.dart';
 
 class PaymentScreen extends StatelessWidget {
-  const PaymentScreen({Key? key}) : super(key: key);
+  final double subTotal;
+  final String planName;
+
+  const PaymentScreen({super.key,
+    required this.subTotal,
+    required this.planName
+  });
 
   @override
   Widget build(BuildContext context) {
+    final userBox = Hive.box<User>('userBox');
+    final user = userBox.get('currentUser');
+    final String formattedDate = DateFormat('d MMMM yyyy . hh:mm a').format(DateTime.now());
+    final int generatedId = Random().nextInt(10000);  // Generates a random ID between 0 and 9999
+
     return Scaffold(
       body: Container(
         height: double.infinity,
         width: double.infinity,
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('assets/images/payment_bg.png'),
@@ -33,12 +50,12 @@ class PaymentScreen extends StatelessWidget {
         ),
         child: Column(
           children: [
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Image.asset('assets/images/tick3.png'),
             const Text(
-              'Payment Completed',
+              'Order Successful',
               style: TextStyle(
                   fontFamily: 'Aeonik',
                   fontSize: 24,
@@ -46,7 +63,7 @@ class PaymentScreen extends StatelessWidget {
                   color: Colors.white,
                   letterSpacing: -0.41),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Container(
@@ -74,17 +91,17 @@ class PaymentScreen extends StatelessWidget {
                       children: [
                         Column(
                           children: [
-                            const Text(
-                              '3100 QR',
-                              style: TextStyle(
+                            Text(
+                              '${subTotal} QR',
+                              style: const TextStyle(
                                 fontFamily: 'Aeonik',
                                 fontWeight: FontWeight.w700,
                                 fontSize: 34,
                               ),
                             ),
-                            const Text(
-                              '7 April 2024 . 10:40 am',
-                              style: TextStyle(
+                            Text(
+                              formattedDate,
+                              style: const TextStyle(
                                 color: Color(0xffB6B6B6),
                                 fontFamily: 'Aeonik',
                                 fontWeight: FontWeight.w500,
@@ -113,22 +130,22 @@ class PaymentScreen extends StatelessWidget {
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    'Customer ID',
-                                    style: CustomTextStyles.labelTextStyle
-                                        .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
-                                  ),
-                                  Text(
                                     'Customer Name',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    'Delivery Date',
+                                    'Start Date',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
+                                  ),
+                                  Text(
+                                    'End Date',
+                                    style: CustomTextStyles.labelTextStyle
+                                        .copyWith(
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                 ],
                               ),
@@ -138,34 +155,34 @@ class PaymentScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Weight loss seeker',
+                                    planName,
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    'P000432',
+                                    generatedId.toString(),
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    '889767',
+                                    user!.firstname ?? 'name',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    'Sheharin',
+                                    '------',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
                                             fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
-                                    '10 April 2024',
+                                    '------',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                 ],
                               ),
@@ -177,7 +194,7 @@ class PaymentScreen extends StatelessWidget {
                           height: 45,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
-                            color: Color(0xffFBC56D),
+                            color: const Color(0xffFBC56D),
                           ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -197,7 +214,7 @@ class PaymentScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 60,
             ),
             GestureDetector(
@@ -205,7 +222,7 @@ class PaymentScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => StartScreen(),
+                        builder: (context) => const BottomNavbar(selectedIndex: 0,),
                       ));
                 },
                 child: SvgPicture.asset('assets/images/exit.svg')),

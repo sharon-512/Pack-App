@@ -20,6 +20,7 @@ class AddressWidget extends StatelessWidget {
   final TextStyle labelStyle;
   final TextStyle hintStyle;
   final TextEditingController textEditingController;
+  final String? Function(String?)? validator;
 
   const AddressWidget({
     Key? key,
@@ -28,6 +29,7 @@ class AddressWidget extends StatelessWidget {
     this.labelStyle = _defaultLabelStyle,
     this.hintStyle = _defaultHintStyle,
     required this.textEditingController,
+    this.validator,
   }) : super(key: key);
 
   @override
@@ -40,22 +42,24 @@ class AddressWidget extends StatelessWidget {
           style: labelStyle,
         ),
         const SizedBox(height: 8),
-        Container(
-          height: 44,
-          padding: const EdgeInsets.symmetric(horizontal: 18.0),
-          decoration: BoxDecoration(
-            border: Border.all(color: Color(0xff000000).withOpacity(.07)),
-            borderRadius: BorderRadius.circular(17),
-          ),
-          alignment: Alignment.centerLeft,
-          child: TextField(
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: address, // Use 'address' as hint text
-              hintStyle: hintStyle,
+        TextFormField(
+          decoration: InputDecoration(
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(17),
+              borderSide: BorderSide(color: Color(0xffB1B1B1)),
             ),
-            controller: textEditingController,
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(17),
+              borderSide: BorderSide(color: Color(0xffB1B1B1)),
+            ),
+            hintText: address,
+            // Use 'address' as hint text
+            hintStyle: hintStyle,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 18.0, vertical: 10.0),
           ),
+          controller: textEditingController,
+          validator: validator,
         ),
         const SizedBox(height: 15),
       ],

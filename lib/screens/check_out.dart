@@ -117,6 +117,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 padding: const EdgeInsets.only(left: 35),
                                 child: DropdownButtonHideUnderline(
                                   child: DropdownButton<String>(
+                                    borderRadius: BorderRadius.circular(12),
                                     isExpanded: true,
                                     icon: Icon(Icons.arrow_drop_down_rounded,
                                         size: 28),
@@ -141,7 +142,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                                 style: CustomTextStyles.titleTextStyle
                                                     .copyWith(
                                                   fontSize: 14,
-                                                  fontWeight: FontWeight.w500,
+                                                  fontWeight: FontWeight.w400,
                                                 ),
                                               ),
                                             ),
@@ -214,6 +215,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           padding: const EdgeInsets.symmetric(horizontal: 12.0),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
+                              borderRadius: BorderRadius.circular(12),
                               value: _selectedOption,
                               hint: Text('Select delivery fee'),
                               isExpanded: true,
@@ -221,7 +223,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               items: _options.map((option) {
                                 return DropdownMenuItem<String>(
                                   value: option['text'],
-                                  child: Text(option['text']),
+                                  child: Text(option['text'],style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w400
+                                  ),),
                                 );
                               }).toList(),
                               onChanged: (newValue) {

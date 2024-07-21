@@ -6,10 +6,12 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/screens/Dashboard/nav_bar.dart';
+import 'package:share/share.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/user_model.dart';
 
-class PaymentScreen extends StatelessWidget {
+class PaymentScreen extends StatefulWidget {
   final double subTotal;
   final String planName;
 
@@ -19,11 +21,26 @@ class PaymentScreen extends StatelessWidget {
   });
 
   @override
+  State<PaymentScreen> createState() => _PaymentScreenState();
+}
+
+class _PaymentScreenState extends State<PaymentScreen> {
+  DateTime? startDate;
+  DateTime? endDate;
+  bool _isLoading = true; // To manage loading state
+
+  @override
+  void initState() {
+    super.initState();
+    fetchDatesFromSharedPreferences(); // Fetch dates when the widget is initialized
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
     final String formattedDate = DateFormat('d MMMM yyyy . hh:mm a').format(DateTime.now());
-    final int generatedId = Random().nextInt(10000);  // Generates a random ID between 0 and 9999
+    final int generatedId = Random().nextInt(10000); // Generates a random ID between 0 and 9999
 
     return Scaffold(
       body: Container(
@@ -36,15 +53,12 @@ class PaymentScreen extends StatelessWidget {
             fit: BoxFit.cover,
           ),
           gradient: RadialGradient(
-            // The gradient center alignment, adjust as needed
             center: Alignment(0.2698, -0.3198),
-            // The radius of the gradient, adjust to fit the screen
             radius: 2,
             colors: [
               Color(0xFF002216), // Dark color
               Color(0xFF124734), // Light color
             ],
-            // If you have specific stops, define them here
             stops: [0.0, 1.0],
           ),
         ),
@@ -77,8 +91,7 @@ class PaymentScreen extends StatelessWidget {
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/images/bill_bg.png'),
-                        fit: BoxFit
-                            .fill, // Changed to BoxFit.cover to fill the entire container
+                        fit: BoxFit.fill,
                       ),
                     ),
                   ),
@@ -87,12 +100,11 @@ class PaymentScreen extends StatelessWidget {
                         horizontal: 25, vertical: 25),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      // Center the column in the stack
                       children: [
                         Column(
                           children: [
                             Text(
-                              '${subTotal} QR',
+                              '${widget.subTotal} QR',
                               style: const TextStyle(
                                 fontFamily: 'Aeonik',
                                 fontWeight: FontWeight.w700,
@@ -121,25 +133,25 @@ class PaymentScreen extends StatelessWidget {
                                     'Item name',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     'Order NO',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     'Customer Name',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     'Start Date',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     'End Date',
@@ -155,59 +167,74 @@ class PaymentScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    planName,
+                                    widget.planName,
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     generatedId.toString(),
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
+                                        fontSize: 14, letterSpacing: -0.14),
                                   ),
                                   Text(
                                     user!.firstname ?? 'name',
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
-                                  ),
-                                  Text(
-                                    '------',
-                                    style: CustomTextStyles.labelTextStyle
-                                        .copyWith(
-                                            fontSize: 14, letterSpacing: -0.14),
-                                  ),
-                                  Text(
-                                    '------',
-                                    style: CustomTextStyles.labelTextStyle
-                                        .copyWith(
                                         fontSize: 14, letterSpacing: -0.14),
+                                  ),
+                                  _isLoading
+                                      ? const CircularProgressIndicator()
+                                      : Text(
+                                    startDate != null
+                                        ? DateFormat('yyyy-MM-dd')
+                                        .format(startDate!)
+                                        : '------',
+                                    style: CustomTextStyles.labelTextStyle
+                                        .copyWith(
+                                        fontSize: 14,
+                                        letterSpacing: -0.14),
+                                  ),
+                                  _isLoading
+                                      ? const CircularProgressIndicator()
+                                      : Text(
+                                    endDate != null
+                                        ? DateFormat('yyyy-MM-dd')
+                                        .format(endDate!)
+                                        : '------',
+                                    style: CustomTextStyles.labelTextStyle
+                                        .copyWith(
+                                        fontSize: 14,
+                                        letterSpacing: -0.14),
                                   ),
                                 ],
                               ),
                             ),
                           ],
                         ),
-                        Container(
-                          width: 260,
-                          height: 45,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: const Color(0xffFBC56D),
+                        GestureDetector(
+                          onTap: _shareReceipt,
+                          child: Container(
+                            width: 260,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: const Color(0xffFBC56D),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset('assets/images/share.svg'),
+                                Text(
+                                  '  Share Receipt',
+                                  style: CustomTextStyles.labelTextStyle
+                                      .copyWith(color: Colors.white),
+                                )
+                              ],
+                            ),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset('assets/images/share.svg'),
-                              Text(
-                                '  Share Receipt',
-                                style: CustomTextStyles.labelTextStyle
-                                    .copyWith(color: Colors.white),
-                              )
-                            ],
-                          ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -222,7 +249,7 @@ class PaymentScreen extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const BottomNavbar(selectedIndex: 0,),
+                        builder: (context) => const BottomNavbar(selectedIndex: 0),
                       ));
                 },
                 child: SvgPicture.asset('assets/images/exit.svg')),
@@ -231,4 +258,48 @@ class PaymentScreen extends StatelessWidget {
       ),
     );
   }
+
+  Future<void> fetchDatesFromSharedPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    final storedStartDate = prefs.getString('startDate');
+    final storedEndDate = prefs.getString('endDate');
+
+    if (storedStartDate != null && storedEndDate != null) {
+      try {
+        setState(() {
+          startDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedStartDate);
+          endDate = DateFormat('EEEE, MMMM d, yyyy').parse(storedEndDate);
+          _isLoading = false;
+        });
+      } catch (e) {
+        print('Error parsing dates: $e');
+        setState(() {
+          startDate = DateTime.now();
+          endDate = DateTime.now();
+          _isLoading = false;
+        });
+      }
+    } else {
+      setState(() {
+        startDate = DateTime.now();
+        endDate = DateTime.now();
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _shareReceipt() {
+    final String receiptDetails = '''
+    Plan Name: ${widget.planName}
+    Order No: ${Random().nextInt(10000)}
+    Customer Name: ${Hive.box<User>('userBox').get('currentUser')!.firstname ?? 'name'}
+    Start Date: ${startDate != null ? DateFormat('yyyy-MM-dd').format(startDate!) : '------'}
+    End Date: ${endDate != null ? DateFormat('yyyy-MM-dd').format(endDate!) : '------'}
+    Total: ${widget.subTotal} QR
+    ''';
+
+    Share.share(receiptDetails, subject: 'Receipt Details');
+  }
 }
+
+

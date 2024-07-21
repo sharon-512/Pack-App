@@ -6,10 +6,8 @@ import 'package:pack_app/screens/Summary/widgets/selectedItem.dart';
 import 'package:pack_app/screens/check_out.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../custom_style.dart';
-import '../../services/apiPost.dart';
 
 class SummaryScreen extends StatefulWidget {
   final String foodPrice;

@@ -5,11 +5,13 @@ import '../../../custom_style.dart';
 class SelectedItem extends StatelessWidget {
   final String plan;
   final String price;
+  final String image;
 
   const SelectedItem({
     Key? key,
     required this.plan,
     required this.price,
+    required this.image,
   }) : super(key: key);
 
   @override
@@ -25,8 +27,8 @@ class SelectedItem extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Image.asset(
-                'assets/images/foodcard1.png', // Placeholder for the image
+              Image.network(
+                image, // Placeholder for the image
                 width: 106,
                 height: 106,
               ),

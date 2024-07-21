@@ -119,6 +119,7 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                           color: const Color(0xffBBC392),
                           label: '${widget.foodData['protien']}g',
                           widthFactor: widget.foodData['protien'].toDouble(),
+
                           label2: ' Protein',
                           isSelected: widget.isSelected,
                         ),

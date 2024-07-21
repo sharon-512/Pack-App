@@ -70,6 +70,7 @@ class _EnterOtpState extends State<EnterOtp> {
         await prefs.setString('bearerToken', response['token']); // Store the token
         await prefs.setString('userId', userId); // Store the user ID
 
+
         Navigator.push(context, MaterialPageRoute(builder: (context) => BottomNavbar(),));
       } else if (response['status_code'] == 2) {
         setState(() {

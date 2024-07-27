@@ -19,13 +19,13 @@ class CheckOutScreen extends StatefulWidget {
 
   const CheckOutScreen(
       {Key? key,
-        required this.dailySelections,
-        required this.selectedAddons,
-        required this.planId,
-        required this.subTotal,
-        required this.foodPrice,
-        required this.planName,
-        required this.addonPrice})
+      required this.dailySelections,
+      required this.selectedAddons,
+      required this.planId,
+      required this.subTotal,
+      required this.foodPrice,
+      required this.planName,
+      required this.addonPrice})
       : super(key: key);
 
   @override
@@ -131,23 +131,24 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     items: _addresses
                                         .map<DropdownMenuItem<String>>(
                                             (String value) {
-                                          return DropdownMenuItem<String>(
-                                            value: value,
-                                            child: Padding(
-                                              padding: const EdgeInsets.symmetric(
-                                                  vertical: 12.0),
-                                              child: Text(
-                                                value,
-                                                maxLines: 1,
-                                                style: CustomTextStyles.titleTextStyle
-                                                    .copyWith(
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                              ),
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 12.0),
+                                          child: Text(
+                                            value,
+                                            maxLines: 1,
+                                            style: CustomTextStyles
+                                                .titleTextStyle
+                                                .copyWith(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w400,
                                             ),
-                                          );
-                                        }).toList(),
+                                          ),
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
                               ),
@@ -202,13 +203,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       const SizedBox(height: 20),
                       Text(
                         'Delivery fee',
-                        style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 16),
+                        style: CustomTextStyles.titleTextStyle
+                            .copyWith(fontSize: 16),
                       ),
                       const SizedBox(height: 15),
                       Container(
                         height: 56,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Color(0xff000000).withOpacity(.07)),
+                          border: Border.all(
+                              color: Color(0xff000000).withOpacity(.07)),
                           borderRadius: BorderRadius.circular(17),
                         ),
                         child: Padding(
@@ -219,21 +222,24 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               value: _selectedOption,
                               hint: Text('Select delivery fee'),
                               isExpanded: true,
-                              icon: Icon(Icons.arrow_drop_down_rounded, size: 28),
+                              icon:
+                                  Icon(Icons.arrow_drop_down_rounded, size: 28),
                               items: _options.map((option) {
                                 return DropdownMenuItem<String>(
                                   value: option['text'],
-                                  child: Text(option['text'],style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400
-                                  ),),
+                                  child: Text(
+                                    option['text'],
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w400),
+                                  ),
                                 );
                               }).toList(),
                               onChanged: (newValue) {
                                 setState(() {
                                   _selectedOption = newValue;
-                                  _deliveryFee = _options
-                                      .firstWhere((option) => option['text'] == newValue)['value'];
+                                  _deliveryFee = _options.firstWhere((option) =>
+                                      option['text'] == newValue)['value'];
                                   //subTotal = subTotal + _deliveryFee;
                                 });
                                 _updateButtonState();
@@ -242,7 +248,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20,),
+                      SizedBox(
+                        height: 20,
+                      ),
                       Container(
                         height: 158,
                         decoration: BoxDecoration(
@@ -256,7 +264,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             children: [
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     widget.planName,
@@ -273,7 +281,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               if (addonPrice != 0)
                                 Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'Add ons',
@@ -289,7 +297,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 ),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Delivery Fee',
@@ -308,7 +316,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',
@@ -322,34 +330,35 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                   ),
                                 ],
                               ),
-
                             ],
                           ),
                         ),
                       ),
                     ],
                   ),
-                  _isButtonEnabled ?
-                  CommonButton(
-                      text: 'Check Out',
-                      onTap: _placeOrder,
-
-                  )
+                  _isButtonEnabled
+                      ? CommonButton(
+                          text: 'Check Out',
+                          onTap: _placeOrder,
+                          isLoading: _isLoading,
+                        )
                       : Container(
-                    height: 65,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                        color: Colors.grey[400],
-                        borderRadius: BorderRadius.circular(28)),
-                    alignment: Alignment.center,
-                    child: Text('Check Out',
-                      style: TextStyle(
-                        fontFamily: 'Aeonik',
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                      ),),
-                  )
+                          height: 65,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: Colors.grey[400],
+                              borderRadius: BorderRadius.circular(28)),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Check Out',
+                            style: TextStyle(
+                              fontFamily: 'Aeonik',
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        )
                 ],
               ),
             ),
@@ -407,6 +416,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void _placeOrder() async {
+    setState(() {
+      _isLoading = true;
+    });
     final double foodPrice = double.parse(widget.foodPrice);
     final double addonPrice = widget.addonPrice;
     double finalAmount = foodPrice + addonPrice + _deliveryFee;
@@ -442,12 +454,16 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       if (result['success']) {
         print('Order saved successfully.');
         print('Response: ${result['data']}');
+        setState(() {
+          _isLoading = false;
+        });
         Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PaymentScreen(
               subTotal: finalAmount,
-              planName: widget.planName,),
+              planName: widget.planName,
+            ),
           ),
         );
       } else {

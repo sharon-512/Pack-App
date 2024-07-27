@@ -55,7 +55,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final responseBody = jsonDecode(response.body);
       print('Response JSON: $responseBody');
       if (responseBody['status'] == true) {
-        // Update successful, handle accordingly
+        // Update successful, update the Hive model
+        final userBox = Hive.box<User>('userBox');
+        final updatedUser = User(
+          id: user.id,
+          email: emailController.text,
+          firstname: firstNameController.text,
+          lastname: lastNameController.text,
+          image: user.image,
+          mobno: user.mobno,
+          address: user.address,
+          areaName: user.areaName,
+          height: user.height,
+          weight: user.weight,
+          age: user.age,
+          gender: user.gender,
+        );
+        userBox.put('currentUser', updatedUser);
         print('Profile updated successfully');
         print('User ID: ${user.id}');  // Print the user ID here
         Navigator.push(
@@ -85,7 +101,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (redirectResponse.statusCode == 200) {
           final responseBody = jsonDecode(redirectResponse.body);
           if (responseBody['status'] == true) {
-            // Update successful, handle accordingly
+            // Update successful, update the Hive model
+            final userBox = Hive.box<User>('userBox');
+            final updatedUser = User(
+              id: user.id,
+              email: emailController.text,
+              firstname: firstNameController.text,
+              lastname: lastNameController.text,
+              image: user.image,
+              mobno: user.mobno,
+              address: user.address,
+              areaName: user.areaName,
+              height: user.height,
+              weight: user.weight,
+              age: user.age,
+              gender: user.gender,
+            );
+            userBox.put('currentUser', updatedUser);
             print('Profile updated successfully');
             print('User ID: ${user.id}');  // Print the user ID here
             Navigator.push(
@@ -108,7 +140,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       // HTTP error, handle accordingly
       print('Failed to update profile: ${response.statusCode}');
     }
-
   }
 
   @override
@@ -117,10 +148,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final user = userBox.get('currentUser');
 
     if (user != null) {
-      firstNameController.text = user.firstname ?? '';
-      lastNameController.text = user.lastname ?? '';
-      emailController.text = user.email ?? '';
-      numberController.text = user.mobno != null ? '+974 ${user.mobno}' : '';
+      firstNameController.text = firstNameController.text.isEmpty ? user.firstname ?? '' : firstNameController.text;
+      lastNameController.text = lastNameController.text.isEmpty ? user.lastname ?? '' : lastNameController.text;
+      emailController.text = emailController.text.isEmpty ? user.email ?? '' : emailController.text;
+      numberController.text = numberController.text.isEmpty ? (user.mobno != null ? '+974 ${user.mobno}' : '') : numberController.text;
     }
 
     return Scaffold(
@@ -205,18 +236,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25),
             child: CommonButton(
-                text: 'Save changes',
-                onTap: () {
-                  if (user != null) {
-                    updateProfile(user);
-                  }
-                },
+              text: 'Save changes',
+              onTap: () {
+                if (user != null) {
+                  updateProfile(user);
+                }
+              },
               isLoading: _isLoading,),
           ),
         ],
       ),
     );
   }
+
 
   Widget _buildTextField(
       String fieldName, String hintText, TextEditingController controller, [bool enabled = true]) {

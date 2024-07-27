@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:pack_app/screens/Dashboard/profile_and_other_options/profile_page.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +58,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Update successful, handle accordingly
         print('Profile updated successfully');
         print('User ID: ${user.id}');  // Print the user ID here
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileMenuScreen()),
+        );
       } else {
         // Update failed, handle accordingly
         print('Failed to update profile: ${responseBody['message']}');
@@ -83,6 +88,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             // Update successful, handle accordingly
             print('Profile updated successfully');
             print('User ID: ${user.id}');  // Print the user ID here
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileMenuScreen()),
+            );
           } else {
             // Update failed, handle accordingly
             print('Failed to update profile: ${responseBody['message']}');

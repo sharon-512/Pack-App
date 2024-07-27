@@ -37,7 +37,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   List<Map<String, dynamic>> selectedAddons = [];
   late DateTime startDate;
   late DateTime endDate;
-  bool _isLoading = true;
+  bool _isLoading = false;
   String? _selectedOption;
   int _deliveryFee = 0;
   bool _isButtonEnabled = false;

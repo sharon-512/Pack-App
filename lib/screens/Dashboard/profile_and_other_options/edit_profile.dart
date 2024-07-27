@@ -1,17 +1,106 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:pack_app/widgets/common_button.dart';
-import 'package:pack_app/widgets/common_textfield.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 import '../../../models/user_model.dart';
 
-class EditProfileScreen extends StatelessWidget {
+class EditProfileScreen extends StatefulWidget {
   EditProfileScreen({super.key});
 
+  @override
+  State<EditProfileScreen> createState() => _EditProfileScreenState();
+}
+
+class _EditProfileScreenState extends State<EditProfileScreen> {
+  bool _isLoading = false;
+
   final TextEditingController firstNameController = TextEditingController();
+
   final TextEditingController lastNameController = TextEditingController();
+
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController numberController = TextEditingController();
+
+  Future<void> updateProfile(User user) async {
+    setState(() {
+      _isLoading = true;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('bearerToken');
+    final url = Uri.parse(
+        'https://interfuel.qa/packupadmin/api/update-profile?id=${user.id}&firstname=${firstNameController.text}&lastname=${lastNameController.text}');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'id': user.id,
+        'firstname': firstNameController.text,
+        'lastname': lastNameController.text,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        _isLoading = false;
+      });
+      final responseBody = jsonDecode(response.body);
+      print('Response JSON: $responseBody');
+      if (responseBody['status'] == true) {
+        // Update successful, handle accordingly
+        print('Profile updated successfully');
+        print('User ID: ${user.id}');  // Print the user ID here
+      } else {
+        // Update failed, handle accordingly
+        print('Failed to update profile: ${responseBody['message']}');
+      }
+    } else if (response.statusCode == 302) {
+      // Handle redirect if necessary
+      final redirectUrl = response.headers['location'];
+      if (redirectUrl != null) {
+        final redirectResponse = await http.post(
+          Uri.parse(redirectUrl),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+          body: jsonEncode({
+            'id': user.id,
+            'firstname': firstNameController.text,
+            'lastname': lastNameController.text,
+          }),
+        );
+        if (redirectResponse.statusCode == 200) {
+          final responseBody = jsonDecode(redirectResponse.body);
+          if (responseBody['status'] == true) {
+            // Update successful, handle accordingly
+            print('Profile updated successfully');
+            print('User ID: ${user.id}');  // Print the user ID here
+          } else {
+            // Update failed, handle accordingly
+            print('Failed to update profile: ${responseBody['message']}');
+          }
+        } else {
+          // HTTP error, handle accordingly
+          print('Failed to update profile: ${redirectResponse.statusCode}');
+        }
+      } else {
+        // No redirect location provided
+        print('Failed to update profile: No redirect location provided');
+      }
+    } else {
+      // HTTP error, handle accordingly
+      print('Failed to update profile: ${response.statusCode}');
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,22 +126,32 @@ class EditProfileScreen extends StatelessWidget {
                 width: double.infinity,
                 decoration: const BoxDecoration(
                     color: Color(0xff124734),
-                    borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight: Radius.circular(20))),
+                    borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20))),
                 child: Column(
                   children: [
-                    const SizedBox(height: 50,),
-                    const Text('My Profile',
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    const Text(
+                      'My Profile',
                       style: TextStyle(
                           fontFamily: 'Aeonik',
                           fontWeight: FontWeight.w600,
                           fontSize: 20,
                           color: Colors.white),
                     ),
-                    const SizedBox(height: 12,),
+                    const SizedBox(
+                      height: 12,
+                    ),
                     CircleAvatar(
                       radius: 40,
                       backgroundColor: Colors.white,
-                      child: Image.asset('assets/images/profile_pic2.png', fit: BoxFit.fill,),
+                      child: Image.asset(
+                        'assets/images/profile_pic2.png',
+                        fit: BoxFit.fill,
+                      ),
                     ),
                     Text(
                       '${user?.firstname ?? ''} ${user?.lastname ?? ''}',
@@ -81,10 +180,14 @@ class EditProfileScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 32),
-                    _buildTextField('First Name', 'Enter Your First Name', firstNameController),
-                    _buildTextField('Last Name', 'Enter Your Last Name', lastNameController),
-                    _buildTextField('Email', 'Enter Your Email', emailController),
-                    _buildTextField('Phone', 'Enter Your Phone number', numberController),
+                    _buildTextField('First Name', 'Enter Your First Name',
+                        firstNameController),
+                    _buildTextField('Last Name', 'Enter Your Last Name',
+                        lastNameController),
+                    _buildTextField(
+                        'Email', 'Enter Your Email', emailController, false),
+                    _buildTextField(
+                        'Phone', 'Enter Your Phone number', numberController, false),
                   ],
                 ),
               ),
@@ -92,16 +195,22 @@ class EditProfileScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25),
-            child: CommonButton(text: 'Save changes', onTap: () {
-              // Add your save changes logic here
-            }),
+            child: CommonButton(
+                text: 'Save changes',
+                onTap: () {
+                  if (user != null) {
+                    updateProfile(user);
+                  }
+                },
+              isLoading: _isLoading,),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTextField(String fieldName, String hintText, TextEditingController controller) {
+  Widget _buildTextField(
+      String fieldName, String hintText, TextEditingController controller, [bool enabled = true]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -118,9 +227,18 @@ class EditProfileScreen extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: CommonTextField(
+              child: TextFormField(
+                controller: controller,
+                enabled: enabled,
+                decoration: InputDecoration(
                   hintText: hintText,
-                  controller: controller),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  filled: true,
+                  fillColor: enabled ? Colors.white : Colors.grey[200],
+                ),
+              ),
             ),
           ],
         ),

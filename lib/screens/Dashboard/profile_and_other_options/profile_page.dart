@@ -20,6 +20,9 @@ class ProfileMenuScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userBox = Hive.box<User>('userBox');
+    final user = userBox.get('currentUser');
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,10 +34,13 @@ class ProfileMenuScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
-                child: Image.asset('assets/images/profile_pic2.png', fit: BoxFit.fill),
+                child: user?.image != null
+                    ? Image.network(user!.image!, fit: BoxFit.fill)
+                    : Image.asset('assets/images/profile_pic2.png', fit: BoxFit.fill),
               ),
-              const Text(
-                'Mariam Ahmed',
+              const SizedBox(height: 8),
+              Text(
+                '${user?.firstname ?? 'Unknown'} ${user?.lastname ?? ''}',
                 style: TextStyle(
                   fontFamily: 'Aeonik',
                   fontWeight: FontWeight.w500,
@@ -42,8 +48,8 @@ class ProfileMenuScreen extends StatelessWidget {
                   letterSpacing: -0.5,
                 ),
               ),
-              const Text(
-                '+974 3344 6568',
+              Text(
+                '+974 ${user?.mobno ?? '0000 0000'}',
                 style: TextStyle(
                   fontFamily: 'Aeonik',
                   fontWeight: FontWeight.w500,

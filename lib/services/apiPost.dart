@@ -15,7 +15,11 @@ class ApiService {
     required String streetNo,
     required String buildingNo,
     required String flatNo,
-    required String mobileNo, required String price,
+    required String mobileNo,
+    required String price,
+    required String addonPrice,
+    required String deliveryPrice,
+    required String paymentStatus,
   }) async {
     try {
 
@@ -56,6 +60,10 @@ class ApiService {
         'building_no': buildingNo,
         'flat_no': flatNo,
         'mobile_no': mobileNo,
+        'price': price,
+        'delivery_price': deliveryPrice,
+        'payment_status': paymentStatus,
+        'addon_price': addonPrice
       };
 
       // Make the POST request with automatic redirection handling

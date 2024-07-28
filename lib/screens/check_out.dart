@@ -431,7 +431,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         productId: widget.planId.toString(),
         dailySelections: widget.dailySelections,
         selectedAddons: widget.selectedAddons,
-        price: finalAmount.toString(),
+        price: widget.foodPrice,
+        paymentStatus: '0',
+        addonPrice: widget.addonPrice.toString(),
+        deliveryPrice: _deliveryFee.toString(),
         address: _selectedAddress ?? 'Your address here',
         streetNo: _streetNumber ?? 'Your street number here',
         buildingNo: _buildingNo ?? 'Your building number here',
@@ -440,7 +443,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       );
 
       if (result['success']) {
-        print('Order saved successfully.');
+        print('Order saved successfully 512.');
         print('Response: ${result['data']}');
         Navigator.push(
           context,

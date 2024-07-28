@@ -1,12 +1,69 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:pack_app/widgets/green_appbar.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../custom_style.dart';
-import '../Home_page/widget/selected_pack_card.dart';
+import '../../../widgets/green_appbar.dart';
 
-class MyCoupons extends StatelessWidget {
+class Coupon {
+  final String title;
+  final String description;
+  final String imageUrl;
+
+  Coupon(
+      {required this.title, required this.description, required this.imageUrl});
+
+  factory Coupon.fromJson(Map<String, dynamic> json) {
+    return Coupon(
+      title: json['title'] ?? 'No Title',
+      description: json['description'] ?? 'No Description',
+      imageUrl: json['imageUrl'] ?? 'default_image_url',
+    );
+  }
+}
+
+Future<List<Coupon>> fetchCoupons() async {
+  final prefs = await SharedPreferences.getInstance();
+  String? token = prefs.getString('bearerToken');
+  final url = Uri.parse('https://interfuel.qa/packupadmin/api/all-coupon');
+  final response = await http.get(
+    url, // Use GET if that's what the endpoint expects
+    headers: {
+      'Authorization': 'Bearer $token',
+      'Accept': 'application/json', // Ensure correct Accept header if needed
+    },
+  );
+
+  print('Request URL: ${url.toString()}');
+  print('Response status: ${response.statusCode}');
+  print('Response body: ${response.body}');
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    final List<dynamic> couponsJson = data['coupons'] ?? [];
+    return couponsJson.map((json) => Coupon.fromJson(json)).toList();
+  } else {
+    throw Exception(
+        'Failed to load coupons. Status code: ${response.statusCode}');
+  }
+}
+
+class MyCoupons extends StatefulWidget {
   const MyCoupons({super.key});
+
+  @override
+  _MyCouponsState createState() => _MyCouponsState();
+}
+
+class _MyCouponsState extends State<MyCoupons> {
+  late Future<List<Coupon>> _couponsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _couponsFuture = fetchCoupons(); // Initialize the future
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +71,27 @@ class MyCoupons extends StatelessWidget {
       body: Column(
         children: [
           GreenAppBar(showBackButton: true, titleText: 'My Coupons'),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                coupenCard(),
-              ],
+          Expanded(
+            child: FutureBuilder<List<Coupon>>(
+              future: _couponsFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No coupons found'));
+                }
+
+                final coupons = snapshot.data!;
+                return ListView.builder(
+                  itemCount: coupons.length,
+                  itemBuilder: (context, index) {
+                    final coupon = coupons[index];
+                    return coupenCard(coupon);
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -27,7 +99,7 @@ class MyCoupons extends StatelessWidget {
     );
   }
 
-  Widget coupenCard () {
+  Widget coupenCard(Coupon coupon) {
     return Container(
       height: 155,
       child: Stack(
@@ -44,7 +116,7 @@ class MyCoupons extends StatelessWidget {
             alignment: Alignment.topRight,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
-              child: Image.asset('assets/images/coupons2.png',height: 120,),
+              child: Image.network(coupon.imageUrl, height: 120),
             ),
           ),
           Padding(
@@ -58,7 +130,7 @@ class MyCoupons extends StatelessWidget {
                   children: [
                     SizedBox(height: 5),
                     Text(
-                      'Welcome offer\n50% off for all\nPackages',
+                      coupon.title,
                       style: CustomTextStyles.titleTextStyle.copyWith(
                         fontSize: 20,
                         fontWeight: FontWeight.w700,
@@ -78,15 +150,16 @@ class MyCoupons extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'WELCOME',
+                            coupon.description,
                             style: CustomTextStyles.titleTextStyle.copyWith(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(width: 8,),
-                          Icon(Icons.file_copy_rounded,size: 16,color: Colors.grey[300],)
+                          SizedBox(width: 8),
+                          Icon(Icons.file_copy_rounded,
+                              size: 16, color: Colors.grey[300]),
                         ],
                       ),
                     ),

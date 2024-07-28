@@ -5,6 +5,8 @@ import 'package:pack_app/widgets/common_button.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 import '../../../models/user_model.dart';
 
@@ -17,14 +19,21 @@ class EditProfileScreen extends StatefulWidget {
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _isLoading = false;
-
   final TextEditingController firstNameController = TextEditingController();
-
   final TextEditingController lastNameController = TextEditingController();
-
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController numberController = TextEditingController();
+  File? _image;
+
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
 
   Future<void> updateProfile(User user) async {
     setState(() {
@@ -49,9 +58,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
 
     if (response.statusCode == 200) {
-      setState(() {
-        _isLoading = false;
-      });
       final responseBody = jsonDecode(response.body);
       print('Response JSON: $responseBody');
       if (responseBody['status'] == true) {
@@ -62,7 +68,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           email: emailController.text,
           firstname: firstNameController.text,
           lastname: lastNameController.text,
-          image: user.image,
+          image: _image?.path ?? user.image,
           mobno: user.mobno,
           address: user.address,
           areaName: user.areaName,
@@ -82,64 +88,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Update failed, handle accordingly
         print('Failed to update profile: ${responseBody['message']}');
       }
-    } else if (response.statusCode == 302) {
-      // Handle redirect if necessary
-      final redirectUrl = response.headers['location'];
-      if (redirectUrl != null) {
-        final redirectResponse = await http.post(
-          Uri.parse(redirectUrl),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-          body: jsonEncode({
-            'id': user.id,
-            'firstname': firstNameController.text,
-            'lastname': lastNameController.text,
-          }),
-        );
-        if (redirectResponse.statusCode == 200) {
-          final responseBody = jsonDecode(redirectResponse.body);
-          if (responseBody['status'] == true) {
-            // Update successful, update the Hive model
-            final userBox = Hive.box<User>('userBox');
-            final updatedUser = User(
-              id: user.id,
-              email: emailController.text,
-              firstname: firstNameController.text,
-              lastname: lastNameController.text,
-              image: user.image,
-              mobno: user.mobno,
-              address: user.address,
-              areaName: user.areaName,
-              height: user.height,
-              weight: user.weight,
-              age: user.age,
-              gender: user.gender,
-            );
-            userBox.put('currentUser', updatedUser);
-            print('Profile updated successfully');
-            print('User ID: ${user.id}');  // Print the user ID here
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ProfileMenuScreen()),
-            );
-          } else {
-            // Update failed, handle accordingly
-            print('Failed to update profile: ${responseBody['message']}');
-          }
-        } else {
-          // HTTP error, handle accordingly
-          print('Failed to update profile: ${redirectResponse.statusCode}');
-        }
-      } else {
-        // No redirect location provided
-        print('Failed to update profile: No redirect location provided');
-      }
     } else {
       // HTTP error, handle accordingly
       print('Failed to update profile: ${response.statusCode}');
     }
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   @override
@@ -185,12 +140,39 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     const SizedBox(
                       height: 12,
                     ),
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.white,
-                      child: Image.asset(
-                        'assets/images/profile_pic2.png',
-                        fit: BoxFit.fill,
+                    GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => BottomSheet(
+                            onClosing: () {},
+                            builder: (context) => Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.camera_alt),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _pickImage(ImageSource.camera);
+                                  },
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.photo),
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    _pickImage(ImageSource.gallery);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      child: CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.white,
+                        backgroundImage:
+                        _image != null ? FileImage(_image!) : (user?.image != null ? NetworkImage(user!.image!) : AssetImage('assets/images/profile_pic2.png')) as ImageProvider,
                       ),
                     ),
                     Text(
@@ -248,7 +230,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       ),
     );
   }
-
 
   Widget _buildTextField(
       String fieldName, String hintText, TextEditingController controller, [bool enabled = true]) {

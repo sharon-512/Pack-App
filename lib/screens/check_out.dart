@@ -11,6 +11,7 @@ import '../custom_style.dart';
 class CheckOutScreen extends StatefulWidget {
   final int planId;
   final String subTotal;
+  final String discount;
   final List<Map<String, dynamic>> dailySelections;
   final List<Map<String, dynamic>> selectedAddons;
   final String foodPrice;
@@ -25,7 +26,8 @@ class CheckOutScreen extends StatefulWidget {
       required this.subTotal,
       required this.foodPrice,
       required this.planName,
-      required this.addonPrice})
+      required this.addonPrice,
+      required this.discount})
       : super(key: key);
 
   @override
@@ -77,7 +79,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   Widget build(BuildContext context) {
     final double foodPrice = double.parse(widget.foodPrice);
     final double addonPrice = widget.addonPrice;
+    final double discountPrice = double.parse(widget.discount);
     double subTotal = foodPrice + addonPrice + _deliveryFee;
+    double totalPrice = subTotal - discountPrice;
     return Scaffold(
       body: Column(
         children: [
@@ -316,6 +320,22 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               ),
                               Row(
                                 mainAxisAlignment:
+                                MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Total Discount',
+                                    style: CustomTextStyles.hintTextStyle
+                                        .copyWith(color: Colors.black),
+                                  ),
+                                  Text(
+                                    '${discountPrice} QR', // Calculate the subtotal
+                                    style: CustomTextStyles.hintTextStyle
+                                        .copyWith(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
@@ -324,7 +344,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '${subTotal} QR', // Calculate the subtotal
+                                    '${totalPrice} QR', // Calculate the subtotal
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -443,7 +463,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
         productId: widget.planId.toString(),
         dailySelections: widget.dailySelections,
         selectedAddons: widget.selectedAddons,
-        price: finalAmount.toString(),
+        price: widget.foodPrice,
+        paymentStatus: '0',
+        addonPrice: widget.addonPrice.toString(),
+        deliveryPrice: _deliveryFee.toString(),
         address: _selectedAddress ?? 'Your address here',
         streetNo: _streetNumber ?? 'Your street number here',
         buildingNo: _buildingNo ?? 'Your building number here',
@@ -452,7 +475,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       );
 
       if (result['success']) {
-        print('Order saved successfully.');
+        print('Order saved successfully 512.');
         print('Response: ${result['data']}');
         setState(() {
           _isLoading = false;

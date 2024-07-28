@@ -58,12 +58,66 @@ class _SummaryScreenState extends State<SummaryScreen> {
     print(selectedAddons);
   }
 
+  final TextEditingController codeController = TextEditingController();
+  double couponDiscount = 0.0;
+  bool isCouponApplied = false;
+  bool _isCouponValid = true; // Coupon validity state
+  String _couponErrorMessage = ''; // Coupon error message
+  String _couponSuccess = '';
+
+
+  Future<void> verifyCoupon(String couponCode) async {
+    setState(() {
+      _isLoading = true;
+      _isCouponValid = true;
+      _couponErrorMessage = '';
+      _couponSuccess = '';
+    });
+    final String url = 'https://interfuel.qa/packupadmin/api/verify-coupon';
+    final int customerPlanId = widget.planId;
+
+    try {
+      final response = await http.post(
+        Uri.parse('$url?coupon=$couponCode&customer_plan_id=$customerPlanId'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          couponDiscount = double.parse(data['data']['coupon_discount_percentage'].replaceAll('%', '')) / 100;
+          isCouponApplied = true;
+          _couponSuccess = 'Coupon Verified Successfully';
+        });
+        print('Coupon verified: $data');
+      } else {
+        // Handle error response here
+        setState(() {
+          _isCouponValid = false;
+          _couponErrorMessage = 'Coupon verification failed';
+        });
+        print('Failed to verify coupon: ${response.statusCode}');
+      }
+    } catch (e) {
+      setState(() {
+        _isCouponValid = false;
+        _couponErrorMessage = 'Coupon verification failed';
+      });
+      print('Error verifying coupon: $e');
+    }
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final TextEditingController code = TextEditingController();
     final double foodPrice = double.parse(widget.foodPrice);
     final double addonPrice = widget.addonPrice;
     final double subTotal = foodPrice + addonPrice;
+    final double discount = _isCouponValid ? subTotal * couponDiscount : 0;
+    final double totalAfterDiscount = subTotal - discount;
 
     return Scaffold(
       body: Column(
@@ -97,61 +151,79 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         children: [
                           Expanded(
                             child: TextField(
-                              controller: code,
+                              controller: codeController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Set the radius here
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color:
-                                          Color(0xff000000).withOpacity(.07)),
-                                  // Active border color
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Set the radius here
+                                      color: Color(0xff000000).withOpacity(.07)),
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                      color:
-                                          Color(0xff000000).withOpacity(.07)),
-                                  // Normal border color
-                                  borderRadius: BorderRadius.circular(
-                                      8.0), // Set the radius here
+                                      color: Color(0xff000000).withOpacity(.07)),
+                                  borderRadius: BorderRadius.circular(8.0),
                                 ),
                                 hintText: 'Enter promo code',
                                 hintStyle: CustomTextStyles.hintTextStyle,
                                 contentPadding:
-                                    EdgeInsets.symmetric(horizontal: 12.0),
+                                EdgeInsets.symmetric(horizontal: 12.0),
                               ),
-                              keyboardType: TextInputType.phone,
+                              keyboardType: TextInputType.text,
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
-                          Container(
+                          SizedBox(
                             height: 44,
                             child: ElevatedButton(
-                              onPressed: () {
-                                // Your onPressed function here
+                              onPressed: _isLoading
+                                  ? null
+                                  : () {
+                                verifyCoupon(codeController.text);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
-                                // Background color as black
                                 shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.circular(15), // Radius as 15
+                                  borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
-                              child: Text(
+                              child: _isLoading
+                                  ? CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              )
+                                  : Text(
                                 'Apply',
-                                style: TextStyle(
-                                    color: Colors.white), // Text color as white
+                                style: TextStyle(color: Colors.white),
                               ),
                             ),
                           ),
                         ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      if (_isCouponValid)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _couponSuccess,
+                            style: TextStyle(color: Colors.green, fontSize: 12),
+                          ),
+                        ),
+                      if (!_isCouponValid)
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            _couponErrorMessage,
+                            style: TextStyle(color: Colors.red, fontSize: 12),
+                          ),
+                        ),
+                      const SizedBox(
+                        height: 20,
                       ),
                       const SizedBox(
                         height: 25,
@@ -203,9 +275,26 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               Divider(
                                 color: Color(0xff000000).withOpacity(.09),
                               ),
+                              if (_isCouponValid)
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      'Discount',
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      '-${discount.toStringAsFixed(2)} QR',
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     'Sub total',
@@ -213,7 +302,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '${subTotal} QR', // Calculate the subtotal
+                                    '${totalAfterDiscount.toStringAsFixed(2)} QR',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -236,6 +325,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                               selectedAddons: widget.selectedAddons,
                               planId: widget.planId,
                               subTotal: subTotal.toString(),
+                              discount: discount.toString(),
                               foodPrice: widget.foodPrice,
                               addonPrice: widget.addonPrice,
                               planName: widget.planName,

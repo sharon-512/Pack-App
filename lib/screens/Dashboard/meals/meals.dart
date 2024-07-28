@@ -26,8 +26,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
-  List<DateTime> dates = [];
-  List<String> formattedDates = [];
 
   @override
   void initState() {
@@ -76,7 +74,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
           final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
           final DateFormat outputDateFormat = DateFormat('MMM dd');
 
-          dates = customerPlan.planDetails.menu.map((menu) {
+          List<DateTime> dates = customerPlan.planDetails.menu.map((menu) {
             print('Raw Date: ${menu.date}');
             return inputDateFormat.parse(menu.date);
           }).toList();
@@ -91,9 +89,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
           // Calculate the total number of days in the plan duration
           final totalDays = endDate.difference(startDate).inDays +
               1; // +1 to include both start and end dates
-
-          // Format dates for the horizontal list
-          formattedDates = dates.map((date) => outputDateFormat.format(date)).toList();
 
           setState(() {
             planName = planNameFetched;
@@ -121,6 +116,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,13 +130,20 @@ class _SelectedMealsState extends State<SelectedMeals> {
             height: 92,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: formattedDates.length,
+              itemCount: 7,
               itemBuilder: (context, index) {
-                final date = formattedDates[index];
-                final splitDate = date.split(' ');
-                final text1 = splitDate[0];
-                final text2 = splitDate[1];
-                final text3 = DateFormat('EEE').format(dates[index]);
+                // Define the texts for each container
+                String text1 = 'Apr';
+                String text2 = (21 + index).toString();
+                String text3 = [
+                  'Sun',
+                  'Mon',
+                  'Tue',
+                  'Wed',
+                  'Thu',
+                  'Fri',
+                  'Sat'
+                ][index];
 
                 return GestureDetector(
                   onTap: () {
@@ -173,11 +176,11 @@ class _SelectedMealsState extends State<SelectedMeals> {
               child: Column(
                 children: List.generate(
                     3,
-                        (index) => Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 5),
-                      child: SelectedFoodCard(),
-                    )),
+                        (index) =>
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 5),
+                          child: SelectedFoodCard(),
+                        )),
               ),
             ),
           ),

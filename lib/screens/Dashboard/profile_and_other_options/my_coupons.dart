@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -170,10 +172,17 @@ class _MyCouponsState extends State<MyCoupons> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            Icon(
-                              Icons.file_copy_rounded,
-                              size: 16,
-                              color: Colors.grey[300],
+                            GestureDetector(
+                              onTap: () {
+                                // Copy the text to clipboard
+                                Clipboard.setData(ClipboardData(text: coupon.code)).then((_) {
+                                });
+                              },
+                              child: Icon(
+                                Icons.file_copy_rounded,
+                                size: 16,
+                                color: Colors.grey[300],
+                              ),
                             ),
                           ],
                         ),

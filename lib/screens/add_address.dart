@@ -1,14 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:hive/hive.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../widgets/common_button.dart';
 import '../custom_style.dart';
 import '../widgets/info_container.dart';
 import 'Summary/map.dart';
+import 'package:http/http.dart' as http;
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);
@@ -27,6 +31,7 @@ class _AddAddressState extends State<AddAddress> {
   final TextEditingController flatNumber = TextEditingController();
   late TextEditingController name;
   late TextEditingController contactNumber;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -55,12 +60,15 @@ class _AddAddressState extends State<AddAddress> {
 
   Future<void> _fetchCurrentLocation() async {
     try {
-      Position position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
       _selectedLocation = LatLng(position.latitude, position.longitude);
-      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      List<Placemark> placemarks =
+          await placemarkFromCoordinates(position.latitude, position.longitude);
       if (placemarks.isNotEmpty) {
         setState(() {
-          addressline.text = '${placemarks.first.street ?? ''}, ${placemarks.first.locality ?? ''}, ${placemarks.first.country ?? ''}';
+          addressline.text =
+              '${placemarks.first.street ?? ''}, ${placemarks.first.locality ?? ''}, ${placemarks.first.country ?? ''}';
         });
       } else {
         setState(() {
@@ -92,16 +100,54 @@ class _AddAddressState extends State<AddAddress> {
     super.dispose();
   }
 
-  void _addAddress() {
+  void _addAddress() async {
+    setState(() {
+      _isLoading = true;
+    });
     if (_formKey.currentState!.validate()) {
-      final addressDetails = {
-        'address': addressline.text,
-        'streetNo': streetNumber.text,
-        'buildingNo': houseName.text,
-        'flatNo': flatNumber.text,
-        'mobileNo': contactNumber.text,
-      };
-      Navigator.pop(context, addressDetails);
+      final userBox = Hive.box<User>('userBox');
+      final user = userBox.get('currentUser');
+      final prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('bearerToken');
+
+      final response = await http.post(
+        Uri.parse('https://interfuel.qa/packupadmin/api/save-address'),
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: {
+          'user_id':
+              user!.id.toString(), // Ensure this matches the API requirements
+          'addresline': addressline.text,
+          'street': streetNumber.text,
+          'floor': houseName.text,
+          'flat': flatNumber.text,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully saved the address
+        print(user!.id.toString());
+        final responseData = json.decode(response.body);
+        print(responseData);
+        // Handle the response if needed
+        setState(() {
+          _isLoading = false;
+        });
+        Navigator.pop(context, {
+          'address': addressline.text,
+          'streetNo': streetNumber.text,
+          'buildingNo': houseName.text,
+          'flatNo': flatNumber.text,
+          'mobileNo': contactNumber.text,
+        });
+      } else {
+        // Handle error
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save address')),
+        );
+      }
     }
   }
 
@@ -137,7 +183,8 @@ class _AddAddressState extends State<AddAddress> {
                   Center(
                     child: Text(
                       'Add Address',
-                      style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 24),
+                      style: CustomTextStyles.titleTextStyle
+                          .copyWith(fontSize: 24),
                     ),
                   ),
                 ],
@@ -146,7 +193,8 @@ class _AddAddressState extends State<AddAddress> {
               SizedBox(
                 height: 250,
                 child: MapWidget(
-                  initialLocation: _selectedLocation ?? const LatLng(25.276987, 51.520008), // Center of Doha
+                  initialLocation: _selectedLocation ??
+                      const LatLng(25.276987, 51.520008), // Center of Doha
                   onLocationSelected: _handleLocationSelected,
                 ),
               ),
@@ -161,7 +209,8 @@ class _AddAddressState extends State<AddAddress> {
                       children: [
                         Text(
                           'Delivery Address',
-                          style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 16),
+                          style: CustomTextStyles.titleTextStyle
+                              .copyWith(fontSize: 16),
                         ),
                         const SizedBox(height: 15),
                         Row(
@@ -177,19 +226,27 @@ class _AddAddressState extends State<AddAddress> {
                                 child: Container(
                                   width: 80,
                                   height: 37,
-                                  margin: const EdgeInsets.fromLTRB(0, 0, 10, 20),
+                                  margin:
+                                      const EdgeInsets.fromLTRB(0, 0, 10, 20),
                                   decoration: BoxDecoration(
                                     color: _selectedIndex == i
                                         ? const Color(0xFFEDC0B2)
                                         : Colors.transparent,
-                                    border: Border.all(color: const Color(0xFFEDC0B2)),
+                                    border: Border.all(
+                                        color: const Color(0xFFEDC0B2)),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
                                   alignment: Alignment.center,
                                   child: Text(
-                                    i == 0 ? 'Home' : i == 1 ? 'Office' : 'Other',
+                                    i == 0
+                                        ? 'Home'
+                                        : i == 1
+                                            ? 'Office'
+                                            : 'Other',
                                     style: TextStyle(
-                                      color: _selectedIndex == i ? Colors.white : Colors.black,
+                                      color: _selectedIndex == i
+                                          ? Colors.white
+                                          : Colors.black,
                                       fontWeight: FontWeight.w500,
                                       fontFamily: 'Aeonik',
                                       fontSize: 14,
@@ -255,7 +312,8 @@ class _AddAddressState extends State<AddAddress> {
                         AddressWidget(
                           label: 'Contact Person Name',
                           address: 'Muhammed Sheharin',
-                          hintStyle: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                          hintStyle: CustomTextStyles.labelTextStyle
+                              .copyWith(fontSize: 14),
                           textEditingController: name,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -269,15 +327,19 @@ class _AddAddressState extends State<AddAddress> {
                           children: [
                             Text(
                               'Contact Number',
-                              style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 12, fontWeight: FontWeight.w400),
+                              style: CustomTextStyles.labelTextStyle.copyWith(
+                                  fontSize: 12, fontWeight: FontWeight.w400),
                             ),
                             const SizedBox(height: 8),
                             Container(
                               height: 44,
                               width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 18.0),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 18.0),
                               decoration: BoxDecoration(
-                                border: Border.all(color: const Color(0xff000000).withOpacity(.07)),
+                                border: Border.all(
+                                    color: const Color(0xff000000)
+                                        .withOpacity(.07)),
                                 borderRadius: BorderRadius.circular(17),
                               ),
                               alignment: Alignment.centerLeft,
@@ -286,7 +348,10 @@ class _AddAddressState extends State<AddAddress> {
                                   Image.asset('assets/images/flag.png'),
                                   Text(
                                     '  +974',
-                                    style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14, fontWeight: FontWeight.w400),
+                                    style: CustomTextStyles.labelTextStyle
+                                        .copyWith(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w400),
                                   ),
                                   const SizedBox(width: 10),
                                   Expanded(
@@ -295,7 +360,9 @@ class _AddAddressState extends State<AddAddress> {
                                       decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: '30567890',
-                                        hintStyle: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
+                                        hintStyle: CustomTextStyles
+                                            .labelTextStyle
+                                            .copyWith(fontSize: 14),
                                       ),
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -314,6 +381,7 @@ class _AddAddressState extends State<AddAddress> {
                         CommonButton(
                           text: 'Continue',
                           onTap: _addAddress,
+                          isLoading: _isLoading,
                         ),
                       ],
                     ),

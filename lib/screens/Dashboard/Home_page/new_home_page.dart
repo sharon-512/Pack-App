@@ -89,24 +89,23 @@ class _HomePageState extends State<HomePage> {
 
           final formattedStartDate = outputDateFormat.format(startDate);
           final formattedEndDate = outputDateFormat.format(endDate);
+          final DateTime today = DateTime.now();
+          final int daysLeft = endDate.difference(today).inDays + 1; // +1 to include the end date
 
-          // Calculate the total number of days in the plan duration
-          final totalDays = endDate.difference(startDate).inDays +
-              1; // +1 to include both start and end dates
 
           setState(() {
             planName = planNameFetched;
-            remainingDays = totalDays;
+            remainingDays = daysLeft;
             startDateforplan = formattedStartDate;
             endDateforplan = formattedEndDate;
-            remainingDays = totalDays;
+            remainingDays = daysLeft;
           });
 
           print('Plan ID: $planId');
           print('Plan Name: $planName');
           print('Start Date: $formattedStartDate');
           print('End Date: $formattedEndDate');
-          print('Total Days: $totalDays');
+          print('Total Days: $daysLeft');
         } else {
           print(
               'Failed to load customer plan. Status code: ${customerPlanResponse.statusCode}');
@@ -347,7 +346,14 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         return Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: SelectedFoodCard(),
+                          child: SelectedFoodCard(
+                            mealTypes: [],
+                            mealNames: [],
+                            mealKcal: [],
+                            mealCarbs: [],
+                            mealProteins: [],
+                            mealFats: [],
+                          ),
                         ); // Your custom card widget
                       },
                     ),

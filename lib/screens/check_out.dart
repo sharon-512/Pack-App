@@ -56,6 +56,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     dailySelections.add(selection);
   }
 
+  void fetchAddressesFromLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    // Assuming addresses are stored as a JSON-encoded string list
+    final storedAddresses = prefs.getStringList('addresses') ?? [];
+
+    setState(() {
+      _addresses = storedAddresses;
+    });
+  }
+
+
   final List<Map<String, dynamic>> _options = [
     {'text': 'Inside Doha - 200 QR', 'value': 200},
     {'text': 'Outside Doha - 250 QR', 'value': 250},
@@ -71,9 +82,9 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   void initState() {
     super.initState();
     fetchDatesFromSharedPreferences();
-    // Initialize addresses if needed
-    _addresses = []; // You can fetch or set initial addresses here
+    fetchAddressesFromLocalStorage(); // Fetch addresses when initializing
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -183,8 +194,14 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 _addresses.add(_selectedAddress!);
                               }
                             });
+
+                            // Save updated addresses list to local storage
+                            final prefs = await SharedPreferences.getInstance();
+                            prefs.setStringList('addresses', _addresses);
+
                             _updateButtonState();
                           }
+
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,

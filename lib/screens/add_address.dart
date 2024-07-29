@@ -42,7 +42,15 @@ class _AddAddressState extends State<AddAddress> {
     name = TextEditingController(text: user!.firstname);
     contactNumber = TextEditingController(text: user.mobno);
     _requestLocationPermission();
+    _loadAddressesFromLocalStorage(); // Load addresses from local storage
   }
+
+  Future<void> _loadAddressesFromLocalStorage() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<String> storedAddresses = prefs.getStringList('addresses') ?? [];
+    // Do something with the storedAddresses if needed
+  }
+
 
   Future<void> _requestLocationPermission() async {
     var status = await Permission.location.status;
@@ -117,8 +125,7 @@ class _AddAddressState extends State<AddAddress> {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
         body: {
-          'user_id':
-              user!.id.toString(), // Ensure this matches the API requirements
+          'user_id': user!.id.toString(), // Ensure this matches the API requirements
           'addresline': addressline.text,
           'street': streetNumber.text,
           'floor': houseName.text,
@@ -128,10 +135,19 @@ class _AddAddressState extends State<AddAddress> {
 
       if (response.statusCode == 200) {
         // Successfully saved the address
-        print(user!.id.toString());
         final responseData = json.decode(response.body);
-        print(responseData);
-        // Handle the response if needed
+
+        // Save the new address to local storage
+        List<String> storedAddresses = prefs.getStringList('addresses') ?? [];
+        storedAddresses.add(jsonEncode({
+          'address': addressline.text,
+          'streetNo': streetNumber.text,
+          'buildingNo': houseName.text,
+          'flatNo': flatNumber.text,
+          'mobileNo': contactNumber.text,
+        }));
+        await prefs.setStringList('addresses', storedAddresses);
+
         setState(() {
           _isLoading = false;
         });
@@ -147,9 +163,17 @@ class _AddAddressState extends State<AddAddress> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to save address')),
         );
+        setState(() {
+          _isLoading = false;
+        });
       }
+    } else {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

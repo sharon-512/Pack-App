@@ -17,11 +17,11 @@ class UserAdapter extends TypeAdapter<User> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return User(
-      id: fields[0] as int,
-      email: fields[1] as String,
-      firstname: fields[2] as String,
-      lastname: fields[3] as String,
-      image: fields[4] as String,
+      id: fields[0] as int?,
+      email: fields[1] as String?,
+      firstname: fields[2] as String?,
+      lastname: fields[3] as String?,
+      image: fields[4] as String?,
       mobno: fields[5] as String?,
       address: fields[6] as String?,
       areaName: fields[7] as String?,
@@ -29,13 +29,19 @@ class UserAdapter extends TypeAdapter<User> {
       weight: fields[9] as String?,
       age: fields[10] as String?,
       gender: fields[11] as String?,
+      addresline: fields[12] as String?,
+      street: fields[13] as String?,
+      floor: fields[14] as String?,
+      flat: fields[15] as String?,
+      foodavoid: fields[16] as String?,
+      activitylevel: fields[17] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(18)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -59,7 +65,19 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(10)
       ..write(obj.age)
       ..writeByte(11)
-      ..write(obj.gender);
+      ..write(obj.gender)
+      ..writeByte(12)
+      ..write(obj.addresline)
+      ..writeByte(13)
+      ..write(obj.street)
+      ..writeByte(14)
+      ..write(obj.floor)
+      ..writeByte(15)
+      ..write(obj.flat)
+      ..writeByte(16)
+      ..write(obj.foodavoid)
+      ..writeByte(17)
+      ..write(obj.activitylevel);
   }
 
   @override
@@ -68,7 +86,7 @@ class UserAdapter extends TypeAdapter<User> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
+          other is UserAdapter &&
+              runtimeType == other.runtimeType &&
+              typeId == other.typeId;
 }

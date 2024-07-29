@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pack_app/screens/Dashboard/meals/widget/shimmer_effect_meals.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:pack_app/widgets/selected_food_card.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-
 import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
-import '../../../models/diet_plan.dart';
+import '../../../services/fetch_selected_meals.dart';
 
 class SelectedMeals extends StatefulWidget {
   const SelectedMeals({super.key});
@@ -20,7 +17,6 @@ class SelectedMeals extends StatefulWidget {
 class _SelectedMealsState extends State<SelectedMeals> {
   int selectedDay = 0;
   String planName = '';
-  String planDuration = '';
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
@@ -31,93 +27,65 @@ class _SelectedMealsState extends State<SelectedMeals> {
   List<int> mealCarbs = [];
   List<int> mealProteins = [];
   List<int> mealFats = [];
+  bool isLoading = true;
+
+  final SelectedFoodApi apiService = SelectedFoodApi();
 
   @override
   void initState() {
     super.initState();
-    fetchCustomerPlan();
+    fetchData();
   }
 
-  Future<void> fetchCustomerPlan() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('bearerToken');
-    final String customerPlanUrl =
-        'https://interfuel.qa/packupadmin/api/view-customer-plan';
-    final String dietPlanUrl =
-        'https://interfuel.qa/packupadmin/api/get-diet-data';
-
+  Future<void> fetchData() async {
     try {
-      final dietPlanResponse = await http.get(
-        Uri.parse(dietPlanUrl),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      );
+      final dietPlan = await apiService.fetchDietPlan();
+      final customerPlan = await apiService.fetchCustomerPlan();
 
-      if (dietPlanResponse.statusCode == 200) {
-        final dietPlanData = json.decode(dietPlanResponse.body);
-        final dietPlan = DietPlan.fromJson(dietPlanData);
+      final planId = customerPlan.planDetails.id;
+      final planNameFetched = dietPlan.plans
+          .firstWhere((plan) => plan.planId == planId)
+          .planName;
 
-        final customerPlanResponse = await http.post(
-          Uri.parse(customerPlanUrl),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
+      // Extract start and end dates from the menu
+      final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
+      final DateFormat outputDateFormat = DateFormat('MMM dd');
 
-        if (customerPlanResponse.statusCode == 200) {
-          final customerPlanData = json.decode(customerPlanResponse.body);
-          final customerPlan = CustomerPlan.fromJson(customerPlanData);
+      List<DateTime> dates = customerPlan.planDetails.menu.map((menu) {
+        return inputDateFormat.parse(menu.date);
+      }).toList();
+      dates.sort((a, b) => a.compareTo(b)); // Sort dates
 
-          final planId = customerPlan.planDetails.id;
-          final planNameFetched = dietPlan.plans
-              .firstWhere((plan) => plan.planId == planId)
-              .planName;
+      final startDate = dates.first;
+      final endDate = dates.last;
 
-          // Extract start and end dates from the menu
-          final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
-          final DateFormat outputDateFormat = DateFormat('MMM dd');
+      final formattedStartDate = outputDateFormat.format(startDate);
+      final formattedEndDate = outputDateFormat.format(endDate);
 
-          List<DateTime> dates = customerPlan.planDetails.menu.map((menu) {
-            return inputDateFormat.parse(menu.date);
-          }).toList();
-          dates.sort((a, b) => a.compareTo(b)); // Sort dates
+      // Calculate the total number of days in the plan duration
+      final totalDays = endDate.difference(startDate).inDays +
+          1; // +1 to include both start and end dates
 
-          final startDate = dates.first;
-          final endDate = dates.last;
+      setState(() {
+        planName = planNameFetched;
+        remainingDays = totalDays;
+        startDateforplan = formattedStartDate;
+        endDateforplan = formattedEndDate;
+        remainingDays = totalDays;
+        menuList = customerPlan.planDetails.menu;
+        isLoading = false;
+      });
 
-          final formattedStartDate = outputDateFormat.format(startDate);
-          final formattedEndDate = outputDateFormat.format(endDate);
-
-          // Calculate the total number of days in the plan duration
-          final totalDays = endDate.difference(startDate).inDays +
-              1; // +1 to include both start and end dates
-
-          setState(() {
-            planName = planNameFetched;
-            remainingDays = totalDays;
-            startDateforplan = formattedStartDate;
-            endDateforplan = formattedEndDate;
-            remainingDays = totalDays;
-            menuList = customerPlan.planDetails.menu;
-          });
-
-          print('Plan ID: $planId');
-          print('Plan Name: $planName');
-          print('Start Date: $formattedStartDate');
-          print('End Date: $formattedEndDate');
-          print('Total Days: $totalDays');
-        } else {
-          print(
-              'Failed to load customer plan. Status code: ${customerPlanResponse.statusCode}');
-        }
-      } else {
-        print(
-            'Failed to load diet plans. Status code: ${dietPlanResponse.statusCode}');
-      }
+      print('Plan ID: $planId');
+      print('Plan Name: $planName');
+      print('Start Date: $formattedStartDate');
+      print('End Date: $formattedEndDate');
+      print('Total Days: $totalDays');
     } catch (e) {
       print('Error: $e');
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -205,84 +173,86 @@ class _SelectedMealsState extends State<SelectedMeals> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GreenAppBar(showBackButton: false, titleText: 'Selected Meals'),
-          const SizedBox(height: 20),
-          Container(
-            margin: EdgeInsets.symmetric(horizontal: 16),
-            height: 92,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: menuList.length,
-              itemBuilder: (context, index) {
-                // Define the texts for each container
-                DateTime date =
-                    DateFormat('dd-MM-yyyy').parse(menuList[index].date);
-                String text1 = DateFormat('MMM').format(date);
-                String text2 = DateFormat('d').format(date);
-                String text3 = DateFormat('EEE').format(date);
+        body: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            GreenAppBar(showBackButton: false, titleText: 'Selected Meals'),
+        const SizedBox(height: 20),
+        isLoading
+            ? buildShimmerForMenuList()
+            : Container(
+        margin: EdgeInsets.symmetric(horizontal: 16),
+    height: 92,
+    child: ListView.builder(
+    scrollDirection: Axis.horizontal,
+    itemCount: menuList.length,
+    itemBuilder: (context, index) {
+    // Define the texts for each container
+    DateTime date =
+    DateFormat('dd-MM-yyyy').parse(menuList[index].date);
+    String text1 = DateFormat('MMM').format(date);
+    String text2 = DateFormat('d').format(date);
+    String text3 = DateFormat('EEE').format(date);
 
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedDay = index; // Update the selected index
-                    });
-                    printFoodDetailsForSelectedDate(index);
-                  },
-                  child: Row(
-                    children: [
-                      CustomContainer(
-                        index == selectedDay,
-                        text1,
-                        text2,
-                        text3,
-                      ),
-                      SizedBox(
-                        width: 10,
-                      )
-                    ],
-                  ),
-                );
-              },
-            ),
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          selectedDay = index; // Update the selected index
+        });
+        printFoodDetailsForSelectedDate(index);
+      },
+      child: Row(
+        children: [
+          CustomContainer(
+            index == selectedDay,
+            text1,
+            text2,
+            text3,
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: List.generate(
-                  mealNames.length,
-                  (index) => Padding(
-                    padding:
+          SizedBox(
+            width: 10,
+          )
+        ],
+      ),
+    );
+    },
+    ),
+        ),
+              const SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: List.generate(
+                      mealNames.length,
+                          (index) => Padding(
+                        padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                    child: SelectedFoodCard(
-                      mealTypes: mealTypes,
-                      mealNames: mealNames,
-                      mealKcal: mealKcal,
-                      mealCarbs: mealCarbs,
-                      mealProteins: mealProteins,
-                      mealFats: mealFats,
+                        child: SelectedFoodCard(
+                          mealTypes: mealTypes,
+                          mealNames: mealNames,
+                          mealKcal: mealKcal,
+                          mealCarbs: mealCarbs,
+                          mealProteins: mealProteins,
+                          mealFats: mealFats,
+                        ),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
+            ],
+        ),
     );
   }
 
   Widget CustomContainer(
-    bool isSelected,
-    String text1,
-    String text2,
-    String text3,
-  ) {
+      bool isSelected,
+      String text1,
+      String text2,
+      String text3,
+      ) {
     return Container(
       height: 90,
       width: 69,
@@ -318,3 +288,4 @@ class _SelectedMealsState extends State<SelectedMeals> {
     );
   }
 }
+

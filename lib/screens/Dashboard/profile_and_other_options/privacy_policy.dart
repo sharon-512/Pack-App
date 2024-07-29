@@ -21,19 +21,21 @@ class PrivacyPolicy extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'At The Plus Pack Ltd, we are committed to protecting the privacy and security of your personal information. '
-                          'This Privacy Policy outlines how we collect, use, disclose, and safeguard your information when you use our website, mobile app, or interact with us in any way.',
+                      'Welcome to PackUp Kitchen! We value your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website [your website URL] and use our services. Please read this Privacy Policy carefully. If you do not agree with the terms of this Privacy Policy, please do not access the site or use our services.',
                       style: CustomTextStyles.informationText,
                     ),
                     const SizedBox(height: 8,),
-                    Text('Information We Collect',
+                    Text('1. Information We Collect',
                       style: CustomTextStyles.informationText.copyWith(
                           fontSize: 14, fontWeight: FontWeight.w500),
                     ),
                     const SizedBox(height: 8,),
                     Text(
-                      'We may collect personal information from you when you visit our website, place an order, sign up for our loyalty program, or participate in surveys or promotions. '
-                          'This information may include your name, email address, phone number, shipping address, dietary preferences, payment details, and other relevant information.',
+                      '•	Personal Identification Information: Name, email address, phone number, address, and other contact details.\n'
+                      '•	Order Information: Details about orders you place through our website, including payment information.\n'
+                      '•	Technical Data: IP address, browser type, version, time zone setting, browser plug-in types, operating system, and platform.\n'
+                      '•	Usage Data: Information about how you use our website and services.\n'
+                      '•	Marketing and Communications Data: Your preferences in receiving marketing from us and your communication preferences.\n',
                       style: CustomTextStyles.informationText,
                     ),
                     const SizedBox(height: 8,),
@@ -43,8 +45,12 @@ class PrivacyPolicy extends StatelessWidget {
                     ),
                     const SizedBox(height: 8,),
                     Text(
-                      'We use the information we collect to process your orders, improve our products and services, personalize your experience, and communicate with you about promotions, offers, and updates. We may also use your information to respond to your inquiries and provide customer support.Data Security\n\n'
-                          'We take the security of your information seriously and implement appropriate measures to protect it from unauthorized access, disclosure, alteration, or destruction. We use industry-standard encryption and security protocols to safeguard your data',
+                      'We use the information we collect in the following ways:\n'
+                    '•	To provide and maintain our services.\n'
+                    '•	To process your orders and manage your account.\n'
+                    '•	To improve our website and services.\n'
+                    '•	To communicate with you, including sending marketing and promotional materials.\n'
+                    '•	To comply with legal obligations and protect our rights.\n',
                       style: CustomTextStyles.informationText,
                     ),
                     const SizedBox(height: 8,),

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:hive/hive.dart';
@@ -34,9 +36,11 @@ class ProfileMenuScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
-                child: user?.image != null
-                    ? Image.network(user!.image!, fit: BoxFit.fill)
-                    : Image.asset('assets/images/profile_pic2.png', fit: BoxFit.fill),
+                backgroundImage:
+                    (user?.image != null
+                    ? FileImage(File(user!.image!))
+                    : const AssetImage('assets/images/profile_place_holder.jpg'))
+                as ImageProvider,
               ),
               const SizedBox(height: 8),
               Text(

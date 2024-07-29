@@ -40,6 +40,24 @@ class User {
   @HiveField(11)
   final String? gender;
 
+  @HiveField(12)
+  final String? addresline;
+
+  @HiveField(13)
+  final String? street;
+
+  @HiveField(14)
+  final String? floor;
+
+  @HiveField(15)
+  final String? flat;
+
+  @HiveField(16)
+  final String? foodavoid;
+
+  @HiveField(17)
+  final String? activitylevel;
+
   User({
     this.id,
     this.email,
@@ -53,6 +71,12 @@ class User {
     this.weight,
     this.age,
     this.gender,
+    this.addresline,
+    this.street,
+    this.floor,
+    this.flat,
+    this.foodavoid,
+    this.activitylevel,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -69,6 +93,12 @@ class User {
       weight: json['weight'],
       age: json['age'],
       gender: json['gender'],
+      addresline: json['addresline'],
+      street: json['street'],
+      floor: json['floor'],
+      flat: json['flat'],
+      foodavoid: json['foodavoid'],
+      activitylevel: json['activitylevel'],
     );
   }
 }

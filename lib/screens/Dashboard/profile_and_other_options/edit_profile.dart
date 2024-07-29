@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../models/user_model.dart';
 
@@ -44,23 +45,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final url = Uri.parse(
         'https://interfuel.qa/packupadmin/api/update-profile?id=${user.id}&firstname=${firstNameController.text}&lastname=${lastNameController.text}');
 
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'id': user.id,
-        'firstname': firstNameController.text,
-        'lastname': lastNameController.text,
-      }),
-    );
+    final request = http.MultipartRequest('POST', url)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['id'] = user.id.toString()
+      ..fields['firstname'] = firstNameController.text
+      ..fields['lastname'] = lastNameController.text;
+
+    if (_image != null) {
+      request.files.add(await http.MultipartFile.fromPath('image', _image!.path));
+    }
+
+    final response = await request.send();
 
     if (response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      print('Response JSON: $responseBody');
-      if (responseBody['status'] == true) {
+      final responseBody = await response.stream.bytesToString();
+      final jsonResponse = jsonDecode(responseBody);
+      print('Response JSON: $jsonResponse');
+      if (jsonResponse['status'] == true) {
         // Update successful, update the Hive model
         final userBox = Hive.box<User>('userBox');
         final updatedUser = User(
@@ -79,14 +80,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
         userBox.put('currentUser', updatedUser);
         print('Profile updated successfully');
-        print('User ID: ${user.id}');  // Print the user ID here
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => ProfileMenuScreen()),
         );
       } else {
         // Update failed, handle accordingly
-        print('Failed to update profile: ${responseBody['message']}');
+        print('Failed to update profile: ${jsonResponse['message']}');
       }
     } else {
       // HTTP error, handle accordingly
@@ -171,8 +171,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       child: CircleAvatar(
                         radius: 40,
                         backgroundColor: Colors.white,
-                        backgroundImage:
-                        _image != null ? FileImage(_image!) : (user?.image != null ? NetworkImage(user!.image!) : AssetImage('assets/images/profile_pic2.png')) as ImageProvider,
+                        backgroundImage: _image != null
+                            ? FileImage(_image!)
+                            : (user?.image != null
+                            ? FileImage(File(user!.image!))
+                            : const AssetImage('assets/images/profile_place_holder.jpg'))
+                        as ImageProvider,
                       ),
                     ),
                     Text(
@@ -202,14 +206,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: 32),
-                    _buildTextField('First Name', 'Enter Your First Name',
-                        firstNameController),
-                    _buildTextField('Last Name', 'Enter Your Last Name',
-                        lastNameController),
-                    _buildTextField(
-                        'Email', 'Enter Your Email', emailController, false),
-                    _buildTextField(
-                        'Phone', 'Enter Your Phone number', numberController, false),
+                    _buildTextField('First Name', 'Enter Your First Name', firstNameController),
+                    _buildTextField('Last Name', 'Enter Your Last Name', lastNameController),
+                    _buildTextField('Email', 'Enter Your Email', emailController, false),
+                    _buildTextField('Phone', 'Enter Your Phone number', numberController, false),
                   ],
                 ),
               ),
@@ -231,8 +231,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     );
   }
 
-  Widget _buildTextField(
-      String fieldName, String hintText, TextEditingController controller, [bool enabled = true]) {
+  Widget _buildTextField(String fieldName, String hintText, TextEditingController controller, [bool enabled = true]) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

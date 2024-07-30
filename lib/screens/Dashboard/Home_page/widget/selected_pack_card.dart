@@ -37,23 +37,23 @@ class SelectedPackCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  height: 28,
-                  width: 98,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: Color(0xffFEC66F),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    planDuration,
-                    style: CustomTextStyles.titleTextStyle.copyWith(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
+                // Container(
+                //   height: 28,
+                //   width: 98,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(30),
+                //     color: Color(0xffFEC66F),
+                //   ),
+                //   alignment: Alignment.center,
+                //   child: Text(
+                //     planDuration,
+                //     style: CustomTextStyles.titleTextStyle.copyWith(
+                //       fontSize: 14,
+                //       fontWeight: FontWeight.w500,
+                //       color: Colors.white,
+                //     ),
+                //   ),
+                // ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [

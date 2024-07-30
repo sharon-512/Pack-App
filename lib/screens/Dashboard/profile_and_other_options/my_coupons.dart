@@ -1,57 +1,12 @@
-import 'dart:convert';
+// lib/screens/my_coupons.dart
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../custom_style.dart';
+import '../../../models/coupon_model.dart';
+import '../../../services/coupon_api.dart';
 import '../../../widgets/green_appbar.dart';
-
-class Coupon {
-  final String code;
-  final String value;
-  final String expiry;
-
-  Coupon({
-    required this.code,
-    required this.value,
-    required this.expiry,
-  });
-
-  factory Coupon.fromJson(Map<String, dynamic> json) {
-    return Coupon(
-      code: json['code'] ?? 'No Code',
-      value: json['value'] ?? 'No Value',
-      expiry: json['expiry'] ?? 'No Expiry',
-    );
-  }
-}
-
-Future<List<Coupon>> fetchCoupons() async {
-  final prefs = await SharedPreferences.getInstance();
-  String? token = prefs.getString('bearerToken');
-  final url = Uri.parse('https://interfuel.qa/packupadmin/api/all-coupon');
-  final response = await http.get(
-    url, // Changed from POST to GET
-    headers: {
-      'Authorization': 'Bearer $token',
-      'Accept': 'application/json',
-    },
-  );
-
-  print('Request URL: ${url.toString()}');
-  print('Response status: ${response.statusCode}');
-  print('Response body: ${response.body}');
-
-  if (response.statusCode == 200) {
-    final data = json.decode(response.body);
-    final List<dynamic> couponsJson = data['data'] ?? [];
-    return couponsJson.map((json) => Coupon.fromJson(json)).toList();
-  } else {
-    throw Exception('Failed to load coupons. Status code: ${response.statusCode}');
-  }
-}
 
 class MyCoupons extends StatefulWidget {
   const MyCoupons({super.key});
@@ -92,7 +47,7 @@ class _MyCouponsState extends State<MyCoupons> {
                   itemCount: coupons.length,
                   itemBuilder: (context, index) {
                     final coupon = coupons[index];
-                    return coupenCard(coupon);
+                    return couponCard(coupon);
                   },
                 );
               },
@@ -103,7 +58,7 @@ class _MyCouponsState extends State<MyCoupons> {
     );
   }
 
-  Widget coupenCard(Coupon coupon) {
+  Widget couponCard(Coupon coupon) {
     return Padding(
       padding: EdgeInsets.only(left: 15, right: 15),
       child: Container(
@@ -176,6 +131,9 @@ class _MyCouponsState extends State<MyCoupons> {
                               onTap: () {
                                 // Copy the text to clipboard
                                 Clipboard.setData(ClipboardData(text: coupon.code)).then((_) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Coupon code copied!')),
+                                  );
                                 });
                               },
                               child: Icon(
@@ -206,5 +164,4 @@ class _MyCouponsState extends State<MyCoupons> {
       ),
     );
   }
-
 }

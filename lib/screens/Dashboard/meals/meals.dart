@@ -76,6 +76,8 @@ class _SelectedMealsState extends State<SelectedMeals> {
         isLoading = false;
       });
 
+      printFoodDetailsForSelectedDate(0);
+
       print('Plan ID: $planId');
       print('Plan Name: $planName');
       print('Start Date: $formattedStartDate');

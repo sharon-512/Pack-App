@@ -4,9 +4,10 @@ import 'package:pack_app/screens/payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
-import '../services/apiPost.dart';
-import 'add_address.dart';
-import '../custom_style.dart';
+
+import '../../custom_style.dart';
+import '../../services/apiPost.dart';
+import 'Address/add_address.dart';
 
 class CheckOutScreen extends StatefulWidget {
   final int planId;

@@ -4,7 +4,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../widgets/common_button.dart';
 
 class MapWidget extends StatefulWidget {
   final LatLng? initialLocation;

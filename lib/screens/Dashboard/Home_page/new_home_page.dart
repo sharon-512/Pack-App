@@ -69,6 +69,9 @@ class _HomePageState extends State<HomePage> {
           final customerPlanData = json.decode(customerPlanResponse.body);
           final customerPlan = CustomerPlan.fromJson(customerPlanData);
 
+          print('Customer Plan JSON Response: $customerPlanData');
+
+
           final planId = customerPlan.planDetails.id;
           final planNameFetched = dietPlan.plans
               .firstWhere((plan) => plan.planId == planId)

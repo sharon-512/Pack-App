@@ -5,14 +5,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:hive/hive.dart';
+import 'package:pack_app/screens/Checkout/Address/widgets/map.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/user_model.dart';
-import '../widgets/common_button.dart';
-import '../custom_style.dart';
-import '../widgets/info_container.dart';
-import 'Summary/map.dart';
 import 'package:http/http.dart' as http;
+
+import '../../../custom_style.dart';
+import '../../../models/user_model.dart';
+import '../../../widgets/common_button.dart';
+import '../../../widgets/info_container.dart';
 
 class AddAddress extends StatefulWidget {
   const AddAddress({Key? key}) : super(key: key);

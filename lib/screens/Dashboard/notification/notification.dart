@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
+import '../../../models/notifications_model.dart';
+import '../../../services/notifications_api.dart';
+
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
 
@@ -12,26 +15,31 @@ class NotificationsScreen extends StatelessWidget {
         children: [
           GreenAppBar(showBackButton: false, titleText: 'Notification'),
           Expanded(
-            child: ListView(
-              children: [
-                notificationCard(
-                  imagePath: 'assets/images/apple.png',
-                  title: 'Healthy Eating Tip',
-                  message:
-                      'Incorporate more greens into your lunch for better digestion.',
-                  timestamp: '2 hours ago',
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Divider(),
-                ),
-                notificationCard(
-                  imagePath: 'assets/images/apple.png',
-                  title: 'Special Discount Just for You!',
-                  message: 'Get 20% off on your next order. Use code HEALTHY20.',
-                  timestamp: '1 day ago',
-                ),
-              ],
+            child: FutureBuilder<List<NotificationModel>>(
+              future: ApiService().fetchNotifications(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No notifications found'));
+                }
+
+                final notifications = snapshot.data!;
+                return ListView.builder(
+                  itemCount: notifications.length,
+                  itemBuilder: (context, index) {
+                    final notification = notifications[index];
+                    return notificationCard(
+                      imagePath: 'assets/images/apple.png', // Update this as per your logic
+                      title: notification.title,
+                      message: notification.message,
+                      date: notification.date, // Use 'date' instead of 'timestamp'
+                    );
+                  },
+                );
+              },
             ),
           ),
         ],
@@ -43,7 +51,7 @@ class NotificationsScreen extends StatelessWidget {
     required String imagePath,
     required String title,
     required String message,
-    required String timestamp,
+    required String date, // Changed to 'date'
   }) {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 16),
@@ -53,20 +61,18 @@ class NotificationsScreen extends StatelessWidget {
           height: 50,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Color(0xffF5FBD3)
+            color: Color(0xffF5FBD3),
           ),
-          child: Image.asset(imagePath)
+          child: Image.asset(imagePath),
         ),
-        title: Text(title,
-            style: CustomTextStyles.labelTextStyle
+        title: Text(
+          message,
+          style: CustomTextStyles.labelTextStyle,
         ),
-        subtitle: Text(message,
-            style: CustomTextStyles.labelTextStyle.copyWith(
-              fontSize: 12,
-              fontWeight: FontWeight.w300
-            )
+        trailing: Text(
+          date, // Use the formatted date here
+          style: CustomTextStyles.hintTextStyle.copyWith(fontSize: 12),
         ),
-        trailing: Text(timestamp,style: CustomTextStyles.hintTextStyle.copyWith(fontSize: 12),),
       ),
     );
   }

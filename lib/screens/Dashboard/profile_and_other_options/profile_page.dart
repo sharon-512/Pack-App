@@ -71,7 +71,7 @@ class ProfileMenuScreen extends StatelessWidget {
                 _buildMenuItem(context, 'My Profile', 'assets/icons/profile.svg', () => _navigateTo(context, EditProfileScreen())),
                 _buildMenuItem(context, 'My Coupons', 'assets/icons/coupons.svg', () => _navigateTo(context, MyCoupons())),
                 _buildMenuItem(context, 'Address', 'assets/icons/address.svg', () => _navigateTo(context, AddNewAddress())),
-                _buildMenuItem(context, 'Whatsapp', 'assets/icons/whatsapp.svg', () => _navigateTo(context, MyCoupons())),
+                // _buildMenuItem(context, 'Whatsapp', 'assets/icons/whatsapp.svg', () => _navigateTo(context, MyCoupons())),
                 _buildMenuItem(context, 'Language', 'assets/icons/language.svg', () => _navigateTo(context, SelectLanguage())),
                 _buildMenuItem(context, 'Help & Support', 'assets/icons/headphone.svg', () => _navigateTo(context, HelpAndSupport())),
                 _buildMenuItem(context, 'Privacy Policy', 'assets/icons/privacy_policy.svg', () => _navigateTo(context, PrivacyPolicy())),

@@ -286,7 +286,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '-${discount.toStringAsFixed(2)} QR',
+                                      '${discount.toStringAsFixed(2)} QR',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),

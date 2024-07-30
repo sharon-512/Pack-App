@@ -352,7 +352,7 @@ class _HomePageState extends State<HomePage> {
                             mealKcal: [],
                             mealCarbs: [],
                             mealProteins: [],
-                            mealFats: [],
+                            mealFats: [], mealImage: [],
                           ),
                         ); // Your custom card widget
                       },

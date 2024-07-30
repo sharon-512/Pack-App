@@ -27,6 +27,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
   List<int> mealCarbs = [];
   List<int> mealProteins = [];
   List<int> mealFats = [];
+  List<String> mealImages = [];
   bool isLoading = true;
 
   final SelectedFoodApi apiService = SelectedFoodApi();
@@ -43,9 +44,8 @@ class _SelectedMealsState extends State<SelectedMeals> {
       final customerPlan = await apiService.fetchCustomerPlan();
 
       final planId = customerPlan.planDetails.id;
-      final planNameFetched = dietPlan.plans
-          .firstWhere((plan) => plan.planId == planId)
-          .planName;
+      final planNameFetched =
+          dietPlan.plans.firstWhere((plan) => plan.planId == planId).planName;
 
       // Extract start and end dates from the menu
       final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
@@ -100,6 +100,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
       mealCarbs.clear();
       mealProteins.clear();
       mealFats.clear();
+      mealImages.clear();
 
       print('Selected Date: ${selectedMenu.date}');
 
@@ -110,12 +111,14 @@ class _SelectedMealsState extends State<SelectedMeals> {
         mealProteins.add(selectedMenu.breakfast?.protein ?? 0);
         mealCarbs.add(selectedMenu.breakfast?.carb ?? 0);
         mealFats.add(selectedMenu.breakfast?.fat ?? 0);
+        mealImages.add(selectedMenu.breakfast?.image ?? '');
         print('Breakfast:');
         print('  Name: ${selectedMenu.breakfast?.menuname}');
         print('  Kcal: ${selectedMenu.breakfast?.kcal}');
         print('  Protein: ${selectedMenu.breakfast?.protein}');
         print('  Carb: ${selectedMenu.breakfast?.carb}');
         print('  Fat: ${selectedMenu.breakfast?.fat}');
+        print('image ${selectedMenu.breakfast?.image}');
       }
 
       if (selectedMenu.lunch != null) {
@@ -125,6 +128,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
         mealProteins.add(selectedMenu.lunch?.protein ?? 0);
         mealCarbs.add(selectedMenu.lunch?.carb ?? 0);
         mealFats.add(selectedMenu.lunch?.fat ?? 0);
+        mealImages.add(selectedMenu.lunch?.image ?? '');
         print('Lunch:');
         print('  Name: ${selectedMenu.lunch?.menuname}');
         print('  Kcal: ${selectedMenu.lunch?.kcal}');
@@ -140,6 +144,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
         mealProteins.add(selectedMenu.snacks?.protein ?? 0);
         mealCarbs.add(selectedMenu.snacks?.carb ?? 0);
         mealFats.add(selectedMenu.snacks?.fat ?? 0);
+        mealImages.add(selectedMenu.snacks?.image ?? '');
         print('Snacks:');
         print('  Name: ${selectedMenu.snacks?.menuname}');
         print('  Kcal: ${selectedMenu.snacks?.kcal}');
@@ -155,6 +160,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
         mealProteins.add(selectedMenu.dinner?.protein ?? 0);
         mealCarbs.add(selectedMenu.dinner?.carb ?? 0);
         mealFats.add(selectedMenu.dinner?.fat ?? 0);
+        mealImages.add(selectedMenu.dinner?.image ?? '');
         print('Dinner:');
         print('  Name: ${selectedMenu.dinner?.menuname}');
         print('  Kcal: ${selectedMenu.dinner?.kcal}');
@@ -173,86 +179,87 @@ class _SelectedMealsState extends State<SelectedMeals> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-            GreenAppBar(showBackButton: false, titleText: 'Selected Meals'),
-        const SizedBox(height: 20),
-        isLoading
-            ? buildShimmerForMenuList()
-            : Container(
-        margin: EdgeInsets.symmetric(horizontal: 16),
-    height: 92,
-    child: ListView.builder(
-    scrollDirection: Axis.horizontal,
-    itemCount: menuList.length,
-    itemBuilder: (context, index) {
-    // Define the texts for each container
-    DateTime date =
-    DateFormat('dd-MM-yyyy').parse(menuList[index].date);
-    String text1 = DateFormat('MMM').format(date);
-    String text2 = DateFormat('d').format(date);
-    String text3 = DateFormat('EEE').format(date);
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedDay = index; // Update the selected index
-        });
-        printFoodDetailsForSelectedDate(index);
-      },
-      child: Row(
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomContainer(
-            index == selectedDay,
-            text1,
-            text2,
-            text3,
-          ),
-          SizedBox(
-            width: 10,
-          )
-        ],
-      ),
-    );
-    },
-    ),
-        ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: List.generate(
-                      mealNames.length,
-                          (index) => Padding(
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-                        child: SelectedFoodCard(
-                          mealTypes: mealTypes,
-                          mealNames: mealNames,
-                          mealKcal: mealKcal,
-                          mealCarbs: mealCarbs,
-                          mealProteins: mealProteins,
-                          mealFats: mealFats,
+          GreenAppBar(showBackButton: false, titleText: 'Selected Meals'),
+          const SizedBox(height: 20),
+          isLoading
+              ? buildShimmerForMenuList()
+              : Container(
+                  margin: EdgeInsets.symmetric(horizontal: 16),
+                  height: 92,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: menuList.length,
+                    itemBuilder: (context, index) {
+                      // Define the texts for each container
+                      DateTime date =
+                          DateFormat('dd-MM-yyyy').parse(menuList[index].date);
+                      String text1 = DateFormat('MMM').format(date);
+                      String text2 = DateFormat('d').format(date);
+                      String text3 = DateFormat('EEE').format(date);
+
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedDay = index; // Update the selected index
+                          });
+                          printFoodDetailsForSelectedDate(index);
+                        },
+                        child: Row(
+                          children: [
+                            CustomContainer(
+                              index == selectedDay,
+                              text1,
+                              text2,
+                              text3,
+                            ),
+                            SizedBox(
+                              width: 10,
+                            )
+                          ],
                         ),
-                      ),
+                      );
+                    },
+                  ),
+                ),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: List.generate(
+                  mealNames.length,
+                  (index) => Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    child: SelectedFoodCard(
+                      mealTypes: mealTypes,
+                      mealNames: mealNames,
+                      mealKcal: mealKcal,
+                      mealCarbs: mealCarbs,
+                      mealProteins: mealProteins,
+                      mealFats: mealFats,
+                      mealImage: mealImages
                     ),
                   ),
                 ),
               ),
-            ],
-        ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget CustomContainer(
-      bool isSelected,
-      String text1,
-      String text2,
-      String text3,
-      ) {
+    bool isSelected,
+    String text1,
+    String text2,
+    String text3,
+  ) {
     return Container(
       height: 90,
       width: 69,
@@ -288,4 +295,3 @@ class _SelectedMealsState extends State<SelectedMeals> {
     );
   }
 }
-

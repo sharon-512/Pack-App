@@ -10,6 +10,7 @@ class SelectedFoodCard extends StatelessWidget {
   final List<int> mealCarbs;
   final List<int> mealProteins;
   final List<int> mealFats;
+  final List<String> mealImage;
 
   SelectedFoodCard({
     required this.mealTypes,
@@ -18,6 +19,7 @@ class SelectedFoodCard extends StatelessWidget {
     required this.mealCarbs,
     required this.mealProteins,
     required this.mealFats,
+    required this.mealImage,
   });
 
   @override
@@ -25,7 +27,7 @@ class SelectedFoodCard extends StatelessWidget {
     return Column(
       children: List.generate(mealNames.length, (index) {
         return Container(
-          height: 115,
+          height: 140,
           margin: EdgeInsets.symmetric(vertical: 5), // Add margin between cards
           decoration: BoxDecoration(
             color: Colors.white,
@@ -48,65 +50,89 @@ class SelectedFoodCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Text(
-                            mealNames[index], // Meal name from list
-                            style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 20),
-                          ),
-                          Row(
-                            children: mealTypes.map((mealType) => Container(
-                              margin: EdgeInsets.symmetric(horizontal: 5),
-                              height: 30,
-                              padding: EdgeInsets.symmetric(horizontal: 10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30),
-                                color: Color(0xff124734),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                mealType,
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            )).toList(),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          SvgPicture.asset('assets/images/fire.svg'),
-                          Text(
-                            '${mealKcal[index]} kcal • ${mealProteins[index]} g',
-                            style: CustomTextStyles.subtitleTextStyle.copyWith(
-                              fontSize: 12,
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.network(
+                              mealImage[index],
+                              width: 90,
+                              height: 90,
+                              fit: BoxFit.cover,
                             ),
                           ),
-                        ],
-                      ),
-                      Row(
-                        children: [
-                          NutritionBar(
-                            color: const Color(0xffBBC392),
-                            label: '${mealProteins[index]} g',
-                            widthFactor: mealProteins[index] / 100 * 50,
-                            label2: ' Protein',
-                          ), // Adjust the widthFactor as needed
-                          NutritionBar(
-                            color: const Color(0xffF7C648),
-                            label: '${mealCarbs[index]} g',
-                            widthFactor: mealCarbs[index] / 100 * 50,
-                            label2: ' Carbs',
-                          ), // Adjust the widthFactor as needed
-                          NutritionBar(
-                            color: const Color(0xffA8353A),
-                            label: '${mealFats[index]} g',
-                            widthFactor: mealFats[index] / 100 * 50,
-                            label2: ' Fat',
-                          ), // Adjust the widthFactor as needed
+                          SizedBox(width: 10,),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                mealNames[index], // Meal name from list
+                                style: CustomTextStyles.labelTextStyle
+                                    .copyWith(fontSize: 20),
+                              ),
+                              Row(
+                                children: mealTypes
+                                    .map((mealType) => Container(
+                                          margin: EdgeInsets.symmetric(
+                                              horizontal: 5),
+                                          height: 30,
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 10),
+                                          decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            color: Color(0xff124734),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            mealType,
+                                            style: CustomTextStyles
+                                                .titleTextStyle
+                                                .copyWith(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ))
+                                    .toList(),
+                              ),
+                              Row(
+                                children: [
+                                  SvgPicture.asset('assets/images/fire.svg'),
+                                  Text(
+                                    '${mealKcal[index]} kcal • ${mealProteins[index]} g',
+                                    style: CustomTextStyles.subtitleTextStyle.copyWith(
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  NutritionBar(
+                                    color: const Color(0xffBBC392),
+                                    label: '${mealProteins[index]} g',
+                                    widthFactor: mealProteins[index] / 100 * 50,
+                                    label2: ' Protein',
+                                  ), // Adjust the widthFactor as needed
+                                  NutritionBar(
+                                    color: const Color(0xffF7C648),
+                                    label: '${mealCarbs[index]} g',
+                                    widthFactor: mealCarbs[index] / 100 * 50,
+                                    label2: ' Carbs',
+                                  ), // Adjust the widthFactor as needed
+                                  NutritionBar(
+                                    color: const Color(0xffA8353A),
+                                    label: '${mealFats[index]} g',
+                                    widthFactor: mealFats[index] / 100 * 50,
+                                    label2: ' Fat',
+                                  ), // Adjust the widthFactor as needed
+                                ],
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ],
@@ -150,7 +176,8 @@ class NutritionBar extends StatelessWidget {
               ),
               children: <TextSpan>[
                 TextSpan(text: label),
-                TextSpan(text: label2, style: TextStyle(color: Color(0xffA5A5A5))),
+                TextSpan(
+                    text: label2, style: TextStyle(color: Color(0xffA5A5A5))),
               ],
             ),
           ),

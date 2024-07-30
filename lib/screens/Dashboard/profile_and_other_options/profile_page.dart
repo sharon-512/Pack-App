@@ -9,8 +9,8 @@ import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/user_model.dart';
+import '../../../widgets/add_address.dart';
 import '../../onboarding/start_screen.dart';
-import 'Add_new_address.dart';
 import 'Help_and_support.dart';
 import 'edit_profile.dart';
 import 'languages.dart';
@@ -70,7 +70,7 @@ class ProfileMenuScreen extends StatelessWidget {
                 _buildMenuItem(context, 'My Subscription', 'assets/icons/subscription.svg', () => _navigateTo(context, MySubscriptions())),
                 _buildMenuItem(context, 'My Profile', 'assets/icons/profile.svg', () => _navigateTo(context, EditProfileScreen())),
                 _buildMenuItem(context, 'My Coupons', 'assets/icons/coupons.svg', () => _navigateTo(context, MyCoupons())),
-                _buildMenuItem(context, 'Address', 'assets/icons/address.svg', () => _navigateTo(context, AddNewAddress())),
+                _buildMenuItem(context, 'Address', 'assets/icons/address.svg', () => _navigateTo(context, AddAddress())),
                 // _buildMenuItem(context, 'Whatsapp', 'assets/icons/whatsapp.svg', () => _navigateTo(context, MyCoupons())),
                 _buildMenuItem(context, 'Language', 'assets/icons/language.svg', () => _navigateTo(context, SelectLanguage())),
                 _buildMenuItem(context, 'Help & Support', 'assets/icons/headphone.svg', () => _navigateTo(context, HelpAndSupport())),

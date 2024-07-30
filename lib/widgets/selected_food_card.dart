@@ -27,7 +27,7 @@ class SelectedFoodCard extends StatelessWidget {
     return Column(
       children: List.generate(mealNames.length, (index) {
         return Container(
-          height: 140,
+          height: 130,
           margin: EdgeInsets.symmetric(vertical: 5), // Add margin between cards
           decoration: BoxDecoration(
             color: Colors.white,
@@ -36,15 +36,9 @@ class SelectedFoodCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              SizedBox(width: 10),
-              // Image.asset(
-              //   imagePath, // Image path from parameter
-              //   width: 100,
-              //   height: 100,
-              // ),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 16, 0, 16),
+                  padding: const EdgeInsets.fromLTRB(5, 16, 0, 5),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,38 +60,43 @@ class SelectedFoodCard extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
-                                mealNames[index], // Meal name from list
-                                style: CustomTextStyles.labelTextStyle
-                                    .copyWith(fontSize: 20),
-                              ),
                               Row(
-                                children: mealTypes
-                                    .map((mealType) => Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 5),
-                                          height: 30,
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 10),
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(30),
-                                            color: Color(0xff124734),
-                                          ),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            mealType,
-                                            style: CustomTextStyles
-                                                .titleTextStyle
-                                                .copyWith(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.white,
-                                            ),
-                                          ),
-                                        ))
-                                    .toList(),
+                                children: [
+                                  Text(
+                                    mealNames[index], // Meal name from list
+                                    style: CustomTextStyles.labelTextStyle
+                                        .copyWith(fontSize: 20),
+                                  ),
+                                  Row(
+                                    children: mealTypes
+                                        .map((mealType) => Container(
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal: 5),
+                                      height: 30,
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 8),
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                        BorderRadius.circular(30),
+                                        color: Color(0xff124734),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        mealType,
+                                        style: CustomTextStyles
+                                            .titleTextStyle
+                                            .copyWith(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ))
+                                        .toList(),
+                                  ),
+                                ],
                               ),
+
                               Row(
                                 children: [
                                   SvgPicture.asset('assets/images/fire.svg'),

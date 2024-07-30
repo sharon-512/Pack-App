@@ -9,7 +9,8 @@ import 'package:pack_app/screens/Dashboard/nav_bar.dart';
 import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user_model.dart';
+import '../../models/user_model.dart';
+
 
 class PaymentScreen extends StatefulWidget {
   final double subTotal;

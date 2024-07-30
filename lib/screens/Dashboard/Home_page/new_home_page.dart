@@ -330,37 +330,37 @@ class _HomePageState extends State<HomePage> {
                     height: 10,
                   ),
                   BannerCardWidget(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 10),
-                    child: Text(
-                      'Todays Meal Plan',
-                      style: CustomTextStyles.titleTextStyle.copyWith(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 115, // Adjust the height to fit your card
-                    child: PageView.builder(
-                      controller: _pageController,
-                      itemCount: 3, // The number of cards
-                      itemBuilder: (context, index) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: SelectedFoodCard(
-                            mealTypes: [],
-                            mealNames: [],
-                            mealKcal: [],
-                            mealCarbs: [],
-                            mealProteins: [],
-                            mealFats: [], mealImage: [],
-                          ),
-                        ); // Your custom card widget
-                      },
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.symmetric(vertical: 10),
+                  //   child: Text(
+                  //     'Todays Meal Plan',
+                  //     style: CustomTextStyles.titleTextStyle.copyWith(
+                  //       fontSize: 20,
+                  //       fontWeight: FontWeight.w500,
+                  //       color: Colors.black,
+                  //     ),
+                  //   ),
+                  // ),
+                  // SizedBox(
+                  //   height: 115, // Adjust the height to fit your card
+                  //   child: PageView.builder(
+                  //     controller: _pageController,
+                  //     itemCount: 3, // The number of cards
+                  //     itemBuilder: (context, index) {
+                  //       return Padding(
+                  //         padding: const EdgeInsets.symmetric(horizontal: 3),
+                  //         child: SelectedFoodCard(
+                  //           mealTypes: [],
+                  //           mealNames: [],
+                  //           mealKcal: [],
+                  //           mealCarbs: [],
+                  //           mealProteins: [],
+                  //           mealFats: [], mealImage: [],
+                  //         ),
+                  //       ); // Your custom card widget
+                  //     },
+                  //   ),
+                  // ),
                   SizedBox(height: 8),
                   Center(
                     child: SmoothPageIndicator(

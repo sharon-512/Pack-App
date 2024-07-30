@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pack_app/screens/payment.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
 import '../../custom_style.dart';
 import '../../services/apiPost.dart';
-import 'Address/add_address.dart';
+import '../../widgets/add_address.dart';
+import '../Payment/payment.dart';
 
 class CheckOutScreen extends StatefulWidget {
   final int planId;

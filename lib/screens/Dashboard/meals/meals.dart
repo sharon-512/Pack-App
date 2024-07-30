@@ -16,7 +16,6 @@ class SelectedMeals extends StatefulWidget {
 
 class _SelectedMealsState extends State<SelectedMeals> {
   int selectedDay = 0;
-  String planName = '';
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
@@ -40,49 +39,24 @@ class _SelectedMealsState extends State<SelectedMeals> {
 
   Future<void> fetchData() async {
     try {
-      final dietPlan = await apiService.fetchDietPlan();
       final customerPlan = await apiService.fetchCustomerPlan();
-
-      final planId = customerPlan.planDetails.id;
-      final planNameFetched =
-          dietPlan.plans.firstWhere((plan) => plan.planId == planId).planName;
-
-      // Extract start and end dates from the menu
       final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
       final DateFormat outputDateFormat = DateFormat('MMM dd');
-
-      List<DateTime> dates = customerPlan.planDetails.menu.map((menu) {
-        return inputDateFormat.parse(menu.date);
-      }).toList();
-      dates.sort((a, b) => a.compareTo(b)); // Sort dates
-
+      List<DateTime> dates = customerPlan.planDetails.menu.map((menu) => inputDateFormat.parse(menu.date)).toList();
+      dates.sort((a, b) => a.compareTo(b));
       final startDate = dates.first;
       final endDate = dates.last;
-
       final formattedStartDate = outputDateFormat.format(startDate);
       final formattedEndDate = outputDateFormat.format(endDate);
-
-      // Calculate the total number of days in the plan duration
-      final totalDays = endDate.difference(startDate).inDays +
-          1; // +1 to include both start and end dates
-
+      final totalDays = endDate.difference(startDate).inDays + 1;
       setState(() {
-        planName = planNameFetched;
         remainingDays = totalDays;
         startDateforplan = formattedStartDate;
         endDateforplan = formattedEndDate;
-        remainingDays = totalDays;
         menuList = customerPlan.planDetails.menu;
         isLoading = false;
       });
-
       printFoodDetailsForSelectedDate(0);
-
-      print('Plan ID: $planId');
-      print('Plan Name: $planName');
-      print('Start Date: $formattedStartDate');
-      print('End Date: $formattedEndDate');
-      print('Total Days: $totalDays');
     } catch (e) {
       print('Error: $e');
       setState(() {
@@ -110,65 +84,40 @@ class _SelectedMealsState extends State<SelectedMeals> {
         mealTypes.add('Breakfast');
         mealNames.add(selectedMenu.breakfast?.menuname ?? '');
         mealKcal.add(selectedMenu.breakfast?.kcal ?? 0);
-        mealProteins.add(selectedMenu.breakfast?.protein ?? 0);
+        mealProteins.add(selectedMenu.breakfast?.protien ?? 0);
         mealCarbs.add(selectedMenu.breakfast?.carb ?? 0);
         mealFats.add(selectedMenu.breakfast?.fat ?? 0);
         mealImages.add(selectedMenu.breakfast?.image ?? '');
-        print('Breakfast:');
-        print('  Name: ${selectedMenu.breakfast?.menuname}');
-        print('  Kcal: ${selectedMenu.breakfast?.kcal}');
-        print('  Protein: ${selectedMenu.breakfast?.protein}');
-        print('  Carb: ${selectedMenu.breakfast?.carb}');
-        print('  Fat: ${selectedMenu.breakfast?.fat}');
-        print('image ${selectedMenu.breakfast?.image}');
       }
 
       if (selectedMenu.lunch != null) {
         mealTypes.add('Lunch');
         mealNames.add(selectedMenu.lunch?.menuname ?? '');
         mealKcal.add(selectedMenu.lunch?.kcal ?? 0);
-        mealProteins.add(selectedMenu.lunch?.protein ?? 0);
+        mealProteins.add(selectedMenu.lunch?.protien ?? 0);
         mealCarbs.add(selectedMenu.lunch?.carb ?? 0);
         mealFats.add(selectedMenu.lunch?.fat ?? 0);
         mealImages.add(selectedMenu.lunch?.image ?? '');
-        print('Lunch:');
-        print('  Name: ${selectedMenu.lunch?.menuname}');
-        print('  Kcal: ${selectedMenu.lunch?.kcal}');
-        print('  Protein: ${selectedMenu.lunch?.protein}');
-        print('  Carb: ${selectedMenu.lunch?.carb}');
-        print('  Fat: ${selectedMenu.lunch?.fat}');
       }
 
       if (selectedMenu.snacks != null) {
         mealTypes.add('Snacks');
         mealNames.add(selectedMenu.snacks?.menuname ?? '');
         mealKcal.add(selectedMenu.snacks?.kcal ?? 0);
-        mealProteins.add(selectedMenu.snacks?.protein ?? 0);
+        mealProteins.add(selectedMenu.snacks?.protien ?? 0);
         mealCarbs.add(selectedMenu.snacks?.carb ?? 0);
         mealFats.add(selectedMenu.snacks?.fat ?? 0);
         mealImages.add(selectedMenu.snacks?.image ?? '');
-        print('Snacks:');
-        print('  Name: ${selectedMenu.snacks?.menuname}');
-        print('  Kcal: ${selectedMenu.snacks?.kcal}');
-        print('  Protein: ${selectedMenu.snacks?.protein}');
-        print('  Carb: ${selectedMenu.snacks?.carb}');
-        print('  Fat: ${selectedMenu.snacks?.fat}');
       }
 
       if (selectedMenu.dinner != null) {
         mealTypes.add('Dinner');
         mealNames.add(selectedMenu.dinner?.menuname ?? '');
         mealKcal.add(selectedMenu.dinner?.kcal ?? 0);
-        mealProteins.add(selectedMenu.dinner?.protein ?? 0);
+        mealProteins.add(selectedMenu.dinner?.protien ?? 0);
         mealCarbs.add(selectedMenu.dinner?.carb ?? 0);
         mealFats.add(selectedMenu.dinner?.fat ?? 0);
         mealImages.add(selectedMenu.dinner?.image ?? '');
-        print('Dinner:');
-        print('  Name: ${selectedMenu.dinner?.menuname}');
-        print('  Kcal: ${selectedMenu.dinner?.kcal}');
-        print('  Protein: ${selectedMenu.dinner?.protein}');
-        print('  Carb: ${selectedMenu.dinner?.carb}');
-        print('  Fat: ${selectedMenu.dinner?.fat}');
       }
 
       // Update the UI to reflect the changes

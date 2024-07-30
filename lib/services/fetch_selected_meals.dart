@@ -2,26 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/customer_plan.dart';
-import '../models/diet_plan.dart';
 
 class SelectedFoodApi {
   static const String _baseUrl = 'https://interfuel.qa/packupadmin/api';
-
-  Future<DietPlan> fetchDietPlan() async {
-    final response = await http.get(
-      Uri.parse('$_baseUrl/get-diet-data'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      return DietPlan.fromJson(data);
-    } else {
-      throw Exception('Failed to load diet plan');
-    }
-  }
+  static const String subscriptionListUrl = 'https://interfuel.qa/packupadmin/api/subscription-list';
 
   Future<CustomerPlan> fetchCustomerPlan() async {
     final prefs = await SharedPreferences.getInstance();
@@ -42,4 +26,31 @@ class SelectedFoodApi {
       throw Exception('Failed to load customer plan');
     }
   }
+
+  static Future<Map<String, dynamic>> subscriptionDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('bearerToken');
+
+    try {
+      final response = await http.post(
+        Uri.parse(subscriptionListUrl),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        print('Failed to load subscription list. Status code: ${response.statusCode}');
+        return {};
+      }
+    } catch (e) {
+      print('Error: $e');
+      return {};
+    }
+  }
 }
+
+

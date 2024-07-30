@@ -27,7 +27,7 @@ class SelectedFoodCard extends StatelessWidget {
     return Column(
       children: List.generate(mealNames.length, (index) {
         return Container(
-          height: 130,
+          height: 110,
           margin: EdgeInsets.symmetric(vertical: 5), // Add margin between cards
           decoration: BoxDecoration(
             color: Colors.white,
@@ -50,8 +50,8 @@ class SelectedFoodCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(15),
                             child: Image.network(
                               mealImage[index],
-                              width: 90,
-                              height: 90,
+                              width: 80,
+                              height: 80,
                               fit: BoxFit.cover,
                             ),
                           ),
@@ -61,11 +61,17 @@ class SelectedFoodCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    mealNames[index], // Meal name from list
-                                    style: CustomTextStyles.labelTextStyle
-                                        .copyWith(fontSize: 20),
+                                  SizedBox(
+                                    width: 150,
+                                    child: Text(
+                                      mealNames[index], // Meal name from list
+                                      style: CustomTextStyles.labelTextStyle
+                                          .copyWith(fontSize: 20),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
                                   ),
                                   Row(
                                     children: mealTypes
@@ -99,7 +105,7 @@ class SelectedFoodCard extends StatelessWidget {
 
                               Row(
                                 children: [
-                                  SvgPicture.asset('assets/images/fire.svg'),
+                                  SvgPicture.asset('assets/images/fire2.png'),
                                   Text(
                                     '${mealKcal[index]} kcal • ${mealProteins[index]} g',
                                     style: CustomTextStyles.subtitleTextStyle.copyWith(

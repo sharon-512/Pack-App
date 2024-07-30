@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,7 +36,7 @@ class _EnterOtpState extends State<EnterOtp> {
 
     try {
       final response = await _authService.confirmOtp(widget.mobileNumber, otpController.text);
-      print(response);
+      print('512');
 
       setState(() {
         _isLoading = false;

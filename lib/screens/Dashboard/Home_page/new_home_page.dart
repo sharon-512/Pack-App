@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -141,10 +142,32 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Row(
                     children: [
-                      Image.asset(
-                        'assets/images/profile_pic.png',
-                        width: 60,
-                        height: 60,
+                      GestureDetector(
+                        onTap: (){
+                          print('512${user!.image}');
+                        },
+                        child: CircleAvatar(
+                          radius: 30,
+                          backgroundColor: Colors.white,
+                          child: ClipOval(
+                            child: Image(
+                              image: user?.image != null
+                                  ? FileImage(File(user!.image!))
+                                  : const AssetImage('assets/images/profile_place_holder.jpg') as ImageProvider,
+                              fit: BoxFit.cover,
+                              width: 60.0,
+                              height: 60.0,
+                              errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                                return Image.asset(
+                                  'assets/images/profile_place_holder.jpg',
+                                  fit: BoxFit.cover,
+                                  width: 60.0,
+                                  height: 60.0,
+                                );
+                              },
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(
                         width: 10,
@@ -172,7 +195,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  Image.asset('assets/images/setting.png'),
+                 // Image.asset('assets/images/setting.png'),
                 ],
               ),
               const SizedBox(

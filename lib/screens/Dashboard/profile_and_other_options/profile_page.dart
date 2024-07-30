@@ -36,11 +36,24 @@ class ProfileMenuScreen extends StatelessWidget {
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
-                backgroundImage:
-                    (user?.image != null
-                    ? FileImage(File(user!.image!))
-                    : const AssetImage('assets/images/profile_place_holder.jpg'))
-                as ImageProvider,
+                child: ClipOval(
+                  child: Image(
+                    image: user?.image != null
+                        ? FileImage(File(user!.image!))
+                        : const AssetImage('assets/images/profile_place_holder.jpg') as ImageProvider,
+                    fit: BoxFit.cover,
+                    width: 80.0,
+                    height: 80.0,
+                    errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) {
+                      return Image.asset(
+                        'assets/images/profile_place_holder.jpg',
+                        fit: BoxFit.cover,
+                        width: 80.0,
+                        height: 80.0,
+                      );
+                    },
+                  ),
+                ),
               ),
               const SizedBox(height: 8),
               Text(

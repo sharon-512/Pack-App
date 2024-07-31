@@ -80,10 +80,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
         userBox.put('currentUser', updatedUser);
         print('Profile updated successfully');
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ProfileMenuScreen()),
-        );
+        Navigator.pop(context);
       } else {
         // Update failed, handle accordingly
         print('Failed to update profile: ${jsonResponse['message']}');

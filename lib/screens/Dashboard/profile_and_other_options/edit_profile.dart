@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../models/user_model.dart';
+import '../nav_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
   EditProfileScreen({super.key});
@@ -80,7 +81,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         );
         userBox.put('currentUser', updatedUser);
         print('Profile updated successfully');
-        Navigator.pop(context);
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavbar(selectedIndex: 4)),
+        );
       } else {
         // Update failed, handle accordingly
         print('Failed to update profile: ${jsonResponse['message']}');

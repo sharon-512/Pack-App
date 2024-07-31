@@ -89,6 +89,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // Update failed, handle accordingly
         print('Failed to update profile: ${jsonResponse['message']}');
       }
+
     } else {
       // HTTP error, handle accordingly
       print('Failed to update profile: ${response.statusCode}');

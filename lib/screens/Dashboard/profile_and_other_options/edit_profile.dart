@@ -112,123 +112,125 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
 
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                    color: Color(0xff124734),
-                    borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20))),
-                child: Column(
-                  children: [
-                    const SizedBox(
-                      height: 50,
-                    ),
-                    const Text(
-                      'My Profile',
-                      style: TextStyle(
-                          fontFamily: 'Aeonik',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
-                          color: Colors.white),
-                    ),
-                    const SizedBox(
-                      height: 12,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        showModalBottomSheet(
-                          context: context,
-                          builder: (context) => BottomSheet(
-                            onClosing: () {},
-                            builder: (context) => Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.camera_alt),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _pickImage(ImageSource.camera);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.photo),
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                    _pickImage(ImageSource.gallery);
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                      child: CircleAvatar(
-                        radius: 40,
-                        backgroundColor: Colors.white,
-                        backgroundImage: _image != null
-                            ? FileImage(_image!)
-                            : (user?.image != null
-                            ? FileImage(File(user!.image!))
-                            : const AssetImage('assets/images/profile_place_holder.jpg'))
-                        as ImageProvider,
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                      color: Color(0xff124734),
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20))),
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 50,
                       ),
-                    ),
-                    Text(
-                      '${user?.firstname ?? ''} ${user?.lastname ?? ''}',
-                      style: const TextStyle(
-                          fontFamily: 'Aeonik',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 20,
-                          letterSpacing: -0.5,
-                          color: Colors.white),
-                    ),
-                    Text(
-                      '+974 ${user?.mobno ?? ''}',
-                      style: const TextStyle(
-                          fontFamily: 'Aeonik',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 13,
-                          letterSpacing: -0.5,
-                          color: Colors.grey),
-                    ),
-                  ],
+                      const Text(
+                        'My Profile',
+                        style: TextStyle(
+                            fontFamily: 'Aeonik',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 20,
+                            color: Colors.white),
+                      ),
+                      const SizedBox(
+                        height: 12,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                            context: context,
+                            builder: (context) => BottomSheet(
+                              onClosing: () {},
+                              builder: (context) => Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.camera_alt),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _pickImage(ImageSource.camera);
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.photo),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                      _pickImage(ImageSource.gallery);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.white,
+                          backgroundImage: _image != null
+                              ? FileImage(_image!)
+                              : (user?.image != null
+                              ? FileImage(File(user!.image!))
+                              : const AssetImage('assets/images/profile_place_holder.jpg'))
+                          as ImageProvider,
+                        ),
+                      ),
+                      Text(
+                        '${user?.firstname ?? ''} ${user?.lastname ?? ''}',
+                        style: const TextStyle(
+                            fontFamily: 'Aeonik',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20,
+                            letterSpacing: -0.5,
+                            color: Colors.white),
+                      ),
+                      Text(
+                        '+974 ${user?.mobno ?? ''}',
+                        style: const TextStyle(
+                            fontFamily: 'Aeonik',
+                            fontWeight: FontWeight.w500,
+                            fontSize: 13,
+                            letterSpacing: -0.5,
+                            color: Colors.grey),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(21.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 32),
-                    _buildTextField('First Name', 'Enter Your First Name', firstNameController),
-                    _buildTextField('Last Name', 'Enter Your Last Name', lastNameController),
-                    _buildTextField('Email', 'Enter Your Email', emailController, false),
-                    _buildTextField('Phone', 'Enter Your Phone number', numberController, false),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.all(21.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 32),
+                      _buildTextField('First Name', 'Enter Your First Name', firstNameController),
+                      _buildTextField('Last Name', 'Enter Your Last Name', lastNameController),
+                      _buildTextField('Email', 'Enter Your Email', emailController, false),
+                      _buildTextField('Phone', 'Enter Your Phone number', numberController, false),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25),
-            child: CommonButton(
-              text: 'Save changes',
-              onTap: () {
-                if (user != null) {
-                  updateProfile(user);
-                }
-              },
-              isLoading: _isLoading,),
-          ),
-        ],
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25),
+              child: CommonButton(
+                text: 'Save changes',
+                onTap: () {
+                  if (user != null) {
+                    updateProfile(user);
+                  }
+                },
+                isLoading: _isLoading,),
+            ),
+          ],
+        ),
       ),
     );
   }

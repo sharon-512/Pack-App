@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
-
 class TermsAndConditions extends StatelessWidget {
   const TermsAndConditions({super.key});
 
@@ -16,40 +15,77 @@ class TermsAndConditions extends StatelessWidget {
           Flexible(
             child: SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(15.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Welcome to The Plus Pack Ltd. These Terms & Conditions govern your use of our website, mobile app, and services. '
-                          'By accessing or using our platform, you agree to comply with these terms. Please read them carefully.',
+                      'Last updated: 28/07/2024\n\n'
+                          'Welcome to PackUp Kitchen! These terms and conditions outline the rules and regulations for the use of our website and services. By accessing this website and using our services, you accept these terms and conditions in full. If you do not agree with these terms and conditions, please do not use our website or services.',
                       style: CustomTextStyles.informationText,
                     ),
-                    const SizedBox(height: 16,),
-                    Text('1. Use of Our Platform\n\n'
-                        '1.1 You must be at least 18 years old to use our platform.\n\n'
-                        '1.2 You agree to provide accurate and complete information when using our services.\n\n'
-                        '1.3 You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account.\n\n'
-                        '2. Ordering & Payments\n\n'
-                        '2.1 When placing an order, you agree to pay the listed price for the products or services selected.\n\n'
-                        '2.2 Payments must be made using valid payment methods accepted by Go Crispy Chicken Company.\n\n'
-                        '2.3 All prices listed on our platform are in the local currency and are inclusive of applicable taxes and fees.\n\n'
-                        '3. Delivery & Returns\n\n'
-                        '3.1 We aim to deliver orders promptly and within the estimated delivery timeframe provided.\n\n'
-                        '3.2 If you are not satisfied with your order, please contact us within [number] days for assistance with returns or refunds.\n\n'
-                        '3.3 We reserve the right to refuse or cancel orders in the event of inaccuracies, errors, or fraud.\n\n'
-                        '4. Intellectual Property\n\n'
-                        '4.1 All content on our platform, including text, graphics, logos, images, and software, is the property of Go Crispy Chicken Company and is protected by intellectual property laws.\n\n'
-                        '4.2 You may not use, reproduce, distribute, or modify any content from our platform without prior written consent.\n\n'
-                        '5. Limitation of Liability\n\n'
-                        '5.1 Go Crispy Chicken Company shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from your use of our platform or products/services.\n\n'
-                        '5.2 Our liability is limited to the fullest extent permitted by law.\n\n'
-                        '6. Governing Law\n\n'
-                        '6.1 These Terms & Conditions shall be governed by and construed in accordance with the laws of [Jurisdiction], without regard to its conflict of law provisions.\n\n'
-                        '7. Changes to Terms & Conditions\n\n'
-                        '7.1 We reserve the right to update or modify these Terms & Conditions at any time without prior notice. By continuing to use our platform after such changes, you agree to be bound by the revised terms.\n\n'
-                        '8. Contact Us\n\n'
-                        '8.1 If you have any questions or concerns about these Terms & Conditions, please contact us at support@gocrispychicken.com.\n\n',
+                    const SizedBox(height: 5,),
+                    Text(
+                      '1. Introduction\n\n'
+                          'These Terms and Conditions ("Terms", "Terms and Conditions") govern your relationship with PackUp Kitchen ("us", "we", or "our") and your use of our website [your website URL] (the "Service").\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '2. Accounts\n\n'
+                          'When you create an account with us, you must provide accurate, complete, and current information at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.\n\n'
+                          'You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password, whether your password is with our Service or a third-party service.\n\n'
+                          'You agree not to disclose your password to any third party. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '3. Orders and Payments\n\n'
+                          'All orders placed through our website are subject to acceptance and availability. We reserve the right to refuse or cancel any order for any reason, including but not limited to product availability, errors in the description or price of the product, or errors in your order.\n\n'
+                          'We accept payments through [list of accepted payment methods]. By placing an order, you agree to pay the full amount for the products purchased, including any applicable taxes and shipping fees.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '4. Shipping and Delivery\n\n'
+                          'We will make every effort to deliver your order within the estimated delivery time; however, delivery times are not guaranteed. We are not responsible for any delays in delivery due to circumstances beyond our control.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '5. Returns and Refunds\n\n'
+                          'If you are not satisfied with your purchase, you may return the product within [number] days of receipt for a full refund, provided that the product is in its original condition and packaging. To initiate a return, please contact our customer service at [customer service email].\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '6. Intellectual Property\n\n'
+                          'The Service and its original content, features, and functionality are and will remain the exclusive property of PackUp Kitchen and its licensors. The Service is protected by copyright, trademark, and other laws of both the United States and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of PackUp Kitchen.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '7. Limitation of Liability\n\n'
+                          'In no event shall PackUp Kitchen, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential, or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses, resulting from (i) your use or inability to use the Service; (ii) any unauthorized access to or use of our servers and/or any personal information stored therein; (iii) any interruption or cessation of transmission to or from the Service; (iv) any bugs, viruses, trojan horses, or the like that may be transmitted to or through our Service by any third party; and/or (v) any errors or omissions in any content or for any loss or damage incurred as a result of the use of any content posted, emailed, transmitted, or otherwise made available through the Service, whether based on warranty, contract, tort (including negligence), or any other legal theory, whether or not we have been informed of the possibility of such damage.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '8. Governing Law\n\n'
+                          'These Terms shall be governed and construed in accordance with the laws of [State/Country], without regard to its conflict of law provisions.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '9. Changes to These Terms\n\n'
+                          'We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material, we will provide at least [number] days\' notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.\n\n'
+                          'By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, please stop using the Service.\n\n',
+                      style: CustomTextStyles.informationText,
+                    ),
+                    const SizedBox(height: 5,),
+                    Text(
+                      '5. Contact Us\n\n'
+                          'If you have any questions about these Terms, please contact us at info@packqtr.com.\n\n',
                       style: CustomTextStyles.informationText,
                     ),
                     const SizedBox(height: 18,),
@@ -63,7 +99,3 @@ class TermsAndConditions extends StatelessWidget {
     );
   }
 }
-
-
-
-

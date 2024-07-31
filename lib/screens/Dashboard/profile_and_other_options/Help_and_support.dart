@@ -12,7 +12,7 @@ class HelpAndSupport extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          const GreenAppBar(showBackButton: true, titleText: 'Terms & Conditions'),
+          const GreenAppBar(showBackButton: true, titleText: 'Help and Support'),
           Flexible(
             child: SingleChildScrollView(
               child: Padding(
@@ -32,7 +32,7 @@ class HelpAndSupport extends StatelessWidget {
                     const SizedBox(height: 8,),
                     Text(
                       'If you need assistance or have any inquiries, please feel free to contact our customer support team at:\n\n'
-                          'Email: support@thepluspack.com\nPhone: [+XX-XXX-XXXXXXX]\n\n'
+                          'Email: support@thepluspack.com\nPhone: +974 3061 6119\n\n'
                           'Our team is available [days of the week] from [hours of operation] to provide you with prompt assistance.',
                       style: CustomTextStyles.informationText,
                     ),
@@ -78,16 +78,3 @@ class HelpAndSupport extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

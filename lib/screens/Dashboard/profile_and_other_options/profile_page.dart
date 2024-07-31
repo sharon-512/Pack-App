@@ -93,18 +93,7 @@ class ProfileMenuScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 30),
                   child: GestureDetector(
                     onTap: () async {
-                      final userBox = Hive.box<User>('userBox');
-                      await userBox.clear(); // Clear all stored user data
-
-                      final prefs = await SharedPreferences.getInstance();
-                      await prefs.remove('isLoggedIn');
-
-                      // Navigate to the start screen
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => StartScreen()),
-                            (route) => false,
-                      );
+                      _showLogoutConfirmationDialog(context);
                     },
                     child: Text(
                       'Logout',
@@ -151,4 +140,116 @@ class ProfileMenuScreen extends StatelessWidget {
       MaterialPageRoute(builder: (context) => page),
     );
   }
+
+  void _showLogoutConfirmationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white, // Set the container background color to white
+              borderRadius: BorderRadius.circular(12.0),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.logout,
+                      color: Colors.orange,
+                      size: 35.0,
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Text(
+                  'You really want to logout?',
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.0),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pop();
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(12.0),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'No Need',
+                              style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () async {
+                          final userBox = Hive.box<User>('userBox');
+                          await userBox.clear(); // Clear all stored user data
+
+                          final prefs = await SharedPreferences.getInstance();
+                          await prefs.remove('isLoggedIn');
+                          await prefs.remove('bearerToken');
+
+                          // Navigate to the start screen
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (context) => StartScreen()),
+                                (route) => false,
+                          );
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.black,
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(12.0),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Yes',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

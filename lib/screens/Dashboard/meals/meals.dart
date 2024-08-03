@@ -12,6 +12,8 @@ import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
+import '../profile_and_other_options/widgets/banner.dart';
+
 class SelectedMeals extends StatefulWidget {
   const SelectedMeals({super.key});
 
@@ -191,19 +193,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
           isLoading
               ? buildShimmerForMenuList()
               : menuList.isEmpty
-                  ? Center(
-                      child: Text(
-                        'Your ordered food details will be displayed here',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2, // Set the maximum number of lines
-                        overflow: TextOverflow
-                            .ellipsis, // Adds an ellipsis if the text is too long
-                      ),
-                    )
+                  ? EmptyMeal()
                   : Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),
                       height: 92,

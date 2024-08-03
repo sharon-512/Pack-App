@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pack_app/custom_style.dart';
 
 class NoNetworkWidget extends StatelessWidget {
   const NoNetworkWidget({Key? key}) : super(key: key);
@@ -9,12 +10,12 @@ class NoNetworkWidget extends StatelessWidget {
       backgroundColor: Colors.black54, // Background overlay
       body: Center(
         child: Container(
-          padding: EdgeInsets.all(20),
-          margin: EdgeInsets.symmetric(horizontal: 40),
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.symmetric(horizontal: 40),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 8,
@@ -25,31 +26,30 @@ class NoNetworkWidget extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.signal_wifi_off,
-                size: 50,
-                color: Colors.red,
-              ),
-              SizedBox(height: 16),
-              Text(
+              SizedBox(
+                height: 100,
+                  child: Image.asset('assets/images/no_network.png',)),
+              const SizedBox(height: 16),
+              const Text(
                 'No Network Connection',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: 20,
+                  //fontFamily: 'Aeonik',
                   fontWeight: FontWeight.bold,
-                  color: Colors.red,
+                  color: primaryGreen,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 8),
-              Text(
-                'Your network is lost, please retry.',
+              const SizedBox(height: 8),
+              const Text(
+                'You\'ve lost your network connection. Please try again.',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
             ],
           ),
         ),

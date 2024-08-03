@@ -195,10 +195,17 @@ class _SelectedMealsState extends State<SelectedMeals> {
               ? buildShimmerForMenuList()
               : menuList.isEmpty
                   ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: BannerCardWidget(),
-                      )
+                      child: Text(
+                        'Your ordered food details will be displayed here',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2, // Set the maximum number of lines
+                        overflow: TextOverflow
+                            .ellipsis, // Adds an ellipsis if the text is too long
+                      ),
                     )
                   : Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),

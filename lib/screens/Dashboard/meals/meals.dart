@@ -138,62 +138,64 @@ class _SelectedMealsState extends State<SelectedMeals> {
           isLoading
               ? buildShimmerForMenuList()
               : Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16),
-                  height: 92,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: menuList.length,
-                    itemBuilder: (context, index) {
-                      // Define the texts for each container
-                      DateTime date =
-                          DateFormat('dd-MM-yyyy').parse(menuList[index].date);
-                      String text1 = DateFormat('MMM').format(date);
-                      String text2 = DateFormat('d').format(date);
-                      String text3 = DateFormat('EEE').format(date);
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            height: 92,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: menuList.length,
+              itemBuilder: (context, index) {
+                // Define the texts for each container
+                DateTime date =
+                DateFormat('dd-MM-yyyy').parse(menuList[index].date);
+                String text1 = DateFormat('MMM').format(date);
+                String text2 = DateFormat('d').format(date);
+                String text3 = DateFormat('EEE').format(date);
 
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedDay = index; // Update the selected index
-                          });
-                          printFoodDetailsForSelectedDate(index);
-                        },
-                        child: Row(
-                          children: [
-                            CustomContainer(
-                              index == selectedDay,
-                              text1,
-                              text2,
-                              text3,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            )
-                          ],
-                        ),
-                      );
-                    },
+                return GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedDay = index; // Update the selected index
+                    });
+                    printFoodDetailsForSelectedDate(index);
+                  },
+                  child: Row(
+                    children: [
+                      CustomContainer(
+                        index == selectedDay,
+                        text1,
+                        text2,
+                        text3,
+                      ),
+                      SizedBox(
+                        width: 10,
+                      )
+                    ],
                   ),
-                ),
+                );
+              },
+            ),
+          ),
           const SizedBox(
             height: 20,
           ),
+          if (mealNames.isEmpty)
+            Center(child: Text('No meals for this date.')),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: List.generate(
-                  mealNames.length,
-                  (index) => Padding(
+                  mealNames.length, // Display a card for each meal
+                      (index) => Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                     child: SelectedFoodCard(
-                      mealTypes: mealTypes,
-                      mealNames: mealNames,
-                      mealKcal: mealKcal,
-                      mealCarbs: mealCarbs,
-                      mealProteins: mealProteins,
-                      mealFats: mealFats,
-                      mealImage: mealImages
+                      mealTypes: [mealTypes[index]], // Display one meal at a time
+                      mealNames: [mealNames[index]],
+                      mealKcal: [mealKcal[index]],
+                      mealCarbs: [mealCarbs[index]],
+                      mealProteins: [mealProteins[index]],
+                      mealFats: [mealFats[index]],
+                      mealImage: [mealImages[index]],
                     ),
                   ),
                 ),
@@ -206,11 +208,11 @@ class _SelectedMealsState extends State<SelectedMeals> {
   }
 
   Widget CustomContainer(
-    bool isSelected,
-    String text1,
-    String text2,
-    String text3,
-  ) {
+      bool isSelected,
+      String text1,
+      String text2,
+      String text3,
+      ) {
     return Container(
       height: 90,
       width: 69,

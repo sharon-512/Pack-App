@@ -37,7 +37,7 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
     try {
       final customerPlan = await apiService.fetchCustomerPlan();
       final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
-      final String currentDateStr = DateFormat('dd-MM-yyyy').format(DateTime.now());
+      final String currentDateStr = '05-08-2024';
 
       final Menu? todayMenu = customerPlan.planDetails.menu.firstWhere(
             (menu) => menu.date == currentDateStr,
@@ -124,7 +124,7 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
           ),
         ),
         SizedBox(
-          height: 140, // Adjust the height to fit your card
+          height: 120, // Adjust the height to fit your card
           child: PageView.builder(
             controller: _pageController,
             itemCount: mealNames.length,
@@ -132,28 +132,31 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: SelectedFoodCard(
-                  mealTypes: mealTypes,
-                  mealNames: mealNames,
-                  mealKcal: mealKcal,
-                  mealCarbs: mealCarbs,
-                  mealProteins: mealProteins,
-                  mealFats: mealFats,
-                  mealImage: mealImages,
+                  mealTypes: [mealTypes[index]], // Single item list for meal type
+                  mealNames: [mealNames[index]], // Single item list for meal name
+                  mealKcal: [mealKcal[index]], // Single item list for meal kcal
+                  mealCarbs: [mealCarbs[index]], // Single item list for meal carbs
+                  mealProteins: [mealProteins[index]], // Single item list for meal proteins
+                  mealFats: [mealFats[index]], // Single item list for meal fats
+                  mealImage: [mealImages[index]], // Single item for meal image
                 ),
-              ); // Your custom card widget
+              );
             },
           ),
         ),
         SizedBox(height: 8),
-        Center(
-          child: SmoothPageIndicator(
-            controller: _pageController, // PageController
-            count: mealNames.length, // The number of dots
-            effect: WormEffect(
-              activeDotColor: Colors.grey,
-              dotColor: Colors.grey[300]!,
-              dotHeight: 8,
-              dotWidth: 8,
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Center(
+            child: SmoothPageIndicator(
+              controller: _pageController, // PageController
+              count: mealNames.length, // The number of dots
+              effect: WormEffect(
+                activeDotColor: Colors.grey,
+                dotColor: Colors.grey[300]!,
+                dotHeight: 8,
+                dotWidth: 8,
+              ),
             ),
           ),
         ),

@@ -31,7 +31,8 @@ class _MealSelectionState extends State<MealSelection> {
 
   Future<void> fetchPlanDetails() async {
     try {
-      final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+      final response = await http
+          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -69,121 +70,133 @@ class _MealSelectionState extends State<MealSelection> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 70),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1.0,
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1.0,
+                          ),
                         ),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_back,
-                        size: 20,
+                        child: const Icon(
+                          Icons.arrow_back,
+                          size: 20,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Choose Your Meal Duration?',
-                          style: CustomTextStyles.titleTextStyle,
-                        ),
-                        const SizedBox(height: 50),
-                        // Show shimmer effect while loading
-                        isLoading
-                            ? Column(
-                          children: List.generate(3, (index) => Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 6),
-                              height: 50,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          )),
-                        )
-                            : Column(
-                          children: subPlans.map((subPlan) {
-                            int index = subPlans.indexOf(subPlan);
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedOption = index + 1; // +1 because options start from 1
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: selectedOption == index + 1
-                                      ? Color(0xFFEDC0B2)
-                                      : Colors.transparent,
-                                  border: Border.all(color: Color(0xFFEDC0B2)),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                height: 50,
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    '${subPlan['subplan_name']}',
-                                    style: TextStyle(
-                                      color: selectedOption == index + 1 ? Colors.white : Colors.black,
-                                      fontFamily: 'Aeonik',
-                                      fontSize: 18,
+                    const SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Choose Your Meal Duration?',
+                            style: CustomTextStyles.titleTextStyle,
+                          ),
+                          const SizedBox(height: 30),
+                          // Show shimmer effect while loading
+                          if (isLoading)
+                            Column(
+                              children: List.generate(
+                                3,
+                                    (index) => Shimmer.fromColors(
+                                  baseColor: Colors.grey[300]!,
+                                  highlightColor: Colors.grey[100]!,
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 6),
+                                    height: 50,
+                                    width: double.infinity,
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
                                 ),
                               ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              CommonButton(
-                text: 'Continue',
-                onTap: () {
-                  // Find the selected subplan based on selectedOption
-                  int selectedSubplanId = subPlans[selectedOption - 1]['subplan_id'];
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DatePicker(
-                        selectedSubplanId: selectedSubplanId,
+                            )
+                          else
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: subPlans.length,
+                              itemBuilder: (context, index) {
+                                var subPlan = subPlans[index];
+                                return GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedOption = index + 1; // +1 because options start from 1
+                                    });
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: selectedOption == index + 1
+                                          ? Color(0xFFEDC0B2)
+                                          : Colors.transparent,
+                                      border: Border.all(
+                                          color: Color(0xFFEDC0B2)),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    height: 50,
+                                    width: double.infinity,
+                                    child: Center(
+                                      child: Text(
+                                        '${subPlan['subplan_name']}',
+                                        style: TextStyle(
+                                          color: selectedOption == index + 1
+                                              ? Colors.white
+                                              : Colors.black,
+                                          fontFamily: 'Aeonik',
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                        ],
                       ),
                     ),
-                  );
-
-                },
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+            CommonButton(
+              text: 'Continue',
+              onTap: () {
+                // Find the selected subplan based on selectedOption
+                int selectedSubplanId =
+                subPlans[selectedOption - 1]['subplan_id'];
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DatePicker(
+                      selectedSubplanId: selectedSubplanId,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

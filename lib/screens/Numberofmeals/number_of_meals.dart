@@ -259,7 +259,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                             builder: (context) => DailyNutrition(
                                 subplanId: widget.subplanId,
                                 mealtypeId: selectedMealType,
-                                numberofMeals: 3),
+                                numberofMeals: totalMeals),
                           ),
                         );
                       } else {

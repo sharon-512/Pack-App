@@ -5,14 +5,12 @@ import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/screens/Dashboard/Home_page/widget/banner_card.dart';
+import 'package:pack_app/screens/Dashboard/Home_page/widget/homepage_shimmer.dart';
 import 'package:pack_app/screens/Dashboard/Home_page/widget/selected_pack_card.dart';
 import 'package:pack_app/screens/Dashboard/Home_page/widget/todays_meal.dart';
-import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../models/user_model.dart';
 import '../../../services/fetch_selected_meals.dart';
-import '../../../widgets/selected_food_card.dart';
-import '../../Mealselection/meal_selection.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
+  bool isLoading = true; // Add a loading state
 
   @override
   void initState() {
@@ -62,6 +61,7 @@ class _HomePageState extends State<HomePage> {
         startDateforplan = formattedStartDate;
         endDateforplan = formattedEndDate;
         this.remainingDays = remainingDays > 0 ? remainingDays : 0; // Ensure remainingDays is not negative
+        isLoading = false; // Set loading to false after data is fetched
       });
     }
   }
@@ -70,16 +70,15 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
+
     return Scaffold(
-      body: Padding(
+      body: isLoading ? const HomePageShimmer() : Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 50),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -112,9 +111,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        width: 10,
-                      ),
+                      const SizedBox(width: 10),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -138,31 +135,23 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  // Image.asset('assets/images/setting.png'),
                 ],
               ),
-              const SizedBox(
-                height: 20,
-              ),
+              const SizedBox(height: 20),
               Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SelectedPackCard(
                       planName: planName, planDuration: planDuration),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     children: <Widget>[
                       Expanded(
                         child: Container(
-                          height: 92, // Height set to 92
+                          height: 92,
                           decoration: BoxDecoration(
-                            color: Color(
-                                0xFF124734), // Background color for the 1st container
-                            borderRadius: BorderRadius.circular(
-                                10), // Radius of 10 pixels
+                            color: const Color(0xFF124734),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -171,11 +160,10 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Image.asset('assets/images/note.png'),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 Text(
                                   'Plan Start',
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -183,8 +171,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text(
                                   startDateforplan,
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
@@ -197,17 +184,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 8,
-                      ),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Container(
-                          height: 92, // Height set to 92
+                          height: 92,
                           decoration: BoxDecoration(
-                            color: Color(
-                                0xFFBBC392), // Background color for the 2nd container
-                            borderRadius: BorderRadius.circular(
-                                10), // Radius of 10 pixels
+                            color: const Color(0xFFBBC392),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -217,13 +200,12 @@ class _HomePageState extends State<HomePage> {
                               children: [
                                 Image.asset(
                                   'assets/images/note.png',
-                                  color: Color(0xff8D9858),
+                                  color: const Color(0xff8D9858),
                                 ),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 Text(
                                   'Plan ends',
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -231,8 +213,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text(
                                   endDateforplan,
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
@@ -245,17 +226,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        width: 8,
-                      ),
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Container(
-                          height: 92, // Height set to 92
+                          height: 92,
                           decoration: BoxDecoration(
-                            color: Color(
-                                0xFFA8353A), // Background color for the 3rd container
-                            borderRadius: BorderRadius.circular(
-                                10), // Radius of 10 pixels
+                            color: const Color(0xFFA8353A),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           child: Padding(
                             padding: const EdgeInsets.all(12.0),
@@ -264,11 +241,10 @@ class _HomePageState extends State<HomePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Image.asset('assets/images/timer.png'),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 Text(
                                   'Remaining',
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w400,
                                     color: Colors.white,
@@ -276,8 +252,7 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Text(
                                   remainingDays.toString(),
-                                  style:
-                                  CustomTextStyles.titleTextStyle.copyWith(
+                                  style: CustomTextStyles.titleTextStyle.copyWith(
                                     fontSize: 22,
                                     fontWeight: FontWeight.w500,
                                     color: Colors.white,
@@ -292,12 +267,10 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   BannerCardWidget(),
-                  SizedBox(height: 15,),
-                  CurrentDayMeals()
+                  const SizedBox(height: 15),
+                  const CurrentDayMeals(),
                 ],
               ),
             ],

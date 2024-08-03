@@ -28,7 +28,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 

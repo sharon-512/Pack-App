@@ -37,7 +37,7 @@ class _AddAddressState extends State<AddAddress> {
   late TextEditingController name;
   late TextEditingController contactNumber;
   bool _isLoading = false;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 

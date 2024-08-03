@@ -21,7 +21,7 @@ class MyCoupons extends StatefulWidget {
 
 class _MyCouponsState extends State<MyCoupons> {
   late Future<List<Coupon>> _couponsFuture;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 

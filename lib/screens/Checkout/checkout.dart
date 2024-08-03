@@ -56,7 +56,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   String? _mobileNo;
   // List of addresses for dropdown
   List<String> _addresses = [];
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 

@@ -11,6 +11,7 @@ import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
 import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
+import '../Home_page/widget/banner_card.dart';
 
 class SelectedMeals extends StatefulWidget {
   const SelectedMeals({super.key});
@@ -21,7 +22,7 @@ class SelectedMeals extends StatefulWidget {
 
 class _SelectedMealsState extends State<SelectedMeals> {
   int selectedDay = 0;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String startDateforplan = '';
@@ -44,7 +45,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
     super.initState();
     fetchData();
     initConnectivity();
-
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
@@ -195,17 +195,10 @@ class _SelectedMealsState extends State<SelectedMeals> {
               ? buildShimmerForMenuList()
               : menuList.isEmpty
                   ? Center(
-                      child: Text(
-                        'Your ordered food details will be displayed here',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.grey,
-                        ),
-                        textAlign: TextAlign.center,
-                        maxLines: 2, // Set the maximum number of lines
-                        overflow: TextOverflow
-                            .ellipsis, // Adds an ellipsis if the text is too long
-                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: BannerCardWidget(),
+                      )
                     )
                   : Container(
                       margin: EdgeInsets.symmetric(horizontal: 16),

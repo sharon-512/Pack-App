@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/widgets/selected_food_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../../custom_style.dart';
 import '../../../../models/customer_plan.dart';
 import '../../../../services/fetch_selected_meals.dart';

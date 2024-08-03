@@ -27,10 +27,8 @@ class _MealSelectionState extends State<MealSelection> {
   List<dynamic> subPlans = [];
   bool isLoading = true;
   String? errorMessage;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
-
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
-
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
 

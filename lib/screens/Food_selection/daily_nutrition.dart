@@ -62,7 +62,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   List<Map<String, dynamic>> selectedAddonsFinal = [];
   double totalPrice = 0.0;
   double subtotalAddonPrice = 0.0;
-  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 

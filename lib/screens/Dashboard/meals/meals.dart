@@ -48,11 +48,13 @@ class _SelectedMealsState extends State<SelectedMeals> {
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
+
   @override
   void dispose() {
     _connectivitySubscription.cancel();
     super.dispose();
   }
+
   Future<void> initConnectivity() async {
     late List<ConnectivityResult> result;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -91,7 +93,9 @@ class _SelectedMealsState extends State<SelectedMeals> {
       final customerPlan = await apiService.fetchCustomerPlan();
       final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
       final DateFormat outputDateFormat = DateFormat('MMM dd');
-      List<DateTime> dates = customerPlan.planDetails.menu.map((menu) => inputDateFormat.parse(menu.date)).toList();
+      List<DateTime> dates = customerPlan.planDetails.menu
+          .map((menu) => inputDateFormat.parse(menu.date))
+          .toList();
       dates.sort((a, b) => a.compareTo(b));
       final startDate = dates.first;
       final endDate = dates.last;
@@ -189,44 +193,59 @@ class _SelectedMealsState extends State<SelectedMeals> {
           const SizedBox(height: 20),
           isLoading
               ? buildShimmerForMenuList()
-              : Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16),
-                  height: 92,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: menuList.length,
-                    itemBuilder: (context, index) {
-                      // Define the texts for each container
-                      DateTime date =
-                          DateFormat('dd-MM-yyyy').parse(menuList[index].date);
-                      String text1 = DateFormat('MMM').format(date);
-                      String text2 = DateFormat('d').format(date);
-                      String text3 = DateFormat('EEE').format(date);
-
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            selectedDay = index; // Update the selected index
-                          });
-                          printFoodDetailsForSelectedDate(index);
-                        },
-                        child: Row(
-                          children: [
-                            CustomContainer(
-                              index == selectedDay,
-                              text1,
-                              text2,
-                              text3,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            )
-                          ],
+              : menuList.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Your ordered food details will be displayed here',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
                         ),
-                      );
-                    },
-                  ),
-                ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2, // Set the maximum number of lines
+                        overflow: TextOverflow
+                            .ellipsis, // Adds an ellipsis if the text is too long
+                      ),
+                    )
+                  : Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      height: 92,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: menuList.length,
+                        itemBuilder: (context, index) {
+                          // Define the texts for each container
+                          DateTime date = DateFormat('dd-MM-yyyy')
+                              .parse(menuList[index].date);
+                          String text1 = DateFormat('MMM').format(date);
+                          String text2 = DateFormat('d').format(date);
+                          String text3 = DateFormat('EEE').format(date);
+
+                          return GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                selectedDay =
+                                    index; // Update the selected index
+                              });
+                              printFoodDetailsForSelectedDate(index);
+                            },
+                            child: Row(
+                              children: [
+                                CustomContainer(
+                                  index == selectedDay,
+                                  text1,
+                                  text2,
+                                  text3,
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
           const SizedBox(
             height: 20,
           ),
@@ -239,14 +258,13 @@ class _SelectedMealsState extends State<SelectedMeals> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                     child: SelectedFoodCard(
-                      mealTypes: mealTypes,
-                      mealNames: mealNames,
-                      mealKcal: mealKcal,
-                      mealCarbs: mealCarbs,
-                      mealProteins: mealProteins,
-                      mealFats: mealFats,
-                      mealImage: mealImages
-                    ),
+                        mealTypes: mealTypes,
+                        mealNames: mealNames,
+                        mealKcal: mealKcal,
+                        mealCarbs: mealCarbs,
+                        mealProteins: mealProteins,
+                        mealFats: mealFats,
+                        mealImage: mealImages),
                   ),
                 ),
               ),

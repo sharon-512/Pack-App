@@ -33,8 +33,8 @@ class _HomePageState extends State<HomePage> {
 
   final PageController _pageController = PageController();
 
-  String planName = '';
-  String planDuration = '';
+  String planName = 'Ordered meal details will be shown here';
+  String planDuration = 'No Plan';
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;

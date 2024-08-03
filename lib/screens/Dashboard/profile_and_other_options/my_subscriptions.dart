@@ -23,8 +23,8 @@ class MySubscriptions extends StatefulWidget {
 }
 
 class _MySubscriptionsState extends State<MySubscriptions> {
-  String planName = '';
-  String planDuration = '';
+  String planName = 'Ordered meal details will be shown here';
+  String planDuration = 'No Plan';
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;

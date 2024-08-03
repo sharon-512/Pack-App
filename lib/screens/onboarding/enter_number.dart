@@ -111,6 +111,10 @@ class _EnterNumberState extends State<EnterNumber> {
                       hintText: 'your phone number',
                       controller: mobileNumber,
                       keyboardType: TextInputType.phone,
+                      style: TextStyle(
+                        fontFamily: 'Aeonik',
+                        fontWeight: FontWeight.w400
+                      ),
                     ),
                   ),
                 ],

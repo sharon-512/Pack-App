@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/screens/Dashboard/meals/widget/shimmer_effect_meals.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
@@ -6,6 +7,8 @@ import 'package:pack_app/widgets/selected_food_card.dart';
 import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
 import '../../../services/fetch_selected_meals.dart';
+import '../../../widgets/no_network_widget.dart';
+import '../Home_page/widget/banner_card.dart';
 
 class SelectedMeals extends StatefulWidget {
   const SelectedMeals({super.key});
@@ -16,6 +19,9 @@ class SelectedMeals extends StatefulWidget {
 
 class _SelectedMealsState extends State<SelectedMeals> {
   int selectedDay = 0;
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   String startDateforplan = '';
   String endDateforplan = '';
   int remainingDays = 0;
@@ -35,6 +41,48 @@ class _SelectedMealsState extends State<SelectedMeals> {
   void initState() {
     super.initState();
     fetchData();
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      print('No internet connection');
+    } else {
+      print('Connected to the internet');
+    }
+    // ignore: avoid_print
+    print('Connectivity changed: $_connectionStatus');
   }
 
   Future<void> fetchData() async {
@@ -129,6 +177,9 @@ class _SelectedMealsState extends State<SelectedMeals> {
 
   @override
   Widget build(BuildContext context) {
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      return NoNetworkWidget();
+    }
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,19 +188,33 @@ class _SelectedMealsState extends State<SelectedMeals> {
           const SizedBox(height: 20),
           isLoading
               ? buildShimmerForMenuList()
-              : Container(
-            margin: EdgeInsets.symmetric(horizontal: 16),
-            height: 92,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: menuList.length,
-              itemBuilder: (context, index) {
-                // Define the texts for each container
-                DateTime date =
-                DateFormat('dd-MM-yyyy').parse(menuList[index].date);
-                String text1 = DateFormat('MMM').format(date);
-                String text2 = DateFormat('d').format(date);
-                String text3 = DateFormat('EEE').format(date);
+              : menuList.isEmpty
+                  ? Center(
+                      child: Text(
+                        'Your ordered food details will be displayed here',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.grey,
+                        ),
+                        textAlign: TextAlign.center,
+                        maxLines: 2, // Set the maximum number of lines
+                        overflow: TextOverflow
+                            .ellipsis, // Adds an ellipsis if the text is too long
+                      ),
+                    )
+                  : Container(
+                      margin: EdgeInsets.symmetric(horizontal: 16),
+                      height: 92,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: menuList.length,
+                        itemBuilder: (context, index) {
+                          // Define the texts for each container
+                          DateTime date = DateFormat('dd-MM-yyyy')
+                              .parse(menuList[index].date);
+                          String text1 = DateFormat('MMM').format(date);
+                          String text2 = DateFormat('d').format(date);
+                          String text3 = DateFormat('EEE').format(date);
 
                 return GestureDetector(
                   onTap: () {
@@ -178,8 +243,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
           const SizedBox(
             height: 20,
           ),
-          if (mealNames.isEmpty)
-            Center(child: Text('No meals for this date.')),
           Expanded(
             child: SingleChildScrollView(
               child: Column(

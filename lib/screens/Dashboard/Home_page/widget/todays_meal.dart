@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/widgets/selected_food_card.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../../../../custom_style.dart';
 import '../../../../models/customer_plan.dart';
 import '../../../../services/fetch_selected_meals.dart';
@@ -125,7 +124,7 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
           ),
         ),
         SizedBox(
-          height: 140, // Adjust the height to fit your card
+          height: 120, // Adjust the height to fit your card
           child: PageView.builder(
             controller: _pageController,
             itemCount: mealNames.length,
@@ -133,28 +132,31 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 3),
                 child: SelectedFoodCard(
-                  mealTypes: mealTypes,
-                  mealNames: mealNames,
-                  mealKcal: mealKcal,
-                  mealCarbs: mealCarbs,
-                  mealProteins: mealProteins,
-                  mealFats: mealFats,
-                  mealImage: mealImages,
+                  mealTypes: [mealTypes[index]], // Single item list for meal type
+                  mealNames: [mealNames[index]], // Single item list for meal name
+                  mealKcal: [mealKcal[index]], // Single item list for meal kcal
+                  mealCarbs: [mealCarbs[index]], // Single item list for meal carbs
+                  mealProteins: [mealProteins[index]], // Single item list for meal proteins
+                  mealFats: [mealFats[index]], // Single item list for meal fats
+                  mealImage: [mealImages[index]], // Single item for meal image
                 ),
-              ); // Your custom card widget
+              );
             },
           ),
         ),
         SizedBox(height: 8),
-        Center(
-          child: SmoothPageIndicator(
-            controller: _pageController, // PageController
-            count: mealNames.length, // The number of dots
-            effect: WormEffect(
-              activeDotColor: Colors.grey,
-              dotColor: Colors.grey[300]!,
-              dotHeight: 8,
-              dotWidth: 8,
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Center(
+            child: SmoothPageIndicator(
+              controller: _pageController, // PageController
+              count: mealNames.length, // The number of dots
+              effect: WormEffect(
+                activeDotColor: Colors.grey,
+                dotColor: Colors.grey[300]!,
+                dotHeight: 8,
+                dotWidth: 8,
+              ),
             ),
           ),
         ),

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:ui';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:pack_app/screens/Food_selection/widgets/Addon_item.dart';
@@ -13,6 +16,7 @@ import 'dart:convert';
 import '../../custom_style.dart';
 import '../../widgets/Shimmer.dart';
 import '../../widgets/common_button.dart';
+import '../../widgets/no_network_widget.dart';
 import '../Summary/summary_screen.dart';
 
 class DailyNutrition extends StatefulWidget {
@@ -58,6 +62,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
   List<Map<String, dynamic>> selectedAddonsFinal = [];
   double totalPrice = 0.0;
   double subtotalAddonPrice = 0.0;
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
 
   @override
   void initState() {
@@ -66,6 +74,48 @@ class _DailyNutritionState extends State<DailyNutrition> {
     fetchAddons();
     fetchFoodPrice(widget.subplanId, widget.mealtypeId);
     clearSharedPreferences();
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      print('No internet connection');
+    } else {
+      print('Connected to the internet');
+    }
+    // ignore: avoid_print
+    print('Connectivity changed: $_connectionStatus');
   }
 
   Future<void> clearSharedPreferences() async {
@@ -249,15 +299,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
 
   @override
   Widget build(BuildContext context) {
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      return NoNetworkWidget();
+    }
     final int limit = widget.numberofMeals;
-
-    // Check if selections are complete for all days
-    bool isSelectionComplete = dailySelections.every((selection) =>
-        selection['breakfast'] != null &&
-        selection['lunch'] != null &&
-        selection['snacks'] != null &&
-        selection['dinner'] != null &&
-        selection['addons'].isNotEmpty);
 
     if (_isLoading) {
       return Scaffold(
@@ -331,164 +376,192 @@ class _DailyNutritionState extends State<DailyNutrition> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        if (selectedFoodOption == 0)
-                          ...List.generate(
-                            foodDetails?['BreakFast']?.length ?? 0,
-                            (index) {
-                              if (foodDetails?['BreakFast'] == null ||
-                                  foodDetails?['BreakFast']!.isEmpty) {
-                                return ShimmerEffect(); // Placeholder when loading
-                              }
-                              return FoodInfoCard(
-                                isSelected: dailySelections[selectedDay]
-                                        ['breakfast'] ==
-                                    foodDetails?['BreakFast'][index],
-                                onTap: () {
-                                  setState(() {
-                                    if (dailySelections[selectedDay]
-                                            ['breakfast'] ==
-                                        foodDetails?['BreakFast'][index]) {
-                                      // If already selected, deselect
-                                      dailySelections[selectedDay]
-                                          ['breakfast'] = null;
-                                      selectedBreakfastCardIndex = -1;
-                                      selectedBreakfastMenuId = -1;
-                                      selectedCount--;
-                                      print('513 -ve ---> $selectedCount');
-                                    } else if (selectedCount < limit) {
-                                      // Otherwise, select the new item if limit not reached
-                                      selectedCount++;
-                                      print('513 +ve---> $selectedCount');
-                                      dailySelections[selectedDay]
-                                              ['breakfast'] =
-                                          foodDetails?['BreakFast'][index];
-                                      selectedBreakfastCardIndex = index;
-                                      selectedBreakfastMenuId =
-                                          foodDetails?['BreakFast'][index]
-                                              ['menu_id'];
-                                    }
-                                  });
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (selectedFoodOption == 0)
+                              ...List.generate(
+                                foodDetails?['BreakFast']?.length ?? 0,
+                                    (index) {
+                                  if (foodDetails?['BreakFast'] == null || foodDetails?['BreakFast']!.isEmpty) {
+                                    return ShimmerEffect(); // Placeholder when loading
+                                  }
+                                  return FoodInfoCard(
+                                    isSelected: dailySelections[selectedDay]['breakfast'] == foodDetails?['BreakFast'][index],
+                                    onTap: () {
+                                      setState(() {
+                                        if (dailySelections[selectedDay]['breakfast'] != null) {
+                                          selectedCount--;
+                                          print('514 --ve count');
+                                          print('514---> $selectedCount');
+                                        }
+                                        if (dailySelections[selectedDay]['breakfast'] == foodDetails?['BreakFast'][index]) {
+                                          // If already selected, deselect
+                                          dailySelections[selectedDay]['breakfast'] = null;
+                                          selectedBreakfastCardIndex = -1;
+                                          selectedBreakfastMenuId = -1;
+                                        } else if (selectedCount < limit) {
+                                          // Otherwise, select the new item if limit not reached
+                                          selectedCount++;
+                                          dailySelections[selectedDay]['breakfast'] = foodDetails?['BreakFast'][index];
+                                          selectedBreakfastCardIndex = index;
+                                          selectedBreakfastMenuId = foodDetails?['BreakFast'][index]['menu_id'];
+                                        }
+                                      });
+                                    },
+                                    foodData: foodDetails?['BreakFast'][index],
+                                  );
                                 },
-                                foodData: foodDetails?['BreakFast'][index],
-                              );
-                            },
-                          ),
-                        if (selectedFoodOption == 1)
-                          ...List.generate(
-                            foodDetails?['Lunch']?.length ?? 0,
-                            (index) {
-                              if (foodDetails?['Lunch'] == null ||
-                                  foodDetails?['Lunch']!.isEmpty) {
-                                return ShimmerEffect(); // Placeholder when loading
-                              }
-                              return FoodInfoCard(
-                                isSelected: dailySelections[selectedDay]
-                                        ['lunch'] ==
-                                    foodDetails?['Lunch'][index],
-                                onTap: () {
-                                  setState(() {
-                                    if (dailySelections[selectedDay]['lunch'] ==
-                                        foodDetails?['Lunch'][index]) {
-                                      // If already selected, deselect
-                                      dailySelections[selectedDay]['lunch'] =
-                                          null;
-                                      selectedLunchCardIndex = -1;
-                                      selectedLunchMenuId = -1;
-                                      selectedCount--;
-                                    } else if (selectedCount < limit) {
-                                      // Otherwise, select the new item if limit not reached
-                                      selectedCount++;
-                                      dailySelections[selectedDay]['lunch'] =
-                                          foodDetails?['Lunch'][index];
-                                      selectedLunchCardIndex = index;
-                                      selectedLunchMenuId =
-                                          foodDetails?['Lunch'][index]
-                                              ['menu_id'];
-                                    }
-                                  });
+                              ),
+                            if (selectedFoodOption == 1)
+                              ...List.generate(
+                                foodDetails?['Lunch']?.length ?? 0,
+                                    (index) {
+                                  if (foodDetails?['Lunch'] == null || foodDetails?['Lunch']!.isEmpty) {
+                                    return ShimmerEffect(); // Placeholder when loading
+                                  }
+                                  return FoodInfoCard(
+                                    isSelected: dailySelections[selectedDay]['lunch'] == foodDetails?['Lunch'][index],
+                                    onTap: () {
+                                      setState(() {
+                                        if (dailySelections[selectedDay]['lunch'] != null) {
+                                          selectedCount--;
+                                          print('514 --ve count');
+                                          print('514---> $selectedCount');
+                                        }
+                                        if (dailySelections[selectedDay]['lunch'] == foodDetails?['Lunch'][index]) {
+                                          // If already selected, deselect
+                                          dailySelections[selectedDay]['lunch'] = null;
+                                          selectedLunchCardIndex = -1;
+                                          selectedLunchMenuId = -1;
+                                        } else if (selectedCount < limit) {
+                                          // Otherwise, select the new item if limit not reached
+                                          selectedCount++;
+                                          dailySelections[selectedDay]['lunch'] = foodDetails?['Lunch'][index];
+                                          selectedLunchCardIndex = index;
+                                          selectedLunchMenuId = foodDetails?['Lunch'][index]['menu_id'];
+                                        }
+                                      });
+                                    },
+                                    foodData: foodDetails?['Lunch'][index],
+                                  );
                                 },
-                                foodData: foodDetails?['Lunch'][index],
-                              );
-                            },
-                          ),
-                        if (selectedFoodOption == 2)
-                          ...List.generate(
-                            foodDetails?['Snacks']?.length ?? 0,
-                            (index) {
-                              if (foodDetails?['Snacks'] == null ||
-                                  foodDetails?['Snacks']!.isEmpty) {
-                                return ShimmerEffect(); // Placeholder when loading
-                              }
-                              return FoodInfoCard(
-                                isSelected: dailySelections[selectedDay]
-                                        ['snacks'] ==
-                                    foodDetails?['Snacks'][index],
-                                onTap: () {
-                                  setState(() {
-                                    if (dailySelections[selectedDay]
-                                            ['snacks'] ==
-                                        foodDetails?['Snacks'][index]) {
-                                      // If already selected, deselect
-                                      dailySelections[selectedDay]['snacks'] =
-                                          null;
-                                      selectedSnacksCardIndex = -1;
-                                      selectedSnacksMenuId = -1;
-                                      selectedCount--;
-                                    } else if (selectedCount < limit) {
-                                      // Otherwise, select the new item if limit not reached
-                                      selectedCount++;
-                                      dailySelections[selectedDay]['snacks'] =
-                                          foodDetails?['Snacks'][index];
-                                      selectedSnacksCardIndex = index;
-                                      selectedSnacksMenuId =
-                                          foodDetails?['Snacks'][index]
-                                              ['menu_id'];
-                                    }
-                                  });
+                              ),
+                            if (selectedFoodOption == 2)
+                              ...List.generate(
+                                foodDetails?['Snacks']?.length ?? 0,
+                                    (index) {
+                                  if (foodDetails?['Snacks'] == null || foodDetails?['Snacks']!.isEmpty) {
+                                    return ShimmerEffect(); // Placeholder when loading
+                                  }
+                                  return FoodInfoCard(
+                                    isSelected: dailySelections[selectedDay]['snacks'] == foodDetails?['Snacks'][index],
+                                    onTap: () {
+                                      setState(() {
+                                        if (dailySelections[selectedDay]['snacks'] != null) {
+                                          selectedCount--;
+                                          print('514 --ve count');
+                                          print('514---> $selectedCount');
+                                        }
+                                        if (dailySelections[selectedDay]['snacks'] == foodDetails?['Snacks'][index]) {
+                                          // If already selected, deselect
+                                          dailySelections[selectedDay]['snacks'] = null;
+                                          selectedSnacksCardIndex = -1;
+                                          selectedSnacksMenuId = -1;
+                                        } else if (selectedCount < limit) {
+                                          // Otherwise, select the new item if limit not reached
+                                          selectedCount++;
+                                          dailySelections[selectedDay]['snacks'] = foodDetails?['Snacks'][index];
+                                          selectedSnacksCardIndex = index;
+                                          selectedSnacksMenuId = foodDetails?['Snacks'][index]['menu_id'];
+                                        }
+                                      });
+                                    },
+                                    foodData: foodDetails?['Snacks'][index],
+                                  );
                                 },
-                                foodData: foodDetails?['Snacks'][index],
-                              );
-                            },
-                          ),
-                        if (selectedFoodOption == 3)
-                          ...List.generate(
-                            foodDetails?['Dinner']?.length ?? 0,
-                            (index) {
-                              if (foodDetails?['Dinner'] == null ||
-                                  foodDetails?['Dinner']!.isEmpty) {
-                                return ShimmerEffect(); // Placeholder when loading
-                              }
-                              return FoodInfoCard(
-                                isSelected: dailySelections[selectedDay]
-                                        ['dinner'] ==
-                                    foodDetails?['Dinner'][index],
-                                onTap: () {
-                                  setState(() {
-                                    if (dailySelections[selectedDay]
-                                            ['dinner'] ==
-                                        foodDetails?['Dinner'][index]) {
-                                      // If already selected, deselect
-                                      dailySelections[selectedDay]['dinner'] =
-                                          null;
-                                      selectedDinnerCardIndex = -1;
-                                      selectedDinnerMenuId = -1;
-                                      selectedCount--;
-                                    } else if (selectedCount < limit) {
-                                      // Otherwise, select the new item if limit not reached
-                                      selectedCount++;
-                                      dailySelections[selectedDay]['dinner'] =
-                                          foodDetails?['Dinner'][index];
-                                      selectedDinnerCardIndex = index;
-                                      selectedDinnerMenuId =
-                                          foodDetails?['Dinner'][index]
-                                              ['menu_id'];
-                                    }
-                                  });
+                              ),
+                            if (selectedFoodOption == 3)
+                              ...List.generate(
+                                foodDetails?['Dinner']?.length ?? 0,
+                                    (index) {
+                                  if (foodDetails?['Dinner'] == null || foodDetails?['Dinner']!.isEmpty) {
+                                    return ShimmerEffect(); // Placeholder when loading
+                                  }
+                                  return FoodInfoCard(
+                                    isSelected: dailySelections[selectedDay]['dinner'] == foodDetails?['Dinner'][index],
+                                    onTap: () {
+                                      setState(() {
+                                        if (dailySelections[selectedDay]['dinner'] != null) {
+                                          selectedCount--;
+                                          print('514 --ve count');
+                                          print('514---> $selectedCount');
+                                        }
+                                        if (dailySelections[selectedDay]['dinner'] == foodDetails?['Dinner'][index]) {
+                                          // If already selected, deselect
+                                          dailySelections[selectedDay]['dinner'] = null;
+                                          selectedDinnerCardIndex = -1;
+                                          selectedDinnerMenuId = -1;
+                                        } else if (selectedCount < limit) {
+                                          // Otherwise, select the new item if limit not reached
+                                          selectedCount++;
+                                          dailySelections[selectedDay]['dinner'] = foodDetails?['Dinner'][index];
+                                          selectedDinnerCardIndex = index;
+                                          selectedDinnerMenuId = foodDetails?['Dinner'][index]['menu_id'];
+                                        }
+                                      });
+                                    },
+                                    foodData: foodDetails?['Dinner'][index],
+                                  );
                                 },
-                                foodData: foodDetails?['Dinner'][index],
-                              );
-                            },
-                          ),
+                              ),
+                            // No changes needed for addons logic here
+                            if (selectedFoodOption == 4)
+                              ...List.generate(
+                                addons?.length ?? 0,
+                                    (index) {
+                                  if (addons == null || addons!.isEmpty) {
+                                    return ShimmerEffect(); // Placeholder when loading
+                                  }
+                                  return AddonItem(
+                                    isSelected: dailySelections[selectedDay]['addons'].contains(addons![index]),
+                                    onTap: () {
+                                      setState(() {
+                                        if (dailySelections[selectedDay]['addons'].contains(addons![index])) {
+                                          dailySelections[selectedDay]['addons'].remove(addons![index]);
+                                        } else {
+                                          dailySelections[selectedDay]['addons'].add(addons![index]);
+                                        }
+                                      });
+                                    },
+                                    addonData: addons![index],
+                                    onCountChange: (addonId, quantity, totalPrice) {
+                                      // Handle the callback here to pass addonId, quantity, and totalPrice
+                                      print('Addon ID: $addonId, Quantity: $quantity, Total Price: $totalPrice');
+
+                                      // Check if addonId already exists in selectedAddons
+                                      int existingIndex = selectedAddonsFinal.indexWhere((addon) => addon['id'] == addonId);
+
+                                      if (existingIndex != -1) {
+                                        // If addon exists, update its quantity
+                                        setState(() {
+                                          selectedAddonsFinal[existingIndex]['quantity'] = quantity;
+                                        });
+                                      } else {
+                                        // If addon doesn't exist, add it to selectedAddons
+                                        setState(() {
+                                          selectedAddonsFinal.add({'id': addonId, 'quantity': quantity});
+                                        });
+                                      }
+                                      // Print updated selectedAddons (for debugging)
+                                      print('Updated selectedAddons: $selectedAddonsFinal');
+                                    },
+                                  );
+                                },
+                              ),
+                          ],
+                        ),
+
                         if (selectedFoodOption == 4)
                           ...List.generate(
                             addons?.length ?? 0,

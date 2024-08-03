@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pack_app/widgets/common_button.dart';
@@ -52,6 +56,10 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   String? _mobileNo;
   // List of addresses for dropdown
   List<String> _addresses = [];
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
 
   void addDailySelections(Map<String, dynamic> selection) {
     dailySelections.add(selection);
@@ -84,8 +92,48 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     super.initState();
     fetchDatesFromSharedPreferences();
     fetchAddressesFromLocalStorage(); // Fetch addresses when initializing
+    initConnectivity();
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
   }
 
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      print('No internet connection');
+    } else {
+      print('Connected to the internet');
+    }
+    // ignore: avoid_print
+    print('Connectivity changed: $_connectionStatus');
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -9,8 +9,9 @@ class CommonTextField extends StatelessWidget {
     required this.controller,
     this.keyboardType,
     this.isEditable = true, // Added parameter for editability
-    this.validator, // Added parameter for validation
+    this.validator,  this.style, // Added parameter for validation
   });
+  final TextStyle? style;
 
   final String hintText;
   final TextEditingController controller;
@@ -39,6 +40,7 @@ class CommonTextField extends StatelessWidget {
         contentPadding: EdgeInsets.symmetric(horizontal: 12.0),
       ),
       keyboardType: keyboardType,
+      style: style,
       readOnly: !isEditable, // Use the isEditable flag to control editability
       validator: validator, // Use the validator parameter
     );

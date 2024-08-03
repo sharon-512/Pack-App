@@ -37,7 +37,7 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
     try {
       final customerPlan = await apiService.fetchCustomerPlan();
       final DateFormat inputDateFormat = DateFormat('dd-MM-yyyy');
-      final String currentDateStr = '05-08-2024';
+      final String currentDateStr = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
       final Menu? todayMenu = customerPlan.planDetails.menu.firstWhere(
             (menu) => menu.date == currentDateStr,

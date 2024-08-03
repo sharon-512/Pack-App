@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +10,7 @@ import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
 import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
-import '../Home_page/widget/banner_card.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 class SelectedMeals extends StatefulWidget {
   const SelectedMeals({super.key});

@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 import 'package:intl/intl.dart';
 import 'package:pack_app/custom_style.dart';
@@ -11,6 +14,7 @@ import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../models/user_model.dart';
 import '../../../services/fetch_selected_meals.dart';
+import '../../../widgets/no_network_widget.dart';
 import '../../../widgets/selected_food_card.dart';
 import '../../Mealselection/meal_selection.dart';
 
@@ -22,6 +26,11 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+
   final PageController _pageController = PageController();
 
   String planName = '';
@@ -34,6 +43,49 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     fetchCustomerPlan();
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      print('No internet connection');
+    } else {
+      print('Connected to the internet');
+    }
+    // ignore: avoid_print
+    print('Connectivity changed: $_connectionStatus');
   }
 
   Future<void> fetchCustomerPlan() async {
@@ -70,6 +122,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      return NoNetworkWidget();
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),

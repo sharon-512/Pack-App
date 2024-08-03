@@ -89,7 +89,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
     const HomePage(),
     const SelectedMeals(),
     const Packs(),
-    const NotificationsScreen(),
+    NotificationsScreen(),
     const ProfileMenuScreen(),
   ];
 

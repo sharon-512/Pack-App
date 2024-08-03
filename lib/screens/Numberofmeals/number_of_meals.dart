@@ -1,13 +1,17 @@
+import 'dart:async';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
 import '../../custom_style.dart';
 import '../../widgets/common_button.dart';
+import '../../widgets/no_network_widget.dart';
 import '../Food_selection/daily_nutrition.dart';
-
 
 class NumberOfMeals extends StatefulWidget {
   final int subplanId;
@@ -25,11 +29,57 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
   List<dynamic> mealOptions = [];
   bool isLoading = true;
   String? errorMessage;
+  List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
+  final Connectivity _connectivity = Connectivity();
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
 
   @override
   void initState() {
     super.initState();
     fetchMealOptions(widget.subplanId);
+    initConnectivity();
+
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> initConnectivity() async {
+    late List<ConnectivityResult> result;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      result = await _connectivity.checkConnectivity();
+    } on PlatformException catch (e) {
+      print('Couldn\'t check connectivity status');
+      return;
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) {
+      return Future.value(null);
+    }
+
+    return _updateConnectionStatus(result);
+  }
+
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
+    setState(() {
+      _connectionStatus = result;
+    });
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      print('No internet connection');
+    } else {
+      print('Connected to the internet');
+    }
+    // ignore: avoid_print
+    print('Connectivity changed: $_connectionStatus');
   }
 
   Future<void> fetchMealOptions(int subplanId) async {
@@ -45,7 +95,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         for (var plan in data['plan']) {
           final subplans = plan['sub_plans'] as List<dynamic>;
           selectedSubplan = subplans.firstWhere(
-                (subplan) => subplan['subplan_id'] == subplanId,
+            (subplan) => subplan['subplan_id'] == subplanId,
             orElse: () => null,
           );
           if (selectedSubplan != null) {
@@ -56,7 +106,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
         if (selectedSubplan != null && selectedSubplan['meal_plan'] != null) {
           setState(() {
             mealOptions =
-            List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
+                List<Map<String, dynamic>>.from(selectedSubplan?['meal_plan']);
             isLoading = false;
           });
         }
@@ -73,6 +123,9 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
 
   @override
   Widget build(BuildContext context) {
+    if (_connectionStatus.last == ConnectivityResult.none) {
+      return NoNetworkWidget();
+    }
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 70),
@@ -119,55 +172,63 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                         // Display shimmer effect while loading
                         isLoading
                             ? Column(
-                          children: List.generate(3, (index) => Shimmer.fromColors(
-                            baseColor: Colors.grey[300]!,
-                            highlightColor: Colors.grey[100]!,
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 6),
-                              height: 50,
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                            ),
-                          )),
-                        )
+                                children: List.generate(
+                                    3,
+                                    (index) => Shimmer.fromColors(
+                                          baseColor: Colors.grey[300]!,
+                                          highlightColor: Colors.grey[100]!,
+                                          child: Container(
+                                            margin: EdgeInsets.symmetric(
+                                                vertical: 6),
+                                            height: 50,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                            ),
+                                          ),
+                                        )),
+                              )
                             : Column(
-                          children: mealOptions.map((mealOption) {
-                            int index = mealOptions.indexOf(mealOption);
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  selectedOption = index + 1; // +1 to match your meal options (1-based)
-                                });
-                              },
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 6, horizontal: 5),
-                                decoration: BoxDecoration(
-                                  color: selectedOption == index + 1
-                                      ? Color(0xFFEDC0B2)
-                                      : Colors.transparent,
-                                  border: Border.all(color: Color(0xFFEDC0B2)),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                height: 50,
-                                width: double.infinity,
-                                child: Center(
-                                  child: Text(
-                                    '${mealOption['mealtype_name']} meal', // Displaying integer with meal type name
-                                    style: TextStyle(
-                                      color: selectedOption == index + 1 ? Colors.white : Colors.black,
-                                      fontFamily: 'Aeonik',
-                                      fontSize: 18,
+                                children: mealOptions.map((mealOption) {
+                                  int index = mealOptions.indexOf(mealOption);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedOption = index +
+                                            1; // +1 to match your meal options (1-based)
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.symmetric(
+                                          vertical: 6, horizontal: 5),
+                                      decoration: BoxDecoration(
+                                        color: selectedOption == index + 1
+                                            ? Color(0xFFEDC0B2)
+                                            : Colors.transparent,
+                                        border: Border.all(
+                                            color: Color(0xFFEDC0B2)),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      height: 50,
+                                      width: double.infinity,
+                                      child: Center(
+                                        child: Text(
+                                          '${mealOption['mealtype_name']} meal', // Displaying integer with meal type name
+                                          style: TextStyle(
+                                            color: selectedOption == index + 1
+                                                ? Colors.white
+                                                : Colors.black,
+                                            fontFamily: 'Aeonik',
+                                            fontSize: 18,
+                                          ),
+                                        ),
+                                      ),
                                     ),
-                                  ),
-          
-                                ),
+                                  );
+                                }).toList(),
                               ),
-                            );
-                          }).toList(),
-                        ),
                       ],
                     ),
                   ),
@@ -189,17 +250,16 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                     onTap: () {
                       if (selectedOption > 0) {
                         int selectedMealType =
-                        mealOptions[selectedOption - 1]['mealtype_id'];
+                            mealOptions[selectedOption - 1]['mealtype_id'];
                         int totalMeals =
-                        mealOptions[selectedOption - 1]['mealtype_name'];
+                            mealOptions[selectedOption - 1]['mealtype_name'];
                         Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => DailyNutrition(
-                              subplanId: widget.subplanId,
-                              mealtypeId: selectedMealType,
-                              numberofMeals: totalMeals
-                            ),
+                                subplanId: widget.subplanId,
+                                mealtypeId: selectedMealType,
+                                numberofMeals: totalMeals),
                           ),
                         );
                       } else {

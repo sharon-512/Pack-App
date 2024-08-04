@@ -13,6 +13,7 @@ import '../../../models/customer_plan.dart';
 import '../../../models/diet_plan.dart';
 import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
+import '../Home_page/widget/homepage_shimmer.dart';
 import '../Home_page/widget/selected_pack_card.dart';
 
 class MySubscriptions extends StatefulWidget {
@@ -23,7 +24,7 @@ class MySubscriptions extends StatefulWidget {
 }
 
 class _MySubscriptionsState extends State<MySubscriptions> {
-  String planName = 'Ordered meal details will be shown here';
+  String planName = '';
   String planDuration = 'No Plan';
   String startDateforplan = '';
   String endDateforplan = '';
@@ -31,6 +32,8 @@ class _MySubscriptionsState extends State<MySubscriptions> {
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.wifi];
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  bool isLoading = true; // Add a loading state
+  bool hasError = false;
 
   @override
   void initState() {
@@ -40,11 +43,13 @@ class _MySubscriptionsState extends State<MySubscriptions> {
     _connectivitySubscription =
         _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
+
   @override
   void dispose() {
     _connectivitySubscription.cancel();
     super.dispose();
   }
+
   Future<void> initConnectivity() async {
     late List<ConnectivityResult> result;
     // Platform messages may fail, so we use a try/catch PlatformException.
@@ -78,30 +83,59 @@ class _MySubscriptionsState extends State<MySubscriptions> {
     print('Connectivity changed: $_connectionStatus');
   }
 
-
   Future<void> fetchCustomerPlan() async {
-    final data = await SelectedFoodApi.subscriptionDetails();
+    try {
+      final data = await SelectedFoodApi.subscriptionDetails();
 
-    if (data.isNotEmpty) {
-      final subscription = data['data']['subscription'][0];
-      final DateFormat inputDateFormat = DateFormat('yyyy-MM-dd');
-      final DateFormat outputDateFormat = DateFormat('MMM dd');
+      if (data != null &&
+          data['data'] != null &&
+          data['data']['subscription'] != null &&
+          data['data']['subscription'].isNotEmpty) {
+        final subscription = data['data']['subscription'][0];
+        final DateFormat inputDateFormat = DateFormat('yyyy-MM-dd');
+        final DateFormat outputDateFormat = DateFormat('MMM dd');
 
-      final startDate = inputDateFormat.parse(subscription['start_date']);
-      final endDate = inputDateFormat.parse(subscription['end_date']);
+        final startDate = inputDateFormat.parse(subscription['start_date']);
+        final endDate = inputDateFormat.parse(subscription['end_date']);
 
-      final formattedStartDate = outputDateFormat.format(startDate);
-      final formattedEndDate = outputDateFormat.format(endDate);
-      final DateTime today = DateTime.now();
-      final int daysLeft = endDate.difference(today).inDays + 1; // +1 to include the end date
+        final formattedStartDate = outputDateFormat.format(startDate);
+        final formattedEndDate = outputDateFormat.format(endDate);
 
+        final totalDays = endDate.difference(startDate).inDays +
+            1; // +1 to include the end date
+        final today = DateTime.now();
+        final remainingDays = totalDays;
+
+        setState(() {
+          planName = subscription['plan'];
+          planDuration = subscription['calorie_plan'];
+          startDateforplan = formattedStartDate;
+          endDateforplan = formattedEndDate;
+          this.remainingDays = remainingDays > 0
+              ? remainingDays
+              : 0; // Ensure remainingDays is not negative
+          isLoading = false; // Set loading to false after data is fetched
+          hasError = false;
+        });
+      } else {
+        setState(() {
+          isLoading =
+              false; // Set loading to false if no valid data is received
+          hasError = true;
+          planName = 'Please order any meals!';
+          planDuration = '0 days';
+          startDateforplan = '';
+          endDateforplan = '';
+        });
+      }
+    } catch (e) {
       setState(() {
-        planName = subscription['plan'];
-        planDuration = subscription ['calorie_plan'];
-        remainingDays = daysLeft;
-        startDateforplan = formattedStartDate;
-        endDateforplan = formattedEndDate;
-        remainingDays = daysLeft;
+        isLoading = false;
+        hasError = true; // Set loading to false if an error occurs
+        planName = 'Please order any meals!';
+        planDuration = '0 days';
+        startDateforplan = '_._';
+        endDateforplan = '_._';
       });
     }
   }
@@ -112,161 +146,173 @@ class _MySubscriptionsState extends State<MySubscriptions> {
       return NoNetworkWidget();
     }
     return Scaffold(
-      body: Column(
-        children: [
-          GreenAppBar(showBackButton: true, titleText: 'My Subscriptions'),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? const HomePageShimmer()
+          : Column(
               children: [
-                SelectedPackCard(
-                    planName: planName, planDuration: planDuration),
-                SizedBox(
-                  height: 10,
-                ),
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Container(
-                        height: 92, // Height set to 92
-                        decoration: BoxDecoration(
-                          color: Color(
-                              0xFF124734), // Background color for the 1st container
-                          borderRadius: BorderRadius.circular(
-                              10), // Radius of 10 pixels
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset('assets/images/note.png'),
-                              SizedBox(height: 5),
-                              Text(
-                                'Plan Start',
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                startDateforplan,
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
-                          ),
-                        ),
+                GreenAppBar(
+                    showBackButton: true, titleText: 'My Subscriptions'),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SelectedPackCard(
+                          planName: planName, planDuration: planDuration),
+                      SizedBox(
+                        height: 10,
                       ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 92, // Height set to 92
-                        decoration: BoxDecoration(
-                          color: Color(
-                              0xFFBBC392), // Background color for the 2nd container
-                          borderRadius: BorderRadius.circular(
-                              10), // Radius of 10 pixels
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                'assets/images/note.png',
-                                color: Color(0xff8D9858),
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Container(
+                              height: 92, // Height set to 92
+                              decoration: BoxDecoration(
+                                color: Color(
+                                    0xFF124734), // Background color for the 1st container
+                                borderRadius: BorderRadius.circular(
+                                    10), // Radius of 10 pixels
                               ),
-                              SizedBox(height: 5),
-                              Text(
-                                'Plan ends',
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset('assets/images/note.png'),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Plan Start',
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      startDateforplan,
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              Text(
-                                endDateforplan,
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
+                            ),
                           ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 92, // Height set to 92
-                        decoration: BoxDecoration(
-                          color: Color(
-                              0xFFA8353A), // Background color for the 3rd container
-                          borderRadius: BorderRadius.circular(
-                              10), // Radius of 10 pixels
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Image.asset('assets/images/timer.png'),
-                              SizedBox(height: 5),
-                              Text(
-                                'Remaining',
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w400,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              Text(
-                                remainingDays.toString(),
-                                style: CustomTextStyles.titleTextStyle.copyWith(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                              ),
-                            ],
+                          const SizedBox(
+                            width: 8,
                           ),
-                        ),
+                          Expanded(
+                            child: Container(
+                              height: 92, // Height set to 92
+                              decoration: BoxDecoration(
+                                color: Color(
+                                    0xFFBBC392), // Background color for the 2nd container
+                                borderRadius: BorderRadius.circular(
+                                    10), // Radius of 10 pixels
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/note.png',
+                                      color: Color(0xff8D9858),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Plan ends',
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      endDateforplan,
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 92, // Height set to 92
+                              decoration: BoxDecoration(
+                                color: Color(
+                                    0xFFA8353A), // Background color for the 3rd container
+                                borderRadius: BorderRadius.circular(
+                                    10), // Radius of 10 pixels
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Image.asset('assets/images/timer.png'),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Remaining',
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    Text(
+                                      remainingDays.toString(),
+                                      style: CustomTextStyles.titleTextStyle
+                                          .copyWith(
+                                        fontSize: 22,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 10,
+                      SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

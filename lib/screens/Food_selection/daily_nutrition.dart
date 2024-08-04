@@ -355,6 +355,11 @@ class _DailyNutritionState extends State<DailyNutrition> {
                     setState(() {
                       selectedCount = 0;
                       selectedDay = index;
+                      if (dailySelections[selectedDay]['breakfast'] !=null) selectedCount++;
+                      if (dailySelections[selectedDay]['lunch'] !=null) selectedCount++;
+                      if (dailySelections[selectedDay]['snacks'] !=null) selectedCount++;
+                      if (dailySelections[selectedDay]['dinner'] !=null) selectedCount++;
+                      print('512---  $selectedCount ');
                     });
                   },
                 ),

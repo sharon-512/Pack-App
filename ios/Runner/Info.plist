@@ -6,6 +6,12 @@
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>
 		<string>Pack App</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Uploading image</string>
+	    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+        <string>Location permission</string>
+        <key>NSLocationWhenInUseUsageDescription</key>
+        <string>Location permission</string>
 		<key>CFBundleExecutable</key>
 		<string>$(EXECUTABLE_NAME)</string>
 		<key>CFBundleIdentifier</key>

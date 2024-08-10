@@ -1,8 +1,9 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'api.dart';
+
 class AuthenticationService {
-  static const String baseUrl = 'https://interfuel.qa/packupadmin/api';
 
   Future<Map<String, dynamic>> sendMobileNumber(String mobileNumber) async {
     final response = await http.post(

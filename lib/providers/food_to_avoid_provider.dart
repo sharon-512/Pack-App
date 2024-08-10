@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/food_to_avoid_model.dart';
+import '../services/api.dart';
 
 class FoodProvider with ChangeNotifier {
   List<Food> _foods = [];
@@ -14,7 +15,7 @@ class FoodProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = 'https://interfuel.qa/packupadmin/api/foodavoid';
+    final url = '$baseUrl/api/foodavoid';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 
 import '../../../custom_style.dart';
 import '../../../models/plan_model.dart';
+import '../../../services/api.dart';
 import '../../../widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
 
@@ -26,7 +27,7 @@ class _PacksState extends State<Packs> {
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   Future<List<Plan>> fetchPlans() async {
     final response = await http
-        .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+        .get(Uri.parse('$baseUrl/api/get-diet-data'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

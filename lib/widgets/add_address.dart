@@ -16,6 +16,7 @@ import '../../../custom_style.dart';
 import '../../../models/user_model.dart';
 import '../../../widgets/common_button.dart';
 import '../../../widgets/info_container.dart';
+import '../services/api.dart';
 import 'map.dart';
 import 'no_network_widget.dart';
 
@@ -164,7 +165,7 @@ class _AddAddressState extends State<AddAddress> {
       String? token = prefs.getString('bearerToken');
 
       final response = await http.post(
-        Uri.parse('https://interfuel.qa/packupadmin/api/save-address'),
+        Uri.parse('$baseUrl/api/save-address'),
         headers: {
           'Authorization': 'Bearer $token',
           'Content-Type': 'application/x-www-form-urlencoded',

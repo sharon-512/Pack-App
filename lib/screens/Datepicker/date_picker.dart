@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../../custom_style.dart';
+import '../../services/api.dart';
 import '../../widgets/common_button.dart';
 import '../Numberofmeals/number_of_meals.dart';
 
@@ -33,7 +34,7 @@ class _DatePickerState extends State<DatePicker> {
   Future<void> fetchSubplanDetails(int subplanId) async {
     try {
       final response = await http.get(
-          Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+          Uri.parse('$baseUrl/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

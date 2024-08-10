@@ -14,10 +14,11 @@ class SpecificFood2 extends StatefulWidget {
 }
 
 class _SpecificFood2 extends State<SpecificFood2> {
-  int _selectedIndex = -1;
+  List<String> _selectedFoods = [];
 
-  void _updateFoodAvoid(String foodName) {
-    Provider.of<UserProvider>(context, listen: false).updateFoodAvoid(foodName);
+  void _updateFoodAvoid() {
+    print('Selected foods to avoid: $_selectedFoods');
+    Provider.of<UserProvider>(context, listen: false).updateFoodAvoidList(_selectedFoods);
   }
 
   @override
@@ -62,19 +63,29 @@ class _SpecificFood2 extends State<SpecificFood2> {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+            child: ElevatedButton(
+              onPressed: _selectedFoods.isNotEmpty ? _updateFoodAvoid : null,
+              child: Text("Save Selections"),
+            ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildContainer(int index, Food food) {
-    bool isSelected = _selectedIndex == index;
+    bool isSelected = _selectedFoods.contains(food.foodName);
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedIndex = index;
+          if (isSelected) {
+            _selectedFoods.remove(food.foodName);
+          } else {
+            _selectedFoods.add(food.foodName);
+          }
         });
-        _updateFoodAvoid(food.foodName); // Update foodavoid with selected food name
       },
       child: Container(
         height: 70,

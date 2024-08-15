@@ -20,7 +20,6 @@ Future<void> main() async {
   Hive.registerAdapter(UserAdapter());
   await Hive.openBox<User>('userBox');
   await Hive.openBox('bannersBox');
-  await Permission.location.request();
 
   final isLoggedIn = await checkLoggedInStatus();
 

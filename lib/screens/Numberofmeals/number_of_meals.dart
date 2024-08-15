@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
 import '../../custom_style.dart';
+import '../../services/api.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/no_network_widget.dart';
 import '../Food_selection/daily_nutrition.dart';
@@ -85,7 +86,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
   Future<void> fetchMealOptions(int subplanId) async {
     try {
       final response = await http
-          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+          .get(Uri.parse('$baseUrl/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

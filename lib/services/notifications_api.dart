@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 
 import '../models/notifications_model.dart';
+import 'api.dart';
 
 class ApiService {
-  final String baseUrl = 'https://interfuel.qa/packupadmin/api';
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -15,7 +15,7 @@ class ApiService {
 
   Future<List<NotificationModel>> fetchNotifications() async {
     final token = await _getToken();
-    final url = Uri.parse('$baseUrl/notifications');
+    final url = Uri.parse('$baseUrl/api/notifications');
     final response = await http.get(
       url,
       headers: {

@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 import '../models/banner_model.dart';
+import 'api.dart';
 
 class BannerService {
-  static const String url = 'https://interfuel.qa/packupadmin/api/banners';
+  static  String url = '$baseUrl/api/banners';
   static final box = Hive.box('bannersBox');
 
   static Future<List<BannerCard>> fetchBanners() async {

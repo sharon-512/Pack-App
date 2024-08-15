@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../models/user_model.dart';
+import '../../../services/api.dart';
 import '../nav_bar.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -44,7 +45,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('bearerToken');
     final url = Uri.parse(
-        'https://interfuel.qa/packupadmin/api/update-profile?id=${user.id}&firstname=${firstNameController.text}&lastname=${lastNameController.text}');
+        '$baseUrl/api/update-profile?id=${user.id}&firstname=${firstNameController.text}&lastname=${lastNameController.text}');
 
     final request = http.MultipartRequest('POST', url)
       ..headers['Authorization'] = 'Bearer $token'

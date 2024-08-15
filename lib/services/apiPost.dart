@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
+import 'api.dart';
+
 class ApiService {
   static Future<Map<String, dynamic>> placeOrder({
     required String userId,
@@ -67,7 +69,7 @@ class ApiService {
       };
 
       // Make the POST request with automatic redirection handling
-      var apiUrl = 'https://interfuel.qa/packupadmin/api/save-order';
+      var apiUrl = '$baseUrl/api/save-order';
       var response = await http.post(
         Uri.parse(apiUrl),
         body: formData,

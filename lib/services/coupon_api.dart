@@ -5,11 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/coupon_model.dart';
+import 'api.dart';
 
 Future<List<Coupon>> fetchCoupons() async {
   final prefs = await SharedPreferences.getInstance();
   String? token = prefs.getString('bearerToken');
-  final url = Uri.parse('https://interfuel.qa/packupadmin/api/all-coupon');
+  final url = Uri.parse('$baseUrl/api/all-coupon');
   final response = await http.get(
     url,
     headers: {

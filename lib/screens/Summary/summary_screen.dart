@@ -8,6 +8,7 @@ import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../custom_style.dart';
+import '../../services/api.dart';
 import '../../services/apiPost.dart';
 import '../checkout/checkout.dart';
 
@@ -73,7 +74,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
       _couponErrorMessage = '';
       _couponSuccess = '';
     });
-    final String url = 'https://interfuel.qa/packupadmin/api/verify-coupon';
+    final String url = '$baseUrl/api/verify-coupon';
     final int customerPlanId = widget.planId;
 
     try {

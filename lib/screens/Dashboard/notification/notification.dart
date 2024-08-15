@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
@@ -85,9 +86,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return  Center(
+                    child: Text('Something went wrong,\nPlease restart the application',
+                      textAlign: TextAlign.center,
+                    ),);
+                    //Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No notifications found'));
+                  return Center(child: Text('You don\'t have any  notifications'));
                 }
 
                 final notifications = snapshot.data!;
@@ -96,7 +101,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   itemBuilder: (context, index) {
                     final notification = notifications[index];
                     return notificationCard(
-                      imagePath: 'assets/images/apple.png', // Update this as per your logic
+                      imagePath: 'assets/images/nav_bar3.svg', // Update this as per your logic
                       title: notification.title,
                       message: notification.message,
                       date: notification.date, // Use 'date' instead of 'timestamp'
@@ -122,12 +127,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       color: Colors.white,
       child: ListTile(
         leading: Container(
-          height: 50,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: Color(0xffF5FBD3),
           ),
-          child: Image.asset(imagePath),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SvgPicture.asset(imagePath, color: Colors.blueGrey,),
+          ),
         ),
         title: Text(
           message,

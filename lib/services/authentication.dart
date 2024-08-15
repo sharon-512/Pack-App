@@ -7,7 +7,7 @@ class AuthenticationService {
 
   Future<Map<String, dynamic>> sendMobileNumber(String mobileNumber) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/sent-mobile-number'),
+      Uri.parse('$baseUrl/api/sent-mobile-number'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -25,7 +25,7 @@ class AuthenticationService {
 
   Future<Map<String, dynamic>> confirmOtp(String mobileNumber, String otp) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/confirm-otp'),
+      Uri.parse('$baseUrl/api/confirm-otp'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

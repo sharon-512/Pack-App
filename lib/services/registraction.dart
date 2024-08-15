@@ -9,7 +9,7 @@ class RegistrationService {
 
   Future<Map<String, dynamic>> newRegister(UserRegistrationModel user) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/new_register'),
+      Uri.parse('$baseUrl/api/new_register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

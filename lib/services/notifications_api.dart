@@ -15,7 +15,7 @@ class ApiService {
 
   Future<List<NotificationModel>> fetchNotifications() async {
     final token = await _getToken();
-    final url = Uri.parse('$baseUrl/notifications');
+    final url = Uri.parse('$baseUrl/api/notifications');
     final response = await http.get(
       url,
       headers: {

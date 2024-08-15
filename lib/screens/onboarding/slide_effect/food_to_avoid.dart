@@ -63,13 +63,6 @@ class _SpecificFood2 extends State<SpecificFood2> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
-            child: ElevatedButton(
-              onPressed: _selectedFoods.isNotEmpty ? _updateFoodAvoid : null,
-              child: Text("Save Selections"),
-            ),
-          ),
         ],
       ),
     );
@@ -85,6 +78,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
           } else {
             _selectedFoods.add(food.foodName);
           }
+          _updateFoodAvoid();
         });
       },
       child: Container(

@@ -9,6 +9,7 @@ import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../models/user_model.dart';
+import '../../../services/api.dart';
 import '../../../widgets/add_address.dart';
 import '../../onboarding/start_screen.dart';
 import 'Help_and_support.dart';
@@ -16,6 +17,7 @@ import 'edit_profile.dart';
 import 'languages.dart';
 import 'my_coupons.dart';
 import 'my_subscriptions.dart';
+import 'package:http/http.dart' as http;
 
 class ProfileMenuScreen extends StatelessWidget {
   const ProfileMenuScreen({super.key});
@@ -93,10 +95,29 @@ class ProfileMenuScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 30),
                   child: GestureDetector(
                     onTap: () async {
-                      _showLogoutConfirmationDialog(context);
+                      _showLogoutConfirmationDialog(context, 'You really want to logout?');
                     },
                     child: Text(
                       'Logout',
+                      style: TextStyle(
+                        fontFamily: 'Aeonik',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                        height: 14 / 15,
+                        letterSpacing: -0.5,
+                        color: Colors.red[800],
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20.0, 0, 20, 30),
+                  child: GestureDetector(
+                    onTap: () async {
+                      _showLogoutConfirmationDialog(context, 'Are you sure? Your account will be deleted permanently.');
+                    },
+                    child: Text(
+                      'Delete Account',
                       style: TextStyle(
                         fontFamily: 'Aeonik',
                         fontWeight: FontWeight.w500,
@@ -141,7 +162,7 @@ class ProfileMenuScreen extends StatelessWidget {
     );
   }
 
-  void _showLogoutConfirmationDialog(BuildContext context) {
+  void _showLogoutConfirmationDialog(BuildContext context, String text) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -170,7 +191,7 @@ class ProfileMenuScreen extends StatelessWidget {
                 ),
                 SizedBox(height: 16.0),
                 Text(
-                  'You really want to logout?',
+                  text,
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.w500,
@@ -208,19 +229,36 @@ class ProfileMenuScreen extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          final userBox = Hive.box<User>('userBox');
-                          await userBox.clear(); // Clear all stored user data
-
+                          // Call the logout API
                           final prefs = await SharedPreferences.getInstance();
-                          await prefs.remove('isLoggedIn');
-                          await prefs.remove('bearerToken');
-
-                          // Navigate to the start screen
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(builder: (context) => StartScreen()),
-                                (route) => false,
+                          String? token = prefs.getString('bearerToken');
+                          final response = await http.get(
+                            Uri.parse('$baseUrl/api/logout'),
+                            headers: {
+                              'Authorization': 'Bearer $token', // Replace with your actual token
+                            },
                           );
+
+                          if (response.statusCode == 200) {
+                            // Clear stored user data
+                            final userBox = Hive.box<User>('userBox');
+                            await userBox.clear();
+
+                            final prefs = await SharedPreferences.getInstance();
+                            await prefs.remove('isLoggedIn');
+                            await prefs.remove('bearerToken');
+
+                            // Navigate to the start screen
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (context) => StartScreen()),
+                                  (route) => false,
+                            );
+                          } else {
+                            // Handle API call failure
+                            print('Failed to logout: ${response.statusCode}');
+                            // Show an error message or handle accordingly
+                          }
                         },
                         child: Container(
                           height: 50,

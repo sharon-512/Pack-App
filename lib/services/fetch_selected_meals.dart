@@ -5,7 +5,6 @@ import '../models/customer_plan.dart';
 import 'api.dart';
 
 class SelectedFoodApi {
-  static  String _baseUrl = '$baseUrl/api';
   static  String subscriptionListUrl = '$baseUrl/api/subscription-list';
 
   Future<CustomerPlan> fetchCustomerPlan() async {
@@ -13,7 +12,7 @@ class SelectedFoodApi {
     final token = prefs.getString('bearerToken');
 
     final response = await http.post(
-      Uri.parse('$_baseUrl/view-customer-plan'),
+      Uri.parse('$baseUrl/api/view-customer-plan'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

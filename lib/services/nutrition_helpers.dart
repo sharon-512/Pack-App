@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
+import 'api.dart';
+
 
 void initializeDailySelections(DateTime start, DateTime end, List<Map<String, dynamic>> dailySelections) {
   int days = calculateDaysDifference(start, end);
@@ -28,7 +30,7 @@ int calculateDaysDifference(DateTime start, DateTime end) {
 
 Future<void> fetchFoodDetails(int subplanId, int mealtypeId, Function setState) async {
   try {
-    final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+    final response = await http.get(Uri.parse('$baseUrl/api/get-diet-data'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
@@ -73,7 +75,7 @@ Future<void> fetchFoodDetails(int subplanId, int mealtypeId, Function setState) 
 
 Future<void> fetchAddons(Function setState) async {
   try {
-    final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/addons'));
+    final response = await http.get(Uri.parse('$baseUrl/api/addons'));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);

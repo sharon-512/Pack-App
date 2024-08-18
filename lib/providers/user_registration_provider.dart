@@ -57,8 +57,8 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateFoodAvoid(String foodAvoid) {
-    _user.foodAvoid = foodAvoid;
+  void updateFoodAvoidList(List<String> foodAvoidList) {
+    _user.foodAvoid = foodAvoidList.join(', '); // Store as a comma-separated string
     notifyListeners();
   }
 

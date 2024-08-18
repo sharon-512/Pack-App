@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../models/activity_level_model.dart';
+import '../services/api.dart';
 
 class ActivityProvider with ChangeNotifier {
   List<Activity> _activities = [];
@@ -14,7 +15,7 @@ class ActivityProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final url = 'https://interfuel.qa/packupadmin/api/activitylevel';
+    final url = '$baseUrl/api/activitylevel';
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {

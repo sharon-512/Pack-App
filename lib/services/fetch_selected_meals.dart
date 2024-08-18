@@ -2,17 +2,17 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/customer_plan.dart';
+import 'api.dart';
 
 class SelectedFoodApi {
-  static const String _baseUrl = 'https://interfuel.qa/packupadmin/api';
-  static const String subscriptionListUrl = 'https://interfuel.qa/packupadmin/api/subscription-list';
+  static  String subscriptionListUrl = '$baseUrl/api/subscription-list';
 
   Future<CustomerPlan> fetchCustomerPlan() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('bearerToken');
 
     final response = await http.post(
-      Uri.parse('$_baseUrl/view-customer-plan'),
+      Uri.parse('$baseUrl/api/view-customer-plan'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

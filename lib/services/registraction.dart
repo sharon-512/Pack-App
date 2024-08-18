@@ -3,13 +3,13 @@ import 'dart:convert';
 import 'package:hive/hive.dart';
 import '../models/user_model.dart';
 import '../models/user_registration_model.dart';
+import 'api.dart';
 
 class RegistrationService {
-  static const String baseUrl = 'https://interfuel.qa/packupadmin/api';
 
   Future<Map<String, dynamic>> newRegister(UserRegistrationModel user) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/new_register'),
+      Uri.parse('$baseUrl/api/new_register'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

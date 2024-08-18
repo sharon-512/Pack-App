@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../services/api.dart';
+
 class Plan {
   final int planId;
   final String planName;
@@ -18,7 +20,7 @@ class Plan {
 }
 
 Future<List<Plan>> fetchPlans() async {
-  final response = await http.get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+  final response = await http.get(Uri.parse('$baseUrl/api/get-diet-data'));
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);

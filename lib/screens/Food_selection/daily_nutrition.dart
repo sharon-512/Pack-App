@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../custom_style.dart';
+import '../../services/api.dart';
 import '../../widgets/Shimmer.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/no_network_widget.dart';
@@ -179,7 +180,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   Future<void> fetchFoodPrice(int subplanId, int mealtypeId) async {
     try {
       final response = await http
-          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+          .get(Uri.parse('$baseUrl/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -236,7 +237,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   Future<void> fetchFoodDetails(int subplanId, int mealtypeId) async {
     try {
       final response = await http
-          .get(Uri.parse('https://interfuel.qa/packupadmin/api/get-diet-data'));
+          .get(Uri.parse('$baseUrl/api/get-diet-data'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
@@ -282,7 +283,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   Future<void> fetchAddons() async {
     try {
       final response = await http
-          .get(Uri.parse('https://interfuel.qa/packupadmin/api/addons'));
+          .get(Uri.parse('$baseUrl/api/addons'));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

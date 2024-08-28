@@ -9,6 +9,8 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double screenHeight = MediaQuery.of(context).size.height;
+
     return WillPopScope(
       onWillPop: () async {
         // This line exits the app.
@@ -27,56 +29,72 @@ class StartScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              IntrinsicHeight(
-                child: Stack(
-                  children: [
-                    Container(
-                      child: Image.asset('assets/images/start_image.png'),
+              Stack(
+                children: [
+                  Container(
+                    height: screenHeight * 0.7, // 70% of the screen height
+                    child: Image.asset(
+                      'assets/images/start_image.png',
+                      fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
-                    Container(
+                  ),
+                  Positioned.fill(
+                    child: Container(
+                      height: screenHeight * 0.7,
                       decoration: BoxDecoration(
-                          color: Color(0xff2F2D28).withOpacity(0.60),
-                          borderRadius: BorderRadius.circular(30)),
+                        color: Color(0xff2F2D28).withOpacity(0.60),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(30.0, 130, 10, 26),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          RichText(
-                            text: const TextSpan(
+                  ),
+                  Positioned(
+                    left: 30.0,
+                    top: screenHeight * 0.7 * 0.2, // 20% from the top of the image
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0, bottom: 26.0),
+                      child: Container(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            RichText(
+                              text: const TextSpan(
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontFamily: 'Aeonik',
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 60.0,
+                                  height: 60.0 / 64.0,
+                                  letterSpacing: -0.41,
+                                ),
+                                children: <TextSpan>[
+                                  TextSpan(text: 'Your Gateway to'),
+                                  TextSpan(
+                                    text: 'Healthier ',
+                                    style: TextStyle(fontStyle: FontStyle.italic),
+                                  ),
+                                  TextSpan(text: 'Living!'),
+                                ],
+                              ),
+                            ),
+                            SizedBox(height: MediaQuery.of(context).size.width * 0.4),
+                            const Text(
+                              'Pack App: Where Healthy Eating Meets Convenience!',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Aeonik',
-                                fontWeight: FontWeight.w700,
-                                fontSize: 62.0,
-                                height: 60.0 / 64.0,
-                                // Line height divided by font size to get the height multiplier
-                                letterSpacing: -0.41,
-                              ), // Default text style
-                              children: <TextSpan>[
-                                TextSpan(text: 'Your Gateway\nto '),
-                                TextSpan(
-                                    text: 'Healthier\n',
-                                    style:
-                                        TextStyle(fontStyle: FontStyle.italic)),
-                                TextSpan(text: 'Living!'),
-                              ],
-                            ),
-                          ),
-                          const Text(
-                            'Pack App: Where Healthy Eating Meets Convenience!',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'Aeonik',
                                 fontSize: 15,
-                                fontWeight: FontWeight.w500),
-                          )
-                        ],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    )
-                  ],
-                ),
+                    ),
+                  ),
+                ],
               ),
               Column(
                 children: [
@@ -86,10 +104,11 @@ class StartScreen extends StatelessWidget {
                       text: 'Get Started',
                       onTap: () {
                         Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => EnterNumber(),
-                            ));
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => EnterNumber(),
+                          ),
+                        );
                       },
                     ),
                   ),
@@ -102,14 +121,17 @@ class StartScreen extends StatelessWidget {
                       ),
                       children: <TextSpan>[
                         TextSpan(
-                            text: 'EN',
-                            style: TextStyle(color: Color(0xFF124734))),
+                          text: 'EN',
+                          style: TextStyle(color: Color(0xFF124734)),
+                        ),
                         TextSpan(
-                            text: ' | ',
-                            style: TextStyle(color: Color(0xFFBEBEBE))),
+                          text: ' | ',
+                          style: TextStyle(color: Color(0xFFBEBEBE)),
+                        ),
                         TextSpan(
-                            text: 'AR',
-                            style: TextStyle(color: Color(0xFFBEBEBE))),
+                          text: 'AR',
+                          style: TextStyle(color: Color(0xFFBEBEBE)),
+                        ),
                       ],
                     ),
                   ),
@@ -117,7 +139,7 @@ class StartScreen extends StatelessWidget {
               ),
               SizedBox(
                 height: 1,
-              )
+              ),
             ],
           ),
         ),

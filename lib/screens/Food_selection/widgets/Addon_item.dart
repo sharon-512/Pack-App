@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../custom_style.dart';
+import '../../../widgets/selected_food_card.dart';
 
 class AddonItem extends StatefulWidget {
   final VoidCallback onTap;
@@ -66,134 +68,172 @@ class _AddonItemState extends State<AddonItem> {
 
     return GestureDetector(
       onTap: () {
-        widget.onTap(); // Call onTap callback defined in the parent widget
+        widget.onTap();
         widget.onCountChange(addonId, count, addonPrice);
       },
       child: Container(
         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-        height: 85,
+        height: 130,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: Color(0xffEDC0B2)),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Image.network(
-                    widget.addonData!['image_url'] ?? '', // Default value for image_url
-                    height: 50,
+              Image.network(
+                widget.addonData!['image_url'] ?? '', // Default value for image_url
+                height: 50,
+                width: 50,
+                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  } else {
+                    return Container(
+                      width: 50,
+                      height: 50,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
+                      ),
+                    );
+                  }
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
                     width: 50,
-                    loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return Container(
-                          width: 50,
-                          height: 50,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                                  : null,
+                    height: 50,
+                    color: Colors.grey[200],
+                    child: Icon(
+                      Icons.error,
+                      color: Colors.red,
+                    ),
+                  );
+                },
+              ),
+              SizedBox(width: 20),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    widget.addonData!['addon_name'] ?? '', // Default value for addon_name
+                    style: CustomTextStyles.labelTextStyle.copyWith(
+                      fontSize: 14,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Image.asset('assets/images/fire2.png', height: 14, width: 13,),
+                      Text(
+                        '${widget.addonData!['kcal']} kcal',
+                        style: CustomTextStyles.subtitleTextStyle.copyWith(
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      NutritionBar(
+                        color: const Color(0xffBBC392),
+                        label: '${widget.addonData!['protein']} g',
+                        //widthFactor: widget.addonData!['protein'] / 100 * 50,
+                        widthFactor: 24/ 100 * 50,
+                        label2: ' Protein',
+                      ), // Adjust the widthFactor as needed
+                      NutritionBar(
+                        color: const Color(0xffF7C648),
+                        label: '${widget.addonData!['carb']} g',
+                        widthFactor: 20 / 100 * 50,
+                        label2: ' Carbs',
+                      ), // Adjust the widthFactor as needed
+                      NutritionBar(
+                        color: const Color(0xffA8353A),
+                        label: '${widget.addonData!['fat']} g',
+                        widthFactor: 60 / 100 * 50,
+                        label2: ' Fat',
+                      ), // Adjust the widthFactor as needed
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Price: ${addonPrice.toStringAsFixed(2)} QR',
+                            style: CustomTextStyles.labelTextStyle.copyWith(
+                              fontSize: 12,
+                              color: Colors.black,
                             ),
                           ),
-                        );
-                      }
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        width: 50,
-                        height: 50,
-                        color: Colors.grey[200],
-                        child: Icon(
-                          Icons.error,
-                          color: Colors.red,
-                        ),
-                      );
-                    },
-                  ),
-                  SizedBox(width: 10),
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        widget.addonData!['addon_name'] ?? '', // Default value for addon_name
-                        style: CustomTextStyles.labelTextStyle.copyWith(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
+                          Text(
+                            'Total: ${(addonPrice * count).toStringAsFixed(2)} QR',
+                            style: CustomTextStyles.labelTextStyle.copyWith(
+                              fontSize: 12,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ],
                       ),
-                      Text(
-                        'Price: ${addonPrice.toStringAsFixed(2)} QR',
-                        style: CustomTextStyles.labelTextStyle.copyWith(
-                          fontSize: 14,
-                          color: Colors.black,
+                      SizedBox(width: 40,),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: Color(0xffEDC0B2),
+                          borderRadius: BorderRadius.circular(25),
                         ),
-                      ),
-                      Text(
-                        'Total: ${(addonPrice * count).toStringAsFixed(2)} QR',
-                        style: CustomTextStyles.labelTextStyle.copyWith(
-                          fontSize: 14,
-                          color: Colors.black,
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  if (count > 0) {
+                                    count--;
+                                    widget.onCountChange(addonId, count, addonPrice);
+                                    _updateSubtotalAddonPrice(-addonPrice);
+                                  }
+                                });
+                              },
+                              child: Icon(
+                                Icons.remove,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                            Text(
+                              '$count',
+                              style: TextStyle(fontSize: 14, color: Colors.white),
+                            ),
+                            SizedBox(width: 10),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  count++;
+                                  widget.onCountChange(addonId, count, addonPrice);
+                                  _updateSubtotalAddonPrice(addonPrice);
+                                });
+                              },
+                              child: Icon(
+                                Icons.add,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
                   ),
                 ],
-              ),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Color(0xffEDC0B2),
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          if (count > 0) {
-                            count--;
-                            widget.onCountChange(addonId, count, addonPrice);
-                            _updateSubtotalAddonPrice(-addonPrice);
-                          }
-                        });
-                      },
-                      child: Icon(
-                        Icons.remove,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      '$count',
-                      style: TextStyle(fontSize: 14, color: Colors.white),
-                    ),
-                    SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          count++;
-                          widget.onCountChange(addonId, count, addonPrice);
-                          _updateSubtotalAddonPrice(addonPrice);
-                        });
-                      },
-                      child: Icon(
-                        Icons.add,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),

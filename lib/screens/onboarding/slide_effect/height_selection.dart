@@ -49,189 +49,191 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          Center(
-            child: Text(
-              'What is your\nweight?',
-              style: CustomTextStyles.titleTextStyle,
-              textAlign: TextAlign.center,
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Center(
+              child: Text(
+                'What is your\nweight?',
+                style: CustomTextStyles.titleTextStyle,
+                textAlign: TextAlign.center,
+              ),
             ),
-          ),
-          const SizedBox(height: 22),
-          Center(
-            child: Container(
-              height: 96,
-              width: 216,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xFFEDC0B2)),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Stack(
-                children: [
-                  Container(
-                    height: 96,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFEDC0B2)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ListWheelScrollView.useDelegate(
-                      itemExtent: 53,
-                      diameterRatio: 1.5,
-                      perspective: 0.002,
-                      physics: FixedExtentScrollPhysics(),
-                      onSelectedItemChanged: (index) {
-                        setState(() {
-                          _selectedWeight = _isKilograms
-                              ? index + 40
-                              : (index + 88)
-                              .round(); // Adjust for lbs if necessary
-                        });
-                        _updateUserData(); // Update user data on weight change
-                      },
-                      childDelegate: ListWheelChildBuilderDelegate(
-                        builder: (context, index) {
-                          return Center(
-                            child: Text(
-                              '${_isKilograms ? 40 + index : ((40 + index) * 2.20462).round()}',
-                              style: const TextStyle(
-                                fontFamily: 'Aeonik',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 40,
-                                color: Colors.black, // Set text color to black
-                              ),
-                            ),
-                          );
-                        },
-                        childCount:
-                        101, // Range from 40kg to 140kg or 88lbs to 308lbs
+            const SizedBox(height: 22),
+            Center(
+              child: Container(
+                height: 96,
+                width: 216,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xFFEDC0B2)),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 96,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFEDC0B2)),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
-                            colors: [
-                              Colors.white,
-                              Colors.white12,
-                              Colors.white
-                            ],
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            //stops: [0.1, 0.1, 0.95], // Adjust the stops for desired effect
-                          ),
+                      child: ListWheelScrollView.useDelegate(
+                        itemExtent: 53,
+                        diameterRatio: 1.5,
+                        perspective: 0.002,
+                        physics: FixedExtentScrollPhysics(),
+                        onSelectedItemChanged: (index) {
+                          setState(() {
+                            _selectedWeight = _isKilograms
+                                ? index + 40
+                                : (index + 88)
+                                .round(); // Adjust for lbs if necessary
+                          });
+                          _updateUserData(); // Update user data on weight change
+                        },
+                        childDelegate: ListWheelChildBuilderDelegate(
+                          builder: (context, index) {
+                            return Center(
+                              child: Text(
+                                '${_isKilograms ? 40 + index : ((40 + index) * 2.20462).round()}',
+                                style: const TextStyle(
+                                  fontFamily: 'Aeonik',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 40,
+                                  color: Colors.black, // Set text color to black
+                                ),
+                              ),
+                            );
+                          },
+                          childCount:
+                          101, // Range from 40kg to 140kg or 88lbs to 308lbs
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Column(
-                      children: [
-                        _unitOption('Kg', _isKilograms),
-                        _unitOption('lbs', !_isKilograms),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 65),
-          Center(
-            child: Text(
-              'What is your\nheight?',
-              style: CustomTextStyles.titleTextStyle,
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 18),
-          Center(
-            child: Container(
-              height: 96,
-              width: 216,
-              decoration: BoxDecoration(
-                  border: Border.all(color: Color(0xFFEDC0B2)),
-                  borderRadius: BorderRadius.circular(8)),
-              child: Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Color(0xFFEDC0B2)),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: ListWheelScrollView.useDelegate(
-                      itemExtent: 53,
-                      diameterRatio: 1.5,
-                      perspective: 0.002,
-                      physics: FixedExtentScrollPhysics(),
-                      onSelectedItemChanged: (index) {
-                        setState(() {
-                          _selectedHeight = _isCentimeters
-                              ? index + 100
-                              : (index + 3)
-                              .round(); // Adjust for ft if necessary
-                        });
-                        _updateUserData(); // Update user data on height change
-                      },
-                      childDelegate: ListWheelChildBuilderDelegate(
-                        builder: (context, index) {
-                          return Center(
-                            child: Text(
-                              '${_isCentimeters ? 100 + index : ((100 + index) / 30.48).toStringAsFixed(1)}',
-                              style: const TextStyle(
-                                fontFamily: 'Aeonik',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 40,
-                                color: Colors.black, // Set text color to black
-                              ),
-                            ),
-                          );
-                        },
-                        childCount:
-                        251, // Range from 100cm to 350cm or 3ft to 11ft
-                      ),
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: IgnorePointer(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: LinearGradient(
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
                               colors: [
                                 Colors.white,
-                                Colors.white24,
+                                Colors.white12,
                                 Colors.white
                               ],
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
-                              stops: [.01, .5, 1]),
+                              //stops: [0.1, 0.1, 0.95], // Adjust the stops for desired effect
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 10,
-                    right: 10,
-                    child: Column(
-                      children: [
-                        _unitOption('cm', _isCentimeters),
-                        _unitOption('ft', !_isCentimeters),
-                      ],
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: Column(
+                        children: [
+                          _unitOption('Kg', _isKilograms),
+                          _unitOption('lbs', !_isKilograms),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 65),
+            Center(
+              child: Text(
+                'What is your\nheight?',
+                style: CustomTextStyles.titleTextStyle,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 18),
+            Center(
+              child: Container(
+                height: 96,
+                width: 216,
+                decoration: BoxDecoration(
+                    border: Border.all(color: Color(0xFFEDC0B2)),
+                    borderRadius: BorderRadius.circular(8)),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xFFEDC0B2)),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: ListWheelScrollView.useDelegate(
+                        itemExtent: 53,
+                        diameterRatio: 1.5,
+                        perspective: 0.002,
+                        physics: FixedExtentScrollPhysics(),
+                        onSelectedItemChanged: (index) {
+                          setState(() {
+                            _selectedHeight = _isCentimeters
+                                ? index + 100
+                                : (index + 3)
+                                .round(); // Adjust for ft if necessary
+                          });
+                          _updateUserData(); // Update user data on height change
+                        },
+                        childDelegate: ListWheelChildBuilderDelegate(
+                          builder: (context, index) {
+                            return Center(
+                              child: Text(
+                                '${_isCentimeters ? 100 + index : ((100 + index) / 30.48).toStringAsFixed(1)}',
+                                style: const TextStyle(
+                                  fontFamily: 'Aeonik',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 40,
+                                  color: Colors.black, // Set text color to black
+                                ),
+                              ),
+                            );
+                          },
+                          childCount:
+                          251, // Range from 100cm to 350cm or 3ft to 11ft
+                        ),
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            gradient: LinearGradient(
+                                colors: [
+                                  Colors.white,
+                                  Colors.white24,
+                                  Colors.white
+                                ],
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                stops: [.01, .5, 1]),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 10,
+                      right: 10,
+                      child: Column(
+                        children: [
+                          _unitOption('cm', _isCentimeters),
+                          _unitOption('ft', !_isCentimeters),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

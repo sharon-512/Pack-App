@@ -127,215 +127,218 @@ class _SummaryScreenState extends State<SummaryScreen> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    children: [
-                      SelectedItem(
-                        plan: widget.planName,
-                        price: widget.foodPrice,
-                        image: widget.planImage
-                      ),
-                      const SizedBox(
-                        height: 15,
-                      ),
-                      if (addonPrice != 0)
-                        Addon(
-                          plan: 'Addons',
-                          price: '$addonPrice',
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      children: [
+                        SelectedItem(
+                          plan: widget.planName,
+                          price: widget.foodPrice,
+                          image: widget.planImage
                         ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: codeController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Color(0xff000000).withOpacity(.07)),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Color(0xff000000).withOpacity(.07)),
-                                  borderRadius: BorderRadius.circular(8.0),
-                                ),
-                                hintText: 'Enter promo code',
-                                hintStyle: CustomTextStyles.hintTextStyle,
-                                contentPadding:
-                                EdgeInsets.symmetric(horizontal: 12.0),
-                              ),
-                              keyboardType: TextInputType.text,
-                            ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        if (addonPrice != 0)
+                          Addon(
+                            plan: 'Addons',
+                            price: '$addonPrice',
                           ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          SizedBox(
-                            height: 44,
-                            child: ElevatedButton(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () {
-                                verifyCoupon(codeController.text);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: codeController,
+                                decoration: InputDecoration(
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color(0xff000000).withOpacity(.07)),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Color(0xff000000).withOpacity(.07)),
+                                    borderRadius: BorderRadius.circular(8.0),
+                                  ),
+                                  hintText: 'Enter promo code',
+                                  hintStyle: CustomTextStyles.hintTextStyle,
+                                  contentPadding:
+                                  EdgeInsets.symmetric(horizontal: 12.0),
                                 ),
-                              ),
-                              child: _isLoading
-                                  ? CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                              )
-                                  : Text(
-                                'Apply',
-                                style: TextStyle(color: Colors.white),
+                                keyboardType: TextInputType.text,
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 5,
-                      ),
-                      if (_isCouponValid)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _couponSuccess,
-                            style: TextStyle(color: Colors.green, fontSize: 12),
-                          ),
-                        ),
-                      if (!_isCouponValid)
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            _couponErrorMessage,
-                            style: TextStyle(color: Colors.red, fontSize: 12),
-                          ),
-                        ),
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      const SizedBox(
-                        height: 25,
-                      ),
-                      Container(
-                        height: 158,
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                                color: Color(0xff000000).withOpacity(.07)),
-                            borderRadius: BorderRadius.circular(28)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(25),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    widget.planName,
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            SizedBox(
+                              height: 44,
+                              child: ElevatedButton(
+                                onPressed: _isLoading
+                                    ? null
+                                    : () {
+                                  verifyCoupon(codeController.text);
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.black,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15),
                                   ),
-                                  Text(
-                                    '${widget.foodPrice} QR',
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                ],
+                                ),
+                                child: _isLoading
+                                    ? CircularProgressIndicator(
+                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                )
+                                    : Text(
+                                  'Apply',
+                                  style: TextStyle(color: Colors.white),
+                                ),
                               ),
-                              if (addonPrice != 0)
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        if (_isCouponValid)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _couponSuccess,
+                              style: TextStyle(color: Colors.green, fontSize: 12),
+                            ),
+                          ),
+                        if (!_isCouponValid)
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _couponErrorMessage,
+                              style: TextStyle(color: Colors.red, fontSize: 12),
+                            ),
+                          ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        Container(
+                          height: 158,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Color(0xff000000).withOpacity(.07)),
+                              borderRadius: BorderRadius.circular(28)),
+                          child: Padding(
+                            padding: const EdgeInsets.all(25),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
                                 Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Add ons',
+                                      widget.planName,
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '$addonPrice QR', // Assuming add-ons price is a fixed 100 QR
+                                      '${widget.foodPrice} QR',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                   ],
                                 ),
-                              Divider(
-                                color: Color(0xff000000).withOpacity(.09),
-                              ),
-                              if (_isCouponValid)
+                                if (addonPrice != 0)
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Add ons',
+                                        style: CustomTextStyles.hintTextStyle
+                                            .copyWith(color: Colors.black),
+                                      ),
+                                      Text(
+                                        '$addonPrice QR', // Assuming add-ons price is a fixed 100 QR
+                                        style: CustomTextStyles.hintTextStyle
+                                            .copyWith(color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
+                                Divider(
+                                  color: Color(0xff000000).withOpacity(.09),
+                                ),
+                                if (_isCouponValid)
+                                  Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        'Discount',
+                                        style: CustomTextStyles.hintTextStyle
+                                            .copyWith(color: Colors.black),
+                                      ),
+                                      Text(
+                                        '${discount.toStringAsFixed(2)} QR',
+                                        style: CustomTextStyles.hintTextStyle
+                                            .copyWith(color: Colors.black),
+                                      ),
+                                    ],
+                                  ),
                                 Row(
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Discount',
+                                      'Sub total',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '${discount.toStringAsFixed(2)} QR',
+                                      '${totalAfterDiscount.toStringAsFixed(2)} QR',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                   ],
                                 ),
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    'Sub total',
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                  Text(
-                                    '${totalAfterDiscount.toStringAsFixed(2)} QR',
-                                    style: CustomTextStyles.hintTextStyle
-                                        .copyWith(color: Colors.black),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  CommonButton(
-                      text: 'Check Out',
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CheckOutScreen(
-                              dailySelections: widget.dailySelections,
-                              selectedAddons: widget.selectedAddons,
-                              planId: widget.planId,
-                              subTotal: subTotal.toString(),
-                              discount: discount.toString(),
-                              foodPrice: widget.foodPrice,
-                              addonPrice: widget.addonPrice,
-                              planName: widget.planName,
+                              ],
                             ),
                           ),
-                        );
-                      } // Call the _placeOrder method here
-                      )
-                ],
+                        )
+                      ],
+                    ),
+                    SizedBox(height: 20,),
+                    CommonButton(
+                        text: 'Check Out',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CheckOutScreen(
+                                dailySelections: widget.dailySelections,
+                                selectedAddons: widget.selectedAddons,
+                                planId: widget.planId,
+                                subTotal: subTotal.toString(),
+                                discount: discount.toString(),
+                                foodPrice: widget.foodPrice,
+                                addonPrice: widget.addonPrice,
+                                planName: widget.planName,
+                              ),
+                            ),
+                          );
+                        } // Call the _placeOrder method here
+                        )
+                  ],
+                ),
               ),
             ),
           ),

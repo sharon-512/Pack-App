@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/user_registration_provider.dart';
 import '../../../services/registraction.dart';
 import '../../../widgets/progress_bar.dart';
@@ -85,6 +86,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return WillPopScope(
       onWillPop: () async {
         if (_currentPage > 0) {
@@ -172,7 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         );
                       }
                     },
-                    text: 'Continue',
+                    text: localizations!.translate('continue'),
                     isLoading: isLoading,
                   ),
                 ],

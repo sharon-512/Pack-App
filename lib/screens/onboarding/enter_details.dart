@@ -3,6 +3,7 @@ import 'package:pack_app/screens/onboarding/slide_effect/main_page.dart';
 import 'package:pack_app/widgets/common_textfield.dart';
 import 'package:provider/provider.dart';
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../providers/user_registration_provider.dart';
 import '../../services/registraction.dart';
 import '../../widgets/common_button.dart';
@@ -39,33 +40,6 @@ class _EnterDetailsState extends State<EnterDetails> {
     userProvider.updateMobileNumber(widget.mobileNumber);
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => OnboardingScreen(),));
-
-    //final registrationService = RegistrationService();
-
-    // try {
-    //   final response = await registrationService.newRegister(firstName, email, mobileNumber, lastName);
-    //
-    //   if (response['response_code'] == 3) {
-    //     Navigator.push(
-    //       context,
-    //       MaterialPageRoute(
-    //         builder: (context) => UserDetailsPage(),
-    //       ),
-    //     );
-    //   } else if (response['response_code'] == 0) {
-    //     _showErrorSnackBar('Existing email ID');
-    //   } else {
-    //     _showErrorSnackBar('Failed to register');
-    //   }
-    // } catch (error) {
-    //   // Handle errors appropriately
-    //   print('Failed to register user: $error');
-    //   _showErrorSnackBar('Failed to register');
-    // } finally {
-    //   setState(() {
-    //     _isLoading = false;
-    //   });
-    // }
   }
 
   void _showErrorSnackBar(String message) {
@@ -80,32 +54,40 @@ class _EnterDetailsState extends State<EnterDetails> {
   }
 
   String? _validateName(String? value) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return 'Please enter your first name';
+      return localizations.translate('errorFirstNameEmpty');
     } else if (value.length < 2) {
-      return 'First name should be at least 2 characters';
+      return localizations.translate('errorFirstNameShort');
     }
     return null;
   }
 
   String? _validateLastName(String? value) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return 'Please enter your last name';
+      return localizations.translate('errorLastNameEmpty');
     }
     return null;
   }
 
   String? _validateEmail(String? value) {
+    final localizations = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return 'Please enter your email';
+      return localizations.translate('errorEmailEmpty');
     } else if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-      return 'Please enter a valid email address';
+      return localizations.translate('errorEmailInvalid');
     }
     return null;
   }
 
+
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 60),
@@ -124,39 +106,39 @@ class _EnterDetailsState extends State<EnterDetails> {
                     children: [
                       const SizedBox(height: 40),
                       Text(
-                        'Enter your details',
+                        localizations!.translate('enterDetails'),
                         style: CustomTextStyles.titleTextStyle,
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'First Name',
+                        localizations!.translate('firstName'),
                         style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       CommonTextField(
-                        hintText: 'Enter your first name',
+                        hintText: localizations!.translate('enterFirstName'),
                         controller: nameController,
                         validator: _validateName, // Use the validation method here
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Last Name',
+                        localizations!.translate('lastName'),
                         style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       CommonTextField(
-                        hintText: 'Enter your last name',
+                        hintText: localizations!.translate('enterLastName'),
                         controller: lastNameController,
                         validator: _validateLastName, // Use the validation method here
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Email',
+                        localizations!.translate('email'),
                         style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 14),
                       ),
                       const SizedBox(height: 8),
                       CommonTextField(
-                        hintText: 'Enter your email',
+                        hintText: localizations!.translate('enterEmail'),
                         controller: emailController,
                         keyboardType: TextInputType.emailAddress,
                         validator: _validateEmail, // Use the validation method here
@@ -166,7 +148,7 @@ class _EnterDetailsState extends State<EnterDetails> {
                   ),
                 ),
                 CommonButton(
-                  text: 'Continue',
+                  text: localizations!.translate('continue'),
                   onTap: _registerUser,
                   isLoading: _isLoading,
                 ),

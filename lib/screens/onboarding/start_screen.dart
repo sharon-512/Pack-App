@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:provider/provider.dart';
+import '../../providers/app_localizations.dart';
+import '../../services/language_selection.dart';
 import '../../widgets/common_button.dart';
 import 'enter_number.dart';
 
@@ -10,10 +12,11 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
+    final localizations = AppLocalizations.of(context)!;
+    final localeNotifier = Provider.of<LocaleNotifier>(context);
 
     return WillPopScope(
       onWillPop: () async {
-        // This line exits the app.
         SystemNavigator.pop();
         return false;
       },
@@ -32,7 +35,7 @@ class StartScreen extends StatelessWidget {
               Stack(
                 children: [
                   Container(
-                    height: screenHeight * 0.7, // 70% of the screen height
+                    height: screenHeight * 0.7,
                     child: Image.asset(
                       'assets/images/start_image.png',
                       fit: BoxFit.cover,
@@ -43,14 +46,14 @@ class StartScreen extends StatelessWidget {
                     child: Container(
                       height: screenHeight * 0.7,
                       decoration: BoxDecoration(
-                        color: Color(0xff2F2D28).withOpacity(0.60),
+                        color: Color(0xff2F2D28).withOpacity(0.75),
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                   ),
                   Positioned(
                     left: 30.0,
-                    top: screenHeight * 0.7 * 0.2, // 20% from the top of the image
+                    top: screenHeight * 0.7 * 0.2,
                     child: Padding(
                       padding: const EdgeInsets.only(right: 10.0, bottom: 26.0),
                       child: Container(
@@ -59,30 +62,20 @@ class StartScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            RichText(
-                              text: const TextSpan(
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontFamily: 'Aeonik',
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 60.0,
-                                  height: 60.0 / 64.0,
-                                  letterSpacing: -0.41,
-                                ),
-                                children: <TextSpan>[
-                                  TextSpan(text: 'Your Gateway to'),
-                                  TextSpan(
-                                    text: 'Healthier ',
-                                    style: TextStyle(fontStyle: FontStyle.italic),
-                                  ),
-                                  TextSpan(text: 'Living!'),
-                                ],
+                            Text(localizations.translate('gatewayToHealth'),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'Aeonik',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 58.0,
+                                height: 60.0 / 64.0,
+                                letterSpacing: -0.41,
                               ),
                             ),
                             SizedBox(height: MediaQuery.of(context).size.width * 0.4),
-                            const Text(
-                              'Pack App: Where Healthy Eating Meets Convenience!',
-                              style: TextStyle(
+                            Text(
+                              localizations!.translate('packAppTagline'),
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontFamily: 'Aeonik',
                                 fontSize: 15,
@@ -101,7 +94,7 @@ class StartScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(20.0),
                     child: CommonButton(
-                      text: 'Get Started',
+                      text: localizations!.translate('getStarted'),
                       onTap: () {
                         Navigator.push(
                           context,
@@ -112,34 +105,40 @@ class StartScreen extends StatelessWidget {
                       },
                     ),
                   ),
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontFamily: 'Aeonik',
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          localeNotifier.changeLocale('en'); // Change to English
+                        },
+                        child: Text(
+                          'EN',
+                          style: TextStyle(
+                            color: localeNotifier.locale?.languageCode == 'en' ? Color(0xFF124734) : Color(0xFFBEBEBE),
+                          ),
+                        ),
                       ),
-                      children: <TextSpan>[
-                        TextSpan(
-                          text: 'EN',
-                          style: TextStyle(color: Color(0xFF124734)),
+                      Text(
+                        ' | ',
+                        style: TextStyle(color: Color(0xFFBEBEBE)),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          localeNotifier.changeLocale('ar'); // Change to Arabic
+                        },
+                        child: Text(
+                          'AR',
+                          style: TextStyle(
+                            color: localeNotifier.locale?.languageCode == 'ar' ? Color(0xFF124734) : Color(0xFFBEBEBE),
+                          ),
                         ),
-                        TextSpan(
-                          text: ' | ',
-                          style: TextStyle(color: Color(0xFFBEBEBE)),
-                        ),
-                        TextSpan(
-                          text: 'AR',
-                          style: TextStyle(color: Color(0xFFBEBEBE)),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-              SizedBox(
-                height: 1,
-              ),
+              SizedBox(height: 1),
             ],
           ),
         ),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pack_app/screens/Dashboard/profile_and_other_options/profile_page.dart';
+import '../../providers/app_localizations.dart';
 import '../package_selection.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -95,6 +96,8 @@ class _BottomNavbarState extends State<BottomNavbar> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
+
     return WillPopScope(
       onWillPop: () async {
         // Return false to disable the back button
@@ -118,7 +121,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   onTap: () => _onItemTapped(0),
                   child: CustomNavItem(
                     imagePath: 'assets/images/nav_bar1.svg',
-                    label: 'Home',
+                    label: localizations?.translate('home') ?? 'Home', // Home label translation
                     isSelected: _selectedIndex == 0,
                   ),
                 ),
@@ -126,7 +129,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   onTap: () => _onItemTapped(1),
                   child: CustomNavItem(
                     imagePath: 'assets/images/nav_bar2.svg',
-                    label: 'Food',
+                    label: localizations?.translate('food') ?? 'Food', // Food label translation
                     isSelected: _selectedIndex == 1,
                   ),
                 ),
@@ -134,7 +137,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   onTap: () => _onItemTapped(2),
                   child: CustomNavItem(
                     imagePath: 'assets/icons/subscription.svg',
-                    label: 'Pack',
+                    label: localizations?.translate('packs') ?? 'Pack', // Pack label translation
                     isSelected: _selectedIndex == 2,
                   ),
                 ),
@@ -142,7 +145,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   onTap: () => _onItemTapped(3),
                   child: CustomNavItem(
                     imagePath: 'assets/images/nav_bar3.svg',
-                    label: 'Alert',
+                    label: localizations?.translate('alert') ?? 'Alert', // Alert label translation
                     isSelected: _selectedIndex == 3,
                   ),
                 ),
@@ -150,7 +153,7 @@ class _BottomNavbarState extends State<BottomNavbar> {
                   onTap: () => _onItemTapped(4),
                   child: CustomNavItem(
                     imagePath: 'assets/images/nav_bar4.svg',
-                    label: 'Profile',
+                    label: localizations?.translate('profile') ?? 'Profile', // Profile label translation
                     isSelected: _selectedIndex == 4,
                   ),
                 ),

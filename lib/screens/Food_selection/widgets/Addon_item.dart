@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../custom_style.dart';
+import '../../../providers/app_localizations.dart';
+import '../../../services/language_selection.dart';
 import '../../../widgets/selected_food_card.dart';
 
 class AddonItem extends StatefulWidget {
@@ -56,6 +59,8 @@ class _AddonItemState extends State<AddonItem> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     if (widget.addonData == null) {
       return Container(); // Handle case where addonData is null
     }
@@ -73,7 +78,7 @@ class _AddonItemState extends State<AddonItem> {
       },
       child: Container(
         margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-        height: 130,
+        height: 131,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(22),
@@ -122,7 +127,10 @@ class _AddonItemState extends State<AddonItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    widget.addonData!['addon_name'] ?? '', // Default value for addon_name
+                    //widget.addonData!['addon_name'] ?? '',
+                     locale?.languageCode == 'ar'
+                       ? widget.addonData!['addon_arabic'] ?? 'arabic unavailable'
+                       : widget.addonData!['addon_name'] ?? '',
                     style: CustomTextStyles.labelTextStyle.copyWith(
                       fontSize: 14,
                       color: Colors.black,
@@ -130,36 +138,39 @@ class _AddonItemState extends State<AddonItem> {
                   ),
                   Row(
                     children: [
-                      Image.asset('assets/images/fire2.png', height: 14, width: 13,),
+                      Image.asset(
+                        'assets/images/fire2.png',
+                        height: 14,
+                        width: 13,
+                      ),
                       Text(
-                        '${widget.addonData!['kcal']} kcal',
+                        '${widget.addonData!['kcal']} ${localizations.translate('kcal')}',
                         style: CustomTextStyles.subtitleTextStyle.copyWith(
                           fontSize: 12,
                         ),
-                      ),
+                      )
                     ],
                   ),
                   Row(
                     children: [
                       NutritionBar(
                         color: const Color(0xffBBC392),
-                        label: '${widget.addonData!['protein']} g',
-                        //widthFactor: widget.addonData!['protein'] / 100 * 50,
-                        widthFactor: 24/ 100 * 50,
-                        label2: ' Protein',
-                      ), // Adjust the widthFactor as needed
+                        label: '${widget.addonData!['protein']} ${localizations.translate('g')}',
+                        widthFactor: 24 / 100 * 50,
+                        label2: ' ${localizations.translate('protein')}',
+                      ),
                       NutritionBar(
                         color: const Color(0xffF7C648),
-                        label: '${widget.addonData!['carb']} g',
+                        label: '${widget.addonData!['carb']} ${localizations.translate('g')}',
                         widthFactor: 20 / 100 * 50,
-                        label2: ' Carbs',
-                      ), // Adjust the widthFactor as needed
+                        label2: ' ${localizations.translate('carbs')}',
+                      ),
                       NutritionBar(
                         color: const Color(0xffA8353A),
-                        label: '${widget.addonData!['fat']} g',
+                        label: '${widget.addonData!['fat']} ${localizations.translate('g')}',
                         widthFactor: 60 / 100 * 50,
-                        label2: ' Fat',
-                      ), // Adjust the widthFactor as needed
+                        label2: ' ${localizations.translate('fat')}',
+                      ),
                     ],
                   ),
                   Row(
@@ -168,14 +179,14 @@ class _AddonItemState extends State<AddonItem> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Price: ${addonPrice.toStringAsFixed(2)} QR',
+                            '${localizations.translate('price')}: ${addonPrice.toStringAsFixed(2)} QR',
                             style: CustomTextStyles.labelTextStyle.copyWith(
                               fontSize: 12,
                               color: Colors.black,
                             ),
                           ),
                           Text(
-                            'Total: ${(addonPrice * count).toStringAsFixed(2)} QR',
+                            '${localizations.translate('total')}: ${(addonPrice * count).toStringAsFixed(2)} QR',
                             style: CustomTextStyles.labelTextStyle.copyWith(
                               fontSize: 12,
                               color: Colors.black,

@@ -5,11 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/api.dart';
+import '../../services/language_selection.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/no_network_widget.dart';
 import '../Food_selection/daily_nutrition.dart';
@@ -124,6 +127,8 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -167,7 +172,7 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                       child: Column(
                         children: [
                           Text(
-                            'Select the no.of meals per day',
+                            localizations.translate('selectMealsPerDay'),
                             style: CustomTextStyles.titleTextStyle,
                           ),
                           const SizedBox(height: 50),
@@ -210,14 +215,14 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                                   width: double.infinity,
                                   child: Center(
                                     child: Text(
-                                      '${mealOption['mealtype_name']} meal', // Displaying integer with meal type name
+                                      '${mealOption['mealtype_name']} ${localizations.translate('meal')}',
                                       style: TextStyle(
                                         color: selectedOption == index + 1 ? Colors.white : Colors.black,
                                         fontFamily: 'Aeonik',
                                         fontSize: 18,
                                       ),
                                     ),
-                
+
                                   ),
                                 ),
                               );
@@ -235,14 +240,14 @@ class _NumberOfMealsState extends State<NumberOfMeals> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'You can freeze your plan through your profile. This is a weekly ongoing subscription. You can freeze up to 3 days.',
+                    localizations.translate('freezePlan'),
                     style: CustomTextStyles.labelTextStyle
                         .copyWith(fontSize: 11, fontWeight: FontWeight.w400),
                     textAlign: TextAlign.center,
                   ),
                 ),
                 CommonButton(
-                  text: 'Continue',
+                  text: localizations.translate('continue'),
                   onTap: () {
                     if (selectedOption > 0) {
                       int selectedMealType =

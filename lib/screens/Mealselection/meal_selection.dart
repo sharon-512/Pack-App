@@ -5,11 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:shimmer/shimmer.dart';
 
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/api.dart';
+import '../../services/language_selection.dart';
 import '../../widgets/common_button.dart';
 import '../../widgets/no_network_widget.dart';
 import '../Datepicker/date_picker.dart';
@@ -119,6 +122,8 @@ class _MealSelectionState extends State<MealSelection> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -158,7 +163,7 @@ class _MealSelectionState extends State<MealSelection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Choose Your Meal Duration?',
+                      localizations!.translate('chooseMealDuration'),
                       style: CustomTextStyles.titleTextStyle,
                     ),
                     const SizedBox(height: 50),
@@ -201,7 +206,9 @@ class _MealSelectionState extends State<MealSelection> {
                             width: double.infinity,
                             child: Center(
                               child: Text(
-                                '${subPlan['subplan_name']}',
+                                locale?.languageCode == 'ar'
+                                    ? '${subPlan['splannamearabic']}'
+                                    : '${subPlan['subplan_name']}',
                                 style: TextStyle(
                                   color: selectedOption == index + 1 ? Colors.white : Colors.black,
                                   fontFamily: 'Aeonik',
@@ -223,8 +230,8 @@ class _MealSelectionState extends State<MealSelection> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
         child: CommonButton(
-          text: 'Continue',
-          onTap: () {
+          text: localizations.translate('continue'),
+            onTap: () {
             // Find the selected subplan based on selectedOption
             int selectedSubplanId = subPlans[selectedOption - 1]['subplan_id'];
             Navigator.push(

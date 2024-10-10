@@ -3,6 +3,7 @@ import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/services/authentication.dart';
 import 'package:pack_app/widgets/common_textfield.dart';
+import '../../providers/app_localizations.dart';
 import 'enter_otp.dart';
 
 class EnterNumber extends StatefulWidget {
@@ -52,6 +53,7 @@ class _EnterNumberState extends State<EnterNumber> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 80),
@@ -83,11 +85,12 @@ class _EnterNumberState extends State<EnterNumber> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Welcome!\nto the plus pack',
+                localizations!.translate('welcomeToPlusPack'),
                 style: CustomTextStyles.titleTextStyle,
               ),
               const SizedBox(height: 22),
-              Text('Enter your phone number to continue',
+              Text(
+                  localizations!.translate('enterPhoneNumber'),
                   style: CustomTextStyles.subtitleTextStyle),
               const SizedBox(height: 40),
               Row(
@@ -108,7 +111,7 @@ class _EnterNumberState extends State<EnterNumber> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: CommonTextField(
-                      hintText: 'your phone number',
+                      hintText: localizations.translate('yourPhoneNumber'),
                       controller: mobileNumber,
                       keyboardType: TextInputType.phone,
                       style: TextStyle(
@@ -137,7 +140,7 @@ class _EnterNumberState extends State<EnterNumber> {
       Padding(
         padding: const EdgeInsets.all(20.0),
         child: CommonButton(
-          text: 'Continue',
+          text: localizations!.translate('continue'),
           onTap: _sendMobileNumber,
           isLoading: _isLoading,
         ),

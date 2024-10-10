@@ -1,17 +1,22 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../../../custom_style.dart';
+import '../../../../providers/app_localizations.dart';
+import '../../../../services/language_selection.dart';
 
 class SelectedPackCard extends StatelessWidget {
   final String planName;
   final String planDuration;
 
-  const SelectedPackCard({super.key, required this.planName, required this.planDuration});
+  const SelectedPackCard(
+      {super.key, required this.planName, required this.planDuration});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     return Container(
       height: 200,
       child: Stack(
@@ -26,10 +31,12 @@ class SelectedPackCard extends StatelessWidget {
               ),
             ),
             alignment: Alignment.topRight,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset('assets/images/selected_pack_1.png'),
-            ),
+            child: locale?.languageCode != 'ar'
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(20),
+                    child: Image.asset('assets/images/selected_pack_1.png'),
+                  )
+                : SizedBox(),
           ),
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -58,7 +65,7 @@ class SelectedPackCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Your Plan',
+                      localizations!.translate('yourPlan'),
                       style: CustomTextStyles.titleTextStyle.copyWith(
                         fontSize: 18,
                         fontWeight: FontWeight.w500,

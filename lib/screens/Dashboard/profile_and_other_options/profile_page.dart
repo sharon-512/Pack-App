@@ -18,12 +18,14 @@ import 'languages.dart';
 import 'my_coupons.dart';
 import 'my_subscriptions.dart';
 import 'package:http/http.dart' as http;
+import '../../../providers/app_localizations.dart'; // Import localization provider
 
 class ProfileMenuScreen extends StatelessWidget {
   const ProfileMenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context);
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
 
@@ -33,8 +35,8 @@ class ProfileMenuScreen extends StatelessWidget {
         children: [
           Column(
             children: [
-              GreenAppBar(showBackButton: false, titleText: 'My Profile'),
-              SizedBox(height: 12,),
+              GreenAppBar(showBackButton: false, titleText: localizations?.translate('myProfile') ?? 'My Profile'), // Translated title
+              const SizedBox(height: 12,),
               CircleAvatar(
                 radius: 40,
                 backgroundColor: Colors.white,
@@ -82,23 +84,22 @@ class ProfileMenuScreen extends StatelessWidget {
           Expanded(
             child: ListView(
               children: [
-                _buildMenuItem(context, 'My Subscription', 'assets/icons/subscription.svg', () => _navigateTo(context, MySubscriptions())),
-                _buildMenuItem(context, 'My Profile', 'assets/icons/profile.svg', () => _navigateTo(context, EditProfileScreen())),
-                _buildMenuItem(context, 'My Coupons', 'assets/icons/coupons.svg', () => _navigateTo(context, MyCoupons())),
-                _buildMenuItem(context, 'Address', 'assets/icons/address.svg', () => _navigateTo(context, AddAddress())),
-                // _buildMenuItem(context, 'Whatsapp', 'assets/icons/whatsapp.svg', () => _navigateTo(context, MyCoupons())),
-                _buildMenuItem(context, 'Language', 'assets/icons/language.svg', () => _navigateTo(context, SelectLanguage())),
-                _buildMenuItem(context, 'Help & Support', 'assets/icons/headphone.svg', () => _navigateTo(context, HelpAndSupport())),
-                _buildMenuItem(context, 'Privacy Policy', 'assets/icons/privacy_policy.svg', () => _navigateTo(context, PrivacyPolicy())),
-                _buildMenuItem(context, 'Terms & Conditions', 'assets/icons/terms_conditions.svg', () => _navigateTo(context, TermsAndConditions())),
+                _buildMenuItem(context, localizations?.translate('mySubscription') ?? 'My Subscription', 'assets/icons/subscription.svg', () => _navigateTo(context, MySubscriptions())),
+                _buildMenuItem(context, localizations?.translate('myProfile') ?? 'My Profile', 'assets/icons/profile.svg', () => _navigateTo(context, EditProfileScreen())),
+                _buildMenuItem(context, localizations?.translate('myCoupons') ?? 'My Coupons', 'assets/icons/coupons.svg', () => _navigateTo(context, MyCoupons())),
+                _buildMenuItem(context, localizations?.translate('address') ?? 'Address', 'assets/icons/address.svg', () => _navigateTo(context, AddAddress())),
+                _buildMenuItem(context, localizations?.translate('language') ?? 'Language', 'assets/icons/language.svg', () => _navigateTo(context, SelectLanguage())),
+                _buildMenuItem(context, localizations?.translate('helpSupport') ?? 'Help & Support', 'assets/icons/headphone.svg', () => _navigateTo(context, HelpAndSupport())),
+                _buildMenuItem(context, localizations?.translate('privacyPolicy') ?? 'Privacy Policy', 'assets/icons/privacy_policy.svg', () => _navigateTo(context, PrivacyPolicy())),
+                _buildMenuItem(context, localizations?.translate('termsConditions') ?? 'Terms & Conditions', 'assets/icons/terms_conditions.svg', () => _navigateTo(context, TermsAndConditions())),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 10, 20, 30),
                   child: GestureDetector(
                     onTap: () async {
-                      _showLogoutConfirmationDialog(context, 'You really want to logout?');
+                      _showLogoutConfirmationDialog(context, localizations?.translate('confirmLogout') ?? 'You really want to logout?');
                     },
                     child: Text(
-                      'Logout',
+                      localizations?.translate('logout') ?? 'Logout',
                       style: TextStyle(
                         fontFamily: 'Aeonik',
                         fontWeight: FontWeight.w500,
@@ -114,10 +115,10 @@ class ProfileMenuScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(20.0, 0, 20, 30),
                   child: GestureDetector(
                     onTap: () async {
-                      _showLogoutConfirmationDialog(context, 'Are you sure? Your account will be deleted permanently.');
+                      _showLogoutConfirmationDialog(context, localizations?.translate('deleteAccount') ?? 'Are you sure? Your account will be deleted permanently.');
                     },
                     child: Text(
-                      'Delete Account',
+                      localizations?.translate('deleteAccount') ?? 'Delete Account',
                       style: TextStyle(
                         fontFamily: 'Aeonik',
                         fontWeight: FontWeight.w500,
@@ -163,6 +164,8 @@ class ProfileMenuScreen extends StatelessWidget {
   }
 
   void _showLogoutConfirmationDialog(BuildContext context, String text) {
+    final localizations = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -172,7 +175,7 @@ class ProfileMenuScreen extends StatelessWidget {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.white, // Set the container background color to white
+              color: Colors.white,
               borderRadius: BorderRadius.circular(12.0),
             ),
             child: Column(
@@ -208,15 +211,10 @@ class ProfileMenuScreen extends StatelessWidget {
                         },
                         child: Container(
                           height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[200],
-                            borderRadius: BorderRadius.only(
-                              bottomLeft: Radius.circular(12.0),
-                            ),
-                          ),
+                          color: Colors.grey[200],
                           child: Center(
                             child: Text(
-                              'No Need',
+                              localizations?.translate('noNeed') ?? 'No Need',
                               style: TextStyle(
                                 color: Colors.black,
                                 fontWeight: FontWeight.w500,
@@ -229,48 +227,37 @@ class ProfileMenuScreen extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          // Call the logout API
                           final prefs = await SharedPreferences.getInstance();
                           String? token = prefs.getString('bearerToken');
                           final response = await http.get(
                             Uri.parse('$baseUrl/api/logout'),
                             headers: {
-                              'Authorization': 'Bearer $token', // Replace with your actual token
+                              'Authorization': 'Bearer $token',
                             },
                           );
 
                           if (response.statusCode == 200) {
-                            // Clear stored user data
                             final userBox = Hive.box<User>('userBox');
                             await userBox.clear();
 
-                            final prefs = await SharedPreferences.getInstance();
                             await prefs.remove('isLoggedIn');
                             await prefs.remove('bearerToken');
 
-                            // Navigate to the start screen
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(builder: (context) => StartScreen()),
                                   (route) => false,
                             );
                           } else {
-                            // Handle API call failure
                             print('Failed to logout: ${response.statusCode}');
-                            // Show an error message or handle accordingly
                           }
                         },
                         child: Container(
                           height: 50,
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(12.0),
-                            ),
-                          ),
+                          color: Colors.black,
                           child: Center(
                             child: Text(
-                              'Yes',
+                              localizations?.translate('logout') ?? 'Logout',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.w500,
@@ -289,5 +276,4 @@ class ProfileMenuScreen extends StatelessWidget {
       },
     );
   }
-
 }

@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
+import '../../../providers/app_localizations.dart';
+
 
 class HelpAndSupport extends StatelessWidget {
   const HelpAndSupport({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
-          const GreenAppBar(showBackButton: true, titleText: 'Help and Support'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('helpSupport'),),
           Flexible(
             child: SingleChildScrollView(
               child: Padding(

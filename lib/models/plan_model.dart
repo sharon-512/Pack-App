@@ -7,14 +7,16 @@ class Plan {
   final int planId;
   final String planName;
   final String planImage;
+  final String planarabic;
 
-  Plan({required this.planId, required this.planName, required this.planImage});
+  Plan( {required this.planId, required this.planName, required this.planImage, required this.planarabic});
 
   factory Plan.fromJson(Map<String, dynamic> json) {
     return Plan(
       planId: json['plan_id'],
       planName: json['plan_name'],
       planImage: json['plan_image'],
+      planarabic: json['planarabic'] ?? 'Not available'
     );
   }
 }

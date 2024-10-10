@@ -11,6 +11,7 @@ import 'package:pack_app/widgets/green_appbar.dart';
 import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
 import '../../../models/diet_plan.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
 import '../Home_page/widget/homepage_shimmer.dart';
@@ -122,7 +123,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
           isLoading =
               false; // Set loading to false if no valid data is received
           hasError = true;
-          planName = 'Please order any meals!';
+          planName = AppLocalizations.of(context)!.translate('pleaseOrderMeals');
           planDuration = '0 days';
           startDateforplan = '';
           endDateforplan = '';
@@ -142,6 +143,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -151,7 +153,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
           : Column(
               children: [
                 GreenAppBar(
-                    showBackButton: true, titleText: 'My Subscriptions'),
+                    showBackButton: true, titleText: localizations!.translate('mySubscription'),),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -184,7 +186,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
                                     Image.asset('assets/images/note.png'),
                                     SizedBox(height: 5),
                                     Text(
-                                      'Plan Start',
+                                      localizations!.translate('planStart'),
                                       style: CustomTextStyles.titleTextStyle
                                           .copyWith(
                                         fontSize: 12,
@@ -233,7 +235,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
                                     ),
                                     SizedBox(height: 5),
                                     Text(
-                                      'Plan ends',
+                                      localizations!.translate('planEnds'),
                                       style: CustomTextStyles.titleTextStyle
                                           .copyWith(
                                         fontSize: 12,
@@ -279,7 +281,7 @@ class _MySubscriptionsState extends State<MySubscriptions> {
                                     Image.asset('assets/images/timer.png'),
                                     SizedBox(height: 5),
                                     Text(
-                                      'Remaining',
+                                      localizations!.translate('remaining'),
                                       style: CustomTextStyles.titleTextStyle
                                           .copyWith(
                                         fontSize: 12,

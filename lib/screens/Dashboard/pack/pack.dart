@@ -3,10 +3,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 
 import '../../../custom_style.dart';
 import '../../../models/plan_model.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/api.dart';
+import '../../../services/language_selection.dart';
 import '../../../widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
 
@@ -88,6 +91,8 @@ class _PacksState extends State<Packs> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -104,7 +109,7 @@ class _PacksState extends State<Packs> {
             } else {
               return Column(
                 children: [
-                  GreenAppBar(showBackButton: false, titleText: 'Packs'),
+                  GreenAppBar(showBackButton: false, titleText: localizations!.translate('packs'),),
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Container(
@@ -159,7 +164,9 @@ class _PacksState extends State<Packs> {
                                           Padding(
                                             padding: const EdgeInsets.all(12.0),
                                             child: Text(
-                                              plan.planName,
+                                              locale?.languageCode == 'ar'
+                                                ? plan.planarabic
+                                                : plan.planName,
                                               style: CustomTextStyles
                                                   .titleTextStyle
                                                   .copyWith(
@@ -224,7 +231,9 @@ class _PacksState extends State<Packs> {
                                           Padding(
                                             padding: const EdgeInsets.all(12.0),
                                             child: Text(
-                                              plan.planName,
+                                              locale?.languageCode == 'ar'
+                                                  ? plan.planarabic
+                                                  : plan.planName,
                                               style: CustomTextStyles
                                                   .titleTextStyle
                                                   .copyWith(

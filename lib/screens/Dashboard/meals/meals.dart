@@ -8,6 +8,7 @@ import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:pack_app/widgets/selected_food_card.dart';
 import '../../../custom_style.dart';
 import '../../../models/customer_plan.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/fetch_selected_meals.dart';
 import '../../../widgets/no_network_widget.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -181,6 +182,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -188,7 +190,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          GreenAppBar(showBackButton: false, titleText: 'Selected Meals'),
+          GreenAppBar(showBackButton: false, titleText: localizations!.translate('selectedMeals'),),
           const SizedBox(height: 20),
           isLoading
               ? buildShimmerForMenuList()

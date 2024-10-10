@@ -9,6 +9,7 @@ import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/apiPost.dart';
 import '../../widgets/add_address.dart';
 import '../Payment/payment.dart';
@@ -40,7 +41,6 @@ class CheckOutScreen extends StatefulWidget {
 }
 
 class _CheckOutScreenState extends State<CheckOutScreen> {
-  List<Map<String, dynamic>> dailySelections = [];
   List<Map<String, dynamic>> selectedAddons = [];
   late DateTime startDate;
   late DateTime endDate;
@@ -62,7 +62,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
 
   void addDailySelections(Map<String, dynamic> selection) {
-    dailySelections.add(selection);
+    widget.dailySelections.add(selection);
   }
 
   void fetchAddressesFromLocalStorage() async {
@@ -74,12 +74,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       _addresses = storedAddresses;
     });
   }
-
-
-  final List<Map<String, dynamic>> _options = [
-    {'text': 'Inside Doha - 200 QR', 'value': 200},
-    {'text': 'Outside Doha - 250 QR', 'value': 250},
-  ];
 
   void _updateButtonState() {
     setState(() {
@@ -104,7 +98,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
 
   Future<void> initConnectivity() async {
     late List<ConnectivityResult> result;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
@@ -112,9 +105,6 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
       return;
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) {
       return Future.value(null);
     }
@@ -142,10 +132,17 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
     final double discountPrice = double.parse(widget.discount);
     double subTotal = foodPrice + addonPrice + _deliveryFee;
     double totalPrice = subTotal - discountPrice;
+    final localizations = AppLocalizations.of(context)!;
+
+    final List<Map<String, dynamic>> _options = [
+      {'text': localizations!.translate('insideDoha'), 'value': 200},
+      {'text': localizations!.translate('outsideDoha'), 'value': 250},
+    ];
+
     return Scaffold(
       body: Column(
         children: [
-          const GreenAppBar(showBackButton: true, titleText: 'Checkout'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('checkout')),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -157,7 +154,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Delivery Address',
+                        localizations!.translate('deliveryAddress'),
                         style: CustomTextStyles.titleTextStyle
                             .copyWith(fontSize: 16),
                       ),
@@ -261,7 +258,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             ),
                             SizedBox(width: 8),
                             Text(
-                              'Add new address',
+                                localizations!.translate('addNewAddress'),
                               style: CustomTextStyles.titleTextStyle.copyWith(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
@@ -272,7 +269,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                       ),
                       const SizedBox(height: 20),
                       Text(
-                        'Delivery fee',
+                        localizations!.translate('deliveryFee'),
                         style: CustomTextStyles.titleTextStyle
                             .copyWith(fontSize: 16),
                       ),
@@ -290,7 +287,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                             child: DropdownButton<String>(
                               borderRadius: BorderRadius.circular(12),
                               value: _selectedOption,
-                              hint: Text('Select delivery fee'),
+                              hint: Text(localizations!.translate('deliveryFee')),
                               isExpanded: true,
                               icon:
                                   Icon(Icons.arrow_drop_down_rounded, size: 28),
@@ -322,7 +319,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                         height: 20,
                       ),
                       Container(
-                        height: 158,
+                        height: 165,
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: Color(0xff000000).withOpacity(.07)),
@@ -342,7 +339,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '${widget.foodPrice} QR',
+                                    '${widget.foodPrice} ${localizations!.translate('currency')}',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -354,12 +351,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Add ons',
+                                      localizations!.translate('addOns'),
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '$addonPrice QR',
+                                      '$addonPrice ${localizations!.translate('currency')}',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
@@ -370,12 +367,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Delivery Fee',
+                                    localizations!.translate('deliveryFee'),
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '$_deliveryFee QR',
+                                    '$_deliveryFee ${localizations!.translate('currency')}',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -385,16 +382,15 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                 color: Color(0xff000000).withOpacity(.09),
                               ),
                               Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Total Discount',
+                                    localizations!.translate('discount'),
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '${discountPrice} QR', // Calculate the subtotal
+                                    '${discountPrice} ${localizations!.translate('currency')}',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -405,12 +401,12 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
-                                    'Sub total',
+                                    localizations!.translate('subTotal'),
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
                                   Text(
-                                    '${totalPrice} QR', // Calculate the subtotal
+                                    '${totalPrice} ${localizations!.translate('currency')}',
                                     style: CustomTextStyles.hintTextStyle
                                         .copyWith(color: Colors.black),
                                   ),
@@ -424,7 +420,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                   ),
                   _isButtonEnabled
                       ? CommonButton(
-                          text: 'Check Out',
+                          text: localizations!.translate('checkout'),
                           onTap: _placeOrder,
                           isLoading: _isLoading,
                         )
@@ -436,7 +432,7 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
                               borderRadius: BorderRadius.circular(28)),
                           alignment: Alignment.center,
                           child: Text(
-                            'Check Out',
+                            localizations!.translate('checkout'),
                             style: TextStyle(
                               fontFamily: 'Aeonik',
                               color: Colors.white,
@@ -502,6 +498,8 @@ class _CheckOutScreenState extends State<CheckOutScreen> {
   }
 
   void _placeOrder() async {
+    print('check out - dailySelections');
+    print(widget.dailySelections);
     setState(() {
       _isLoading = true;
     });

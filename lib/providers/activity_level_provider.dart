@@ -29,6 +29,7 @@ class ActivityProvider with ChangeNotifier {
         throw Exception('Failed to load activities');
       }
     } catch (error) {
+      print('activities error - $error');
       throw error;
     } finally {
       _isLoading = false;

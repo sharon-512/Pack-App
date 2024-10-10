@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../custom_style.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/user_registration_provider.dart'; // Import the UserProvider
 
 class SelectGender2 extends StatefulWidget {
@@ -24,6 +25,7 @@ class _SelectGenderState extends State<SelectGender2> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     Color _activeColor = Color(0xFFFFEDE7);
     Color _defaultColor = Colors.white;
     Color _borderColor = Color(0xFFEDC0B2);
@@ -45,7 +47,7 @@ class _SelectGenderState extends State<SelectGender2> {
           const SizedBox(height: 40),
           Center(
             child: Text(
-              'What gender\nyou identify as?',
+              localizations!.translate('genderIdentification'),
               style: CustomTextStyles.titleTextStyle,
               textAlign: TextAlign.center,
             ),
@@ -70,7 +72,7 @@ class _SelectGenderState extends State<SelectGender2> {
                       ),
                     ),
                     Text(
-                      'Male',
+                    localizations!.translate('male'),
                       style: CustomTextStyles.labelTextStyle
                           .copyWith(fontSize: 16, fontWeight: FontWeight.w500),
                     ),
@@ -92,7 +94,7 @@ class _SelectGenderState extends State<SelectGender2> {
                           alignment: Alignment.bottomCenter),
                     ),
                     Text(
-                      'Female',
+                      localizations!.translate('female'),
                       style: CustomTextStyles.labelTextStyle
                           .copyWith(fontSize: 16, fontWeight: FontWeight.w500),
                     ),

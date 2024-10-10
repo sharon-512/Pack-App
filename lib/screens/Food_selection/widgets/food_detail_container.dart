@@ -5,7 +5,11 @@ import 'package:pack_app/custom_style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../../providers/app_localizations.dart';
+import '../../../services/language_selection.dart';
 
 class FoodInfoCard extends StatefulWidget {
   final bool isSelected;
@@ -26,6 +30,8 @@ class FoodInfoCard extends StatefulWidget {
 class _FoodInfoCardState extends State<FoodInfoCard> {
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     Color textColor = widget.isSelected ? Color(0xff54423C) : Colors.black;
 
     return GestureDetector(
@@ -62,7 +68,8 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                     ),
                   );
                 },
-                loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                loadingBuilder: (BuildContext context, Widget child,
+                    ImageChunkEvent? loadingProgress) {
                   if (loadingProgress == null) {
                     return child;
                   } else {
@@ -88,7 +95,9 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                   children: <Widget>[
                     Flexible(
                       child: Text(
-                        widget.foodData['menu_name'] ?? 'Food Name',
+                        locale?.languageCode == 'ar'
+                            ? widget.foodData['menu_namear'] ?? 'اسم الطعام'
+                            : widget.foodData['menu_name'] ?? 'Food Name',
                         style: CustomTextStyles.labelTextStyle.copyWith(
                           fontSize: 20,
                           color: textColor,
@@ -98,13 +107,17 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                     ),
                     Row(
                       children: [
-                        Image.asset('assets/images/fire2.png', height: 14, width: 13,),
+                        Image.asset(
+                          'assets/images/fire2.png',
+                          height: 14,
+                          width: 13,
+                        ),
                         const SizedBox(width: 2),
                         Flexible(
                           child: Text(
-                            '${widget.foodData['kcal']} kcal',
+                            '${widget.foodData['kcal']} ${localizations.translate('kcal')}',
                             style: CustomTextStyles.subtitleTextStyle.copyWith(
-                              fontSize: 12,
+                              fontSize: 11,
                               color: textColor,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -117,24 +130,26 @@ class _FoodInfoCardState extends State<FoodInfoCard> {
                       children: [
                         NutritionBar(
                           color: const Color(0xffBBC392),
-                          label: '${widget.foodData['protien']}g',
+                          label:
+                              '${widget.foodData['protien']}${localizations.translate('g')}',
                           widthFactor: widget.foodData['protien'].toDouble(),
-
-                          label2: ' Protein',
+                          label2: ' ${localizations.translate('protein')}',
                           isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffF7C648),
-                          label: '${widget.foodData['carb']}g',
+                          label:
+                              '${widget.foodData['carb']}${localizations.translate('g')}',
                           widthFactor: widget.foodData['carb'].toDouble(),
-                          label2: ' Carbs',
+                          label2: ' ${localizations.translate('carbs')}',
                           isSelected: widget.isSelected,
                         ),
                         NutritionBar(
                           color: const Color(0xffA8353A),
-                          label: '${widget.foodData['fat']}g',
+                          label:
+                              '${widget.foodData['fat']}${localizations.translate('g')}',
                           widthFactor: widget.foodData['fat'].toDouble(),
-                          label2: ' Fat',
+                          label2: ' ${localizations.translate('fat')}',
                           isSelected: widget.isSelected,
                         ),
                       ],
@@ -185,7 +200,9 @@ class NutritionBar extends StatelessWidget {
                 TextSpan(text: label),
                 TextSpan(
                   text: label2,
-                  style: TextStyle(color: isSelected ? Color(0xff54423C) : Color(0xffA5A5A5)),
+                  style: TextStyle(
+                      color:
+                          isSelected ? Color(0xff54423C) : Color(0xffA5A5A5)),
                 ),
               ],
             ),
@@ -217,4 +234,3 @@ class NutritionBar extends StatelessWidget {
     );
   }
 }
-

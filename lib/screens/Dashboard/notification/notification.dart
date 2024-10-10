@@ -8,6 +8,7 @@ import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
 import '../../../models/notifications_model.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/notifications_api.dart';
 import '../../../widgets/no_network_widget.dart';
 
@@ -72,13 +73,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
     return Scaffold(
       body: Column(
         children: [
-          GreenAppBar(showBackButton: false, titleText: 'Notification'),
+          GreenAppBar(showBackButton: false, titleText: localizations!.translate('notification'),),
           Expanded(
             child: FutureBuilder<List<NotificationModel>>(
               future: ApiService().fetchNotifications(),
@@ -87,12 +89,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                   return Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return  Center(
-                    child: Text('Something went wrong,\nPlease restart the application',
+                    child: Text(localizations!.translate('noNotifications'),
                       textAlign: TextAlign.center,
                     ),);
                     //Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('You don\'t have any  notifications'));
+                  return Center(child: Text(localizations!.translate('noNotifications'),));
                 }
 
                 final notifications = snapshot.data!;

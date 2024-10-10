@@ -6,15 +6,19 @@ import 'package:pack_app/screens/Summary/widgets/selectedItem.dart';
 import 'package:pack_app/widgets/common_button.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/api.dart';
 import '../../services/apiPost.dart';
+import '../../services/language_selection.dart';
 import '../checkout/checkout.dart';
 
 class SummaryScreen extends StatefulWidget {
   final String foodPrice;
   final String planName;
+  final String planNameAr;
   final String planImage;
   final int planId;
   final int subplanId;
@@ -30,6 +34,7 @@ class SummaryScreen extends StatefulWidget {
     required this.subplanId,
     required this.mealtypeId,
     required this.planName,
+    required this.planNameAr,
     required this.addonPrice,
     required this.dailySelections,
     required this.selectedAddons,
@@ -41,20 +46,18 @@ class SummaryScreen extends StatefulWidget {
 }
 
 class _SummaryScreenState extends State<SummaryScreen> {
-  List<Map<String, dynamic>> dailySelections = [];
   List<Map<String, dynamic>> selectedAddons = [];
   late DateTime startDate;
   late DateTime endDate;
   bool _isLoading = true;
   void addDailySelections(Map<String, dynamic> selection) {
-    dailySelections.add(selection);
+    widget.dailySelections.add(selection);
   }
 
   @override
   void initState() {
     super.initState();
     fetchDatesFromSharedPreferences();
-    dailySelections = widget.dailySelections;
     selectedAddons = widget.selectedAddons;
     print(selectedAddons);
   }
@@ -113,17 +116,20 @@ class _SummaryScreenState extends State<SummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final TextEditingController code = TextEditingController();
     final double foodPrice = double.parse(widget.foodPrice);
     final double addonPrice = widget.addonPrice;
     final double subTotal = foodPrice + addonPrice;
     final double discount = _isCouponValid ? subTotal * couponDiscount : 0;
     final double totalAfterDiscount = subTotal - discount;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
+
 
     return Scaffold(
       body: Column(
         children: [
-          GreenAppBar(showBackButton: true, titleText: 'Summary'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('summary'),),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -134,7 +140,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     Column(
                       children: [
                         SelectedItem(
-                          plan: widget.planName,
+                          plan: locale?.languageCode == 'ar'
+                              ? widget.planNameAr
+                              : widget.planName,
                           price: widget.foodPrice,
                           image: widget.planImage
                         ),
@@ -143,7 +151,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         ),
                         if (addonPrice != 0)
                           Addon(
-                            plan: 'Addons',
+                            plan: localizations!.translate('addOns'),
                             price: '$addonPrice',
                           ),
                         const SizedBox(
@@ -168,7 +176,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         color: Color(0xff000000).withOpacity(.07)),
                                     borderRadius: BorderRadius.circular(8.0),
                                   ),
-                                  hintText: 'Enter promo code',
+                                  hintText: localizations!.translate('enterPromoCode'),
                                   hintStyle: CustomTextStyles.hintTextStyle,
                                   contentPadding:
                                   EdgeInsets.symmetric(horizontal: 12.0),
@@ -198,7 +206,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                                 )
                                     : Text(
-                                  'Apply',
+                                  localizations!.translate('apply'),
                                   style: TextStyle(color: Colors.white),
                                 ),
                               ),
@@ -246,12 +254,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                       MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      widget.planName,
+                                      locale?.languageCode == 'ar'
+                                          ? widget.planNameAr
+                                          : widget.planName ,
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '${widget.foodPrice} QR',
+                                      '${widget.foodPrice} ${localizations!.translate('currency')}',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
@@ -263,12 +273,12 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Add ons',
+                                        localizations!.translate('addOns'),
                                         style: CustomTextStyles.hintTextStyle
                                             .copyWith(color: Colors.black),
                                       ),
                                       Text(
-                                        '$addonPrice QR', // Assuming add-ons price is a fixed 100 QR
+                                        '$addonPrice ${localizations!.translate('currency')}', // Assuming add-ons price is a fixed 100 QR
                                         style: CustomTextStyles.hintTextStyle
                                             .copyWith(color: Colors.black),
                                       ),
@@ -279,32 +289,30 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 ),
                                 if (_isCouponValid)
                                   Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Text(
-                                        'Discount',
+                                        localizations!.translate('discount'),
                                         style: CustomTextStyles.hintTextStyle
                                             .copyWith(color: Colors.black),
                                       ),
                                       Text(
-                                        '${discount.toStringAsFixed(2)} QR',
+                                        '${discount.toStringAsFixed(2)} ${localizations!.translate('currency')}',
                                         style: CustomTextStyles.hintTextStyle
                                             .copyWith(color: Colors.black),
                                       ),
                                     ],
                                   ),
                                 Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
-                                      'Sub total',
+                                    localizations!.translate('subTotal'),
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
                                     Text(
-                                      '${totalAfterDiscount.toStringAsFixed(2)} QR',
+                                      '${totalAfterDiscount.toStringAsFixed(2)} ${localizations!.translate('currency')}',
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),
@@ -318,7 +326,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                     ),
                     SizedBox(height: 20,),
                     CommonButton(
-                        text: 'Check Out',
+                        text: localizations!.translate('checkout'),
                         onTap: () {
                           Navigator.push(
                             context,
@@ -331,7 +339,9 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                 discount: discount.toString(),
                                 foodPrice: widget.foodPrice,
                                 addonPrice: widget.addonPrice,
-                                planName: widget.planName,
+                                planName: locale?.languageCode == 'ar'
+                                    ? widget.planNameAr
+                                    : widget.planName,
                               ),
                             ),
                           );

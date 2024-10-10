@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../custom_style.dart';
 import '../../../models/coupon_model.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/coupon_api.dart';
 import '../../../widgets/green_appbar.dart';
 import '../../../widgets/no_network_widget.dart';
@@ -76,13 +77,14 @@ class _MyCouponsState extends State<MyCoupons> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
     return Scaffold(
       body: Column(
         children: [
-          GreenAppBar(showBackButton: true, titleText: 'My Coupons'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('myCoupons'),),
           Expanded(
             child: FutureBuilder<List<Coupon>>(
               future: _couponsFuture,
@@ -92,7 +94,7 @@ class _MyCouponsState extends State<MyCoupons> {
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No coupons found'));
+                  return Center(child: Text(localizations!.translate('noCouponsFound'),));
                 }
 
                 final coupons = snapshot.data!;

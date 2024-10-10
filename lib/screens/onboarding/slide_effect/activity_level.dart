@@ -4,7 +4,9 @@ import 'package:shimmer/shimmer.dart';
 import '../../../custom_style.dart';
 import '../../../models/activity_level_model.dart';
 import '../../../providers/activity_level_provider.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/user_registration_provider.dart';
+import '../../../services/language_selection.dart';
 
 class ActivityLevelSelection2 extends StatefulWidget {
   const ActivityLevelSelection2({super.key});
@@ -29,6 +31,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final activityProvider = Provider.of<ActivityProvider>(context);
 
     return Scaffold(
@@ -41,7 +44,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
           const SizedBox(height: 20),
           Center(
             child: Text(
-              'How would you describe\nyour activity level?',
+              localizations!.translate('describeActivityLevel'),
               style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 30),
               textAlign: TextAlign.center,
             ),
@@ -63,6 +66,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
 
   Widget _buildContainer(int index, Activity activity) {
     bool isSelected = _selectedIndex == index;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -123,39 +127,47 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
               ),
             ),
             SizedBox(width: 10),
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    activity.activityName,
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20,
-                      fontFamily: 'Aeonik',
-                      color: isSelected ? Colors.white : Colors.black,
+            Expanded( // Add Expanded here to constrain the Column
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      locale?.languageCode == 'ar'
+                          ? activity.activityNameAr
+                          : activity.activityName,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: 20,
+                        fontFamily: 'Aeonik',
+                        color: isSelected ? Colors.white : Colors.black,
+                      ),
                     ),
-                  ),
-                  Text(
-                    activity.activityDescription,
-                    style: TextStyle(
-                      fontFamily: 'Aeonik',
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: isSelected ? Colors.white : Color(0xffCDD1D6),
+                    Text(
+                      activity.activityDescription,
+                      style: TextStyle(
+                        fontFamily: 'Aeonik',
+                        fontSize: 12,
+                        fontWeight: FontWeight.w400,
+                        overflow: TextOverflow.ellipsis,
+                        color: isSelected ? Colors.white : Color(0xffCDD1D6),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],
-        ),
+        )
+
       ),
     );
   }
 
   Widget _buildShimmerEffect() {
+    final localizations = AppLocalizations.of(context)!;
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -166,7 +178,7 @@ class _SelectActivityLevelSelection2 extends State<ActivityLevelSelection2> {
           const SizedBox(height: 15),
           Center(
             child: Text(
-              'How would you describe\nyour activity level?',
+              localizations!.translate('describeActivityLevel'),
               style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 32),
               textAlign: TextAlign.center,
             ),

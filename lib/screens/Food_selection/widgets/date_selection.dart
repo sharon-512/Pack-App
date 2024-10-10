@@ -18,16 +18,18 @@ class DateSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Locale locale = Localizations.localeOf(context);
     return Container(
+
       height: 92,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: dailySelections.length,
         itemBuilder: (context, index) {
           DateTime currentDate = dailySelections[index]['date'];
-          String text1 = DateFormat('MMM').format(currentDate);
-          String text2 = DateFormat('d').format(currentDate);
-          String text3 = DateFormat('E').format(currentDate);
+          String text1 = DateFormat('MMM', locale.toString()).format(currentDate);
+          String text2 = DateFormat('d', locale.toString()).format(currentDate);
+          String text3 = DateFormat('E', locale.toString()).format(currentDate);
 
           return GestureDetector(
             onTap: () => onDateSelected(index),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../custom_style.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/user_registration_provider.dart';
 
 class SelectDob2 extends StatefulWidget {
@@ -37,6 +38,7 @@ class _SelectDobState2 extends State<SelectDob2> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -45,7 +47,7 @@ class _SelectDobState2 extends State<SelectDob2> {
           const SizedBox(height: 40),
           Center(
             child: Text(
-              'When is your\nbirthday?',
+              localizations!.translate('birthday'),
               style: CustomTextStyles.titleTextStyle,
               textAlign: TextAlign.center,
             ),
@@ -59,12 +61,12 @@ class _SelectDobState2 extends State<SelectDob2> {
                   child: Column(
                     children: [
                       Text(
-                        'Day',
+                        localizations!.translate('day'),
                         style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
                         height: 76,
-                        margin: EdgeInsets.only(right: 10),
+                        margin: EdgeInsets.all(5),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
                           border: Border.all(color: Color(0xFFEDC0B2)),
@@ -101,7 +103,7 @@ class _SelectDobState2 extends State<SelectDob2> {
                   child: Column(
                     children: [
                       Text(
-                        'Month',
+                        localizations!.translate('month'),
                         style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
@@ -142,11 +144,11 @@ class _SelectDobState2 extends State<SelectDob2> {
                   child: Column(
                     children: [
                       Text(
-                        'Year',
+                        localizations!.translate('year'),
                         style: CustomTextStyles.subtitleTextStyle.copyWith(fontSize: 14),
                       ),
                       Container(
-                        margin: EdgeInsets.only(left: 10),
+                        margin: EdgeInsets.all(5),
                         height: 76,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),

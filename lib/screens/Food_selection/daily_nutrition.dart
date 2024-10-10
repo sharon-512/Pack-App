@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/api.dart';
 import '../../widgets/Shimmer.dart';
 import '../../widgets/common_button.dart';
@@ -47,6 +48,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
   bool _isLoading = true;
   int selectedPlanId = -1;
   String selectedPlanName = '';
+  String selectedPlanNameAr = '';
   String planImage = '';
   int selectedCount = 0;
   List<Map<String, dynamic>> dailySelections = [];
@@ -178,8 +180,9 @@ class _DailyNutritionState extends State<DailyNutrition> {
           for (var subplan in plan['sub_plans']) {
             if (subplan['subplan_id'] == subplanId) {
               selectedSubplan = subplan;
-              selectedPlanId = plan['plan_id']; // Store the plan_id here
-              selectedPlanName = plan['plan_name']; // Store the plan_name here
+              selectedPlanId = plan['plan_id'];
+              selectedPlanName = plan['plan_name'];
+              selectedPlanNameAr = plan['planarabic'] ?? 'unavailable';
               planImage = plan['plan_image'];
               break;
             }
@@ -331,6 +334,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -376,7 +380,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Pick your daily nutrition',
+                    '${localizations.translate('pickDailyNutrition')}',
                   style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 30),
                 ),
                 const SizedBox(height: 20),
@@ -471,7 +475,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
               ],
             ),
             CommonButton(
-              text: 'Continue',
+              text: localizations!.translate('continue'),
               onTap: () async {
                 bool isComplete = true;
                 // Check if the required number of meals are selected for each day
@@ -500,7 +504,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                       transformDailySelections();
                   final prefs = await SharedPreferences.getInstance();
                   final subtotalAddonPrice = prefs.getDouble('subtotalAddonPrice') ?? 0;
-                  print(transformedSelections);
+                  print('daily selections --> $transformedSelections');
                   print(selectedAddons);
                   Navigator.push(
                     context,
@@ -511,6 +515,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         subplanId: widget.subplanId,
                         mealtypeId: widget.mealtypeId,
                         planName: selectedPlanName,
+                        planNameAr: selectedPlanNameAr,
                         addonPrice: subtotalAddonPrice,
                         dailySelections: transformedSelections,
                         selectedAddons: selectedAddonsFinal,

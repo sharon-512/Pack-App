@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
+import '../../../providers/app_localizations.dart';
+
 class TermsAndConditions extends StatelessWidget {
   const TermsAndConditions({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
-          const GreenAppBar(showBackButton: true, titleText: 'Terms & Conditions'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('termsConditions'),),
           Flexible(
             child: SingleChildScrollView(
               child: Padding(

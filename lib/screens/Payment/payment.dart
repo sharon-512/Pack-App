@@ -10,6 +10,7 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../models/user_model.dart';
+import '../../providers/app_localizations.dart';
 
 
 class PaymentScreen extends StatefulWidget {
@@ -38,6 +39,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    final localizations = AppLocalizations.of(context)!;
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
     final String formattedDate = DateFormat('d MMMM yyyy . hh:mm a').format(DateTime.now());
@@ -80,8 +83,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 height: 20,
               ),
               Image.asset('assets/images/tick3.png'),
-              const Text(
-                'Order Successful',
+              Text(
+                  localizations!.translate('orderSuccessful'),
                 style: TextStyle(
                     fontFamily: 'Aeonik',
                     fontSize: 24,
@@ -116,7 +119,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           Column(
                             children: [
                               Text(
-                                '${widget.subTotal} QR',
+                                '${widget.subTotal} ${localizations!.translate('currency')}',
                                 style: const TextStyle(
                                   fontFamily: 'Aeonik',
                                   fontWeight: FontWeight.w700,
@@ -142,31 +145,31 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Item name',
+                                      localizations!.translate('itemName'),
                                       style: CustomTextStyles.labelTextStyle
                                           .copyWith(
                                           fontSize: 14, letterSpacing: -0.14),
                                     ),
                                     Text(
-                                      'Order NO',
+                                      localizations!.translate('orderNo'),
                                       style: CustomTextStyles.labelTextStyle
                                           .copyWith(
                                           fontSize: 14, letterSpacing: -0.14),
                                     ),
                                     Text(
-                                      'Customer Name',
+                                      localizations!.translate('customerName'),
                                       style: CustomTextStyles.labelTextStyle
                                           .copyWith(
                                           fontSize: 14, letterSpacing: -0.14),
                                     ),
                                     Text(
-                                      'Start Date',
+                                      localizations!.translate('startDate'),
                                       style: CustomTextStyles.labelTextStyle
                                           .copyWith(
                                           fontSize: 14, letterSpacing: -0.14),
                                     ),
                                     Text(
-                                      'End Date',
+                                      localizations!.translate('endDate'),
                                       style: CustomTextStyles.labelTextStyle
                                           .copyWith(
                                           fontSize: 14, letterSpacing: -0.14),
@@ -239,7 +242,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                 children: [
                                   SvgPicture.asset('assets/images/share.svg'),
                                   Text(
-                                    '  Share Receipt',
+                                    localizations!.translate('shareReceipt'),
                                     style: CustomTextStyles.labelTextStyle
                                         .copyWith(color: Colors.white),
                                   )

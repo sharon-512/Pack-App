@@ -2,6 +2,7 @@ class Food {
   final int id;
   final String foodCode;
   final String foodName;
+  final String foodNameAr;
   final String foodImage;
   final String imageUrl;
   final int status;
@@ -12,6 +13,7 @@ class Food {
     required this.id,
     required this.foodCode,
     required this.foodName,
+    required this.foodNameAr,
     required this.foodImage,
     required this.imageUrl,
     required this.status,
@@ -24,6 +26,7 @@ class Food {
       id: json['id'],
       foodCode: json['foodcode'],
       foodName: json['food_name'],
+      foodNameAr: json['food_namear'] ?? 'null',
       foodImage: json['foodimage'],
       imageUrl: json['image_url'],
       status: json['status'],

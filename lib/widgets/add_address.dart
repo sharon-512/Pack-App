@@ -16,6 +16,7 @@ import '../../../custom_style.dart';
 import '../../../models/user_model.dart';
 import '../../../widgets/common_button.dart';
 import '../../../widgets/info_container.dart';
+import '../providers/app_localizations.dart';
 import '../services/api.dart';
 import 'map.dart';
 import 'no_network_widget.dart';
@@ -223,6 +224,7 @@ class _AddAddressState extends State<AddAddress> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     if (_connectionStatus.last == ConnectivityResult.none) {
       return NoNetworkWidget();
     }
@@ -255,7 +257,7 @@ class _AddAddressState extends State<AddAddress> {
                   ),
                   Center(
                     child: Text(
-                      'Add Address',
+                      localizations!.translate('addAddress'),
                       style: CustomTextStyles.titleTextStyle
                           .copyWith(fontSize: 24),
                     ),
@@ -281,7 +283,7 @@ class _AddAddressState extends State<AddAddress> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Delivery Address',
+                          localizations!.translate('deliveryAddress'),
                           style: CustomTextStyles.titleTextStyle
                               .copyWith(fontSize: 16),
                         ),
@@ -312,10 +314,11 @@ class _AddAddressState extends State<AddAddress> {
                                   alignment: Alignment.center,
                                   child: Text(
                                     i == 0
-                                        ? 'Home'
+                                        ? localizations!.translate('home')
                                         : i == 1
-                                            ? 'Office'
-                                            : 'Other',
+                                            ? localizations!.translate('office')
+                                            : localizations!.translate('other'),
+                                    overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       color: _selectedIndex == i
                                           ? Colors.white
@@ -330,7 +333,7 @@ class _AddAddressState extends State<AddAddress> {
                           ],
                         ),
                         AddressWidget(
-                          label: 'Address Line',
+                          label: localizations!.translate('addressLine'),
                           address: addressline.text,
                           textEditingController: addressline,
                           validator: (value) {
@@ -341,7 +344,7 @@ class _AddAddressState extends State<AddAddress> {
                           },
                         ),
                         AddressWidget(
-                          label: 'Street Number',
+                          label: localizations!.translate('streetNumber'),
                           address: 'Ex: 10th street',
                           textEditingController: streetNumber,
                           validator: (value) {
@@ -355,7 +358,7 @@ class _AddAddressState extends State<AddAddress> {
                           children: [
                             Expanded(
                               child: AddressWidget(
-                                label: 'House/Floor Number',
+                                label: localizations!.translate('houseFloorNumber'),
                                 address: 'Ex: 02',
                                 textEditingController: houseName,
                                 validator: (value) {
@@ -369,7 +372,7 @@ class _AddAddressState extends State<AddAddress> {
                             const SizedBox(width: 20),
                             Expanded(
                               child: AddressWidget(
-                                label: 'Flat Number',
+                                label: localizations!.translate('flatNumber'),
                                 address: 'Ex: 2B',
                                 textEditingController: flatNumber,
                                 validator: (value) {
@@ -383,7 +386,7 @@ class _AddAddressState extends State<AddAddress> {
                           ],
                         ),
                         AddressWidget(
-                          label: 'Contact Person Name',
+                          label: localizations!.translate('contactPersonName'),
                           address: 'Muhammed Sheharin',
                           hintStyle: CustomTextStyles.labelTextStyle
                               .copyWith(fontSize: 14),
@@ -399,7 +402,7 @@ class _AddAddressState extends State<AddAddress> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Contact Number',
+                              localizations!.translate('contactNumber'),
                               style: CustomTextStyles.labelTextStyle.copyWith(
                                   fontSize: 12, fontWeight: FontWeight.w400),
                             ),
@@ -452,7 +455,7 @@ class _AddAddressState extends State<AddAddress> {
                         ),
                         const SizedBox(height: 20),
                         CommonButton(
-                          text: 'Continue',
+                          text: localizations!.translate('continue'),
                           onTap: _addAddress,
                           isLoading: _isLoading,
                         ),

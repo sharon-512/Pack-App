@@ -10,6 +10,7 @@ import 'package:pack_app/widgets/common_button.dart';
 import 'package:hive/hive.dart';
 import 'package:pack_app/models/user_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/authentication.dart';
 import 'enter_details.dart';
 
@@ -85,6 +86,7 @@ class _EnterOtpState extends State<EnterOtp> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -104,12 +106,12 @@ class _EnterOtpState extends State<EnterOtp> {
                     children: [
                       const SizedBox(height: 50),
                       Text(
-                        'Verify your\nphone number',
+                        localizations!.translate('verifyPhoneNumber'),
                         style: CustomTextStyles.titleTextStyle,
                       ),
                       const SizedBox(height: 22),
                       Text(
-                        'We have sent you a 4 digit code.\nPlease enter here to Verify your Number.',
+                        localizations!.translate('otpSent'),
                         style: CustomTextStyles.subtitleTextStyle,
                       ),
                       const SizedBox(height: 40),
@@ -160,7 +162,8 @@ class _EnterOtpState extends State<EnterOtp> {
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 24),
                         child: Text(
-                          'Please enter your OTP',
+                          //'Please enter your OTP',
+                            localizations.translate('enterOtp'),
                           style: CustomTextStyles.subtitleTextStyle.copyWith(color: Colors.black),
                         ),
                       ),
@@ -181,7 +184,7 @@ class _EnterOtpState extends State<EnterOtp> {
                     ],
                   ),
                   CommonButton(
-                    text: 'Continue',
+                    text: localizations!.translate('continue'),
                     onTap: _confirmOtp,
                     isLoading: _isLoading,
                   ),

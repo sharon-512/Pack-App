@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 import 'package:pack_app/widgets/green_appbar.dart';
 
+import '../../../providers/app_localizations.dart';
+
 class PrivacyPolicy extends StatelessWidget {
   const PrivacyPolicy({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       body: Column(
         children: [
-          GreenAppBar(showBackButton: true, titleText: 'Privacy Policy'),
+          GreenAppBar(showBackButton: true, titleText: localizations!.translate('privacyPolicy'),),
           Flexible(
             child: SingleChildScrollView(
               child: Padding(

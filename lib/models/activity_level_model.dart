@@ -2,6 +2,7 @@ class Activity {
   final int id;
   final String activityCode;
   final String activityName;
+  final String activityNameAr;
   final String activityDescription;
   final String activityImage;
   final String imageUrl;
@@ -13,6 +14,7 @@ class Activity {
     required this.id,
     required this.activityCode,
     required this.activityName,
+    required this.activityNameAr,
     required this.activityDescription,
     required this.activityImage,
     required this.imageUrl,
@@ -26,6 +28,7 @@ class Activity {
       id: json['id'],
       activityCode: json['activitycode'],
       activityName: json['activity_name'],
+      activityNameAr: json['activity_namear'] ?? 'arabic unavailable',
       activityDescription: json['activity_descrption'],
       activityImage: json['activityimage'],
       imageUrl: json['image_url'],

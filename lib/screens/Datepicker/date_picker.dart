@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../../custom_style.dart';
+import '../../providers/app_localizations.dart';
 import '../../services/api.dart';
+import '../../services/language_selection.dart';
 import '../../widgets/common_button.dart';
 import '../Numberofmeals/number_of_meals.dart';
 
@@ -61,6 +64,8 @@ class _DatePickerState extends State<DatePicker> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 70),
@@ -95,19 +100,19 @@ class _DatePickerState extends State<DatePicker> {
                 ),
                 const SizedBox(height: 30),
                 Text(
-                  'Pick your starting date',
+                  localizations.translate('pickStartingDate'),
                   style: CustomTextStyles.titleTextStyle,
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Starting Day',
-                  style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 20),
+                    localizations.translate('startingDay'),
+                    style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     DateSelectionField(
-                      hintText: 'Select starting date',
+                      hintText: localizations.translate('pickStartingDate'),
                       controller: start,
                       onDateSelected: (DateTime date) {
                         setState(() {
@@ -123,7 +128,7 @@ class _DatePickerState extends State<DatePicker> {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  'Ending Day',
+                  localizations.translate('endingDay'),
                   style: CustomTextStyles.labelTextStyle.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 8),
@@ -147,7 +152,7 @@ class _DatePickerState extends State<DatePicker> {
                           ),
                           hintText: end.text.isNotEmpty
                               ? end.text
-                              : 'Select starting date first',
+                              : localizations.translate('selectStartingDateFirst'),
                           hintStyle: CustomTextStyles.hintTextStyle,
                           contentPadding: EdgeInsets.symmetric(
                               horizontal: 12.0),
@@ -164,7 +169,7 @@ class _DatePickerState extends State<DatePicker> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'You can freeze your plan through your profile. This is a weekly ongoing subscription. You can freeze up to 3 days.',
+                    localizations.translate('freezePlan'),
                     style: CustomTextStyles.labelTextStyle.copyWith(
                       fontSize: 11,
                       fontWeight: FontWeight.w400,
@@ -173,7 +178,7 @@ class _DatePickerState extends State<DatePicker> {
                   ),
                 ),
                 CommonButton(
-                  text: 'Continue',
+                  text: localizations.translate('continue'),
                   onTap: () async {
                     final prefs = await SharedPreferences.getInstance();
                     await prefs.setString(

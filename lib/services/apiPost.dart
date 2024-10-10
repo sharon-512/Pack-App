@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-
+import 'package:logger/logger.dart';
 import 'api.dart';
 
 class ApiService {
@@ -28,17 +28,19 @@ class ApiService {
       String planFrom = DateFormat('yyyy-MM-dd').format(startDate);
       String planTo = DateFormat('yyyy-MM-dd').format(endDate);
 
-      // Prepare menu from dailySelections
       List<Map<String, dynamic>> menu = [];
       for (var selection in dailySelections) {
-        menu.add({
-          "date": selection['date'],
-          "breakfast": selection['breakfast'],
-          "lunch": selection['lunch'],
-          "snacks": selection['snacks'],
-          "dinner": selection['dinner'],
-        });
+        Map<String, dynamic> dayMenu = {"date": selection['date']};
+
+        // Loop through the dynamic meal categories in each selection
+        for (var mealType in selection.keys) {
+          if (mealType != 'date') {
+            dayMenu[mealType] = selection[mealType];  // Dynamically add the meal type
+          }
+        }
+        menu.add(dayMenu);
       }
+
 
       List<Map<String, dynamic>> addon = [];
       for (var addonItem in selectedAddons) {
@@ -70,6 +72,8 @@ class ApiService {
 
       // Make the POST request with automatic redirection handling
       var apiUrl = '$baseUrl/api/save-order';
+      var logger = Logger();
+      logger.d('jwt token $token');
       var response = await http.post(
         Uri.parse(apiUrl),
         body: formData,

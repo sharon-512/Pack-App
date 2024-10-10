@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:pack_app/custom_style.dart';
 
+import '../providers/app_localizations.dart';
+
 class StaticProgressBar extends StatelessWidget {
   final double progress;
   final int value;
@@ -9,6 +11,7 @@ class StaticProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -17,7 +20,7 @@ class StaticProgressBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('You\'re almost there',
+              Text(localizations!.translate('youAreAlmostThere'),
                 style: CustomTextStyles.subtitleTextStyle.copyWith(color: Colors.black),),
               Text('$value/5',
                 style: CustomTextStyles.subtitleTextStyle,),

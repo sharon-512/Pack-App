@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import '../../../custom_style.dart';
 import '../../../models/food_to_avoid_model.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/food_to_avoid_provider.dart';
 import '../../../providers/user_registration_provider.dart';
+import '../../../services/language_selection.dart';
 
 class SpecificFood2 extends StatefulWidget {
   const SpecificFood2({Key? key}) : super(key: key);
@@ -29,6 +31,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final foodProvider = Provider.of<FoodProvider>(context);
 
     return Scaffold(
@@ -41,7 +44,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
           const SizedBox(height: 15),
           Center(
             child: Text(
-              'Are there any specific\nfood to avoid?',
+              localizations!.translate('foodAvoidance'),
               style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 32),
               textAlign: TextAlign.center,
             ),
@@ -69,6 +72,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
   }
 
   Widget _buildContainer(int index, Food food) {
+    final locale = Provider.of<LocaleNotifier>(context).locale;
     bool isSelected = _selectedFoods.contains(food.foodName);
     return GestureDetector(
       onTap: () {
@@ -94,7 +98,9 @@ class _SpecificFood2 extends State<SpecificFood2> {
           children: [
             Image.network(food.imageUrl, fit: BoxFit.fill, height: 37, width: 37),
             Text(
-              food.foodName,
+              locale?.languageCode == 'ar'
+                  ? food.foodNameAr
+                  : food.foodName,
               style: TextStyle(
                 fontFamily: 'Aeonik',
                 fontSize: 14,
@@ -109,6 +115,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
   }
 
   Widget _buildShimmerEffect() {
+    final localizations = AppLocalizations.of(context)!;
     return Shimmer.fromColors(
       baseColor: Colors.grey[300]!,
       highlightColor: Colors.grey[100]!,
@@ -119,7 +126,7 @@ class _SpecificFood2 extends State<SpecificFood2> {
           const SizedBox(height: 15),
           Center(
             child: Text(
-              'Are there any specific\nfood to avoid?',
+              localizations!.translate('foodAvoidance'),
               style: CustomTextStyles.titleTextStyle.copyWith(fontSize: 32),
               textAlign: TextAlign.center,
             ),

@@ -10,6 +10,7 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../models/user_model.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../services/api.dart';
 import '../nav_bar.dart';
 
@@ -102,6 +103,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     final userBox = Hive.box<User>('userBox');
     final user = userBox.get('currentUser');
 
@@ -133,8 +135,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(
                         height: 50,
                       ),
-                      const Text(
-                        'My Profile',
+                      Text(
+                        localizations!.translate('myProfile'),
                         style: TextStyle(
                             fontFamily: 'Aeonik',
                             fontWeight: FontWeight.w600,
@@ -210,10 +212,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const SizedBox(height: 32),
-                      _buildTextField('First Name', 'Enter Your First Name', firstNameController),
-                      _buildTextField('Last Name', 'Enter Your Last Name', lastNameController),
-                      _buildTextField('Email', 'Enter Your Email', emailController, false),
-                      _buildTextField('Phone', 'Enter Your Phone number', numberController, false),
+                      _buildTextField(localizations!.translate('firstName'),localizations!.translate('enterFirstName'), firstNameController),
+                      _buildTextField(localizations!.translate('lastName'),localizations!.translate('enterLastName'), lastNameController),
+                      _buildTextField(localizations!.translate('email'),localizations!.translate('enterEmail'), emailController, false),
+                      _buildTextField(localizations!.translate('phone'), localizations!.translate('enterYourNumber'), numberController, false),
                     ],
                   ),
                 ),
@@ -222,7 +224,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25),
               child: CommonButton(
-                text: 'Save changes',
+                text: localizations!.translate('saveChanges'),
                 onTap: () {
                   if (user != null) {
                     updateProfile(user);

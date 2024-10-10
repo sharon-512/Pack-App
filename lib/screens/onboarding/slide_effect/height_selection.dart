@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../custom_style.dart';
+import '../../../providers/app_localizations.dart';
 import '../../../providers/user_registration_provider.dart';
 
 class WeightAndHeight2 extends StatefulWidget {
@@ -47,6 +48,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
@@ -57,7 +59,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
             const SizedBox(height: 20),
             Center(
               child: Text(
-                'What is your\nweight?',
+                localizations!.translate('enterWeight'),
                 style: CustomTextStyles.titleTextStyle,
                 textAlign: TextAlign.center,
               ),
@@ -147,7 +149,7 @@ class _WeightAndHeightState extends State<WeightAndHeight2> {
             const SizedBox(height: 65),
             Center(
               child: Text(
-                'What is your\nheight?',
+                localizations!.translate('enterHeight'),
                 style: CustomTextStyles.titleTextStyle,
                 textAlign: TextAlign.center,
               ),

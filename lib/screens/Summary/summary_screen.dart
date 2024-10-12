@@ -25,10 +25,15 @@ class SummaryScreen extends StatefulWidget {
   final int mealtypeId;
   final double addonPrice;
   final List<Map<String, dynamic>> dailySelections;
-  final List<Map<String, dynamic>> selectedAddons; // Add this line
+  final List<Map<String, dynamic>> selectedAddons;
+  final double totalProtein;
+  final double totalCarb;
+  final double totalFat ;
+  final double totalKcal ;
+
 
   const SummaryScreen({
-    Key? key,
+    super.key,
     required this.foodPrice,
     required this.planId,
     required this.subplanId,
@@ -38,8 +43,12 @@ class SummaryScreen extends StatefulWidget {
     required this.addonPrice,
     required this.dailySelections,
     required this.selectedAddons,
-    required this.planImage, // Add this line
-  }) : super(key: key);
+    required this.planImage,
+    required this.totalProtein,
+    required this.totalCarb,
+    required this.totalFat,
+    required this.totalKcal,
+  });
 
   @override
   State<SummaryScreen> createState() => _SummaryScreenState();
@@ -313,6 +322,89 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                     ),
                                     Text(
                                       '${totalAfterDiscount.toStringAsFixed(2)} ${localizations!.translate('currency')}',
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        SizedBox(height:10),
+                        Container(
+                          height: 175,
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Color(0xff000000).withOpacity(.07)),
+                              borderRadius: BorderRadius.circular(28)),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 25),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Protein",
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      widget.totalProtein.toString(),
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                Divider(color: Color(0xff000000).withOpacity(.09), height: 1,),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Calories",
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      widget.totalKcal.toString(),
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                Divider(color: Color(0xff000000).withOpacity(.09), height: 1,),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Fat",
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      widget.totalFat.toString(),
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                  ],
+                                ),
+                                Divider(color: Color(0xff000000).withOpacity(.09), height: 1,),
+                                Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Carbs",
+                                      style: CustomTextStyles.hintTextStyle
+                                          .copyWith(color: Colors.black),
+                                    ),
+                                    Text(
+                                      widget.totalCarb.toString(),
                                       style: CustomTextStyles.hintTextStyle
                                           .copyWith(color: Colors.black),
                                     ),

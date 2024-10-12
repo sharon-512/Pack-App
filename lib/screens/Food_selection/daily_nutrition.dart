@@ -59,7 +59,10 @@ class _DailyNutritionState extends State<DailyNutrition> {
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   List<String> mealCategories = [];
-
+  double totalProtein = 0;
+  double totalCarb = 0;
+  double totalFat = 0;
+  double totalKcal = 0;
 
 
   @override
@@ -156,11 +159,27 @@ class _DailyNutritionState extends State<DailyNutrition> {
         for (String category in mealCategories) {
           daySelection[category] = null;
         }
-
         dailySelections.add(daySelection);
       }
     }
   }
+
+  void calculateTotalNutrients(List<Map<String, dynamic>> dailySelections, List<String> mealCategories) {
+
+    for (var selection in dailySelections) {
+      for (String category in mealCategories) {
+        if (selection[category] != null) {
+          var food = selection[category];
+
+          totalKcal += food['kcal'] != null ? food['kcal'] : 0;
+          totalProtein += food['protien'] != null ? food['protien'] : 0;
+          totalCarb += food['carb'] != null ? food['carb'] : 0;
+          totalFat += food['fat'] != null ? food['fat'] : 0;
+        }
+      }
+    }
+  }
+
 
   int calculateDaysDifference(DateTime start, DateTime end) {
     return end.difference(start).inDays;
@@ -341,7 +360,7 @@ class _DailyNutritionState extends State<DailyNutrition> {
     final int limit = widget.numberofMeals;
 
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(),
         ),
@@ -398,7 +417,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
                           selectedCount++;
                         }
                       }
-
                       print('Selected count for day $selectedDay: $selectedCount');
                     });
                   },
@@ -498,14 +516,17 @@ class _DailyNutritionState extends State<DailyNutrition> {
 
                 if (isComplete) {
                   print(foodPrice);
-                  List<Map<String, dynamic>> selectedAddons =
-                      transformSelectedAddons();
-                  List<Map<String, dynamic>> transformedSelections =
-                      transformDailySelections();
+                  List<Map<String, dynamic>> selectedAddons = transformSelectedAddons();
+                  List<Map<String, dynamic>> transformedSelections = transformDailySelections();
                   final prefs = await SharedPreferences.getInstance();
                   final subtotalAddonPrice = prefs.getDouble('subtotalAddonPrice') ?? 0;
                   print('daily selections --> $transformedSelections');
                   print(selectedAddons);
+                  calculateTotalNutrients(dailySelections,mealCategories);
+                  print('Total Protein: $totalProtein g');
+                  print('Total Carbohydrates: $totalCarb g');
+                  print('Total Fat: $totalFat g');
+                  print('Total Calories: $totalKcal kcal');
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -520,12 +541,15 @@ class _DailyNutritionState extends State<DailyNutrition> {
                         dailySelections: transformedSelections,
                         selectedAddons: selectedAddonsFinal,
                         planImage: planImage,
+                        totalProtein: totalProtein,
+                        totalCarb: totalCarb,
+                        totalFat: totalFat,
+                        totalKcal: totalKcal,
                       ),
                     ),
                   );
                   print(subtotalAddonPrice);
                 } else {
-                  // Optionally show a message or handle incomplete selection
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Please select meals for each day.'),
@@ -545,7 +569,6 @@ class _DailyNutritionState extends State<DailyNutrition> {
   List<Map<String, dynamic>> transformSelectedAddons() {
     List<Map<String, dynamic>> addonsList = [];
 
-    // Iterate over each day's addon selection
     for (var daySelection in dailySelections) {
       // Iterate over addons selected for each day
       for (var addon in daySelection['addons']) {

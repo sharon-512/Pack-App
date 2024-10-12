@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+
 import 'api.dart';
 
 class ApiService {
@@ -24,65 +25,55 @@ class ApiService {
     required String paymentStatus,
   }) async {
     try {
-
       String planFrom = DateFormat('yyyy-MM-dd').format(startDate);
       String planTo = DateFormat('yyyy-MM-dd').format(endDate);
 
+      // Prepare menu data
       List<Map<String, dynamic>> menu = [];
       for (var selection in dailySelections) {
         Map<String, dynamic> dayMenu = {"date": selection['date']};
-
-        // Loop through the dynamic meal categories in each selection
         for (var mealType in selection.keys) {
           if (mealType != 'date') {
-            dayMenu[mealType] = selection[mealType];  // Dynamically add the meal type
+            dayMenu[mealType.toLowerCase()] = selection[mealType];
           }
         }
         menu.add(dayMenu);
       }
 
-
+      // Prepare addon data
       List<Map<String, dynamic>> addon = [];
       for (var addonItem in selectedAddons) {
-        addon.add({
+        Map<String, dynamic> lowerCaseAddon = {
           "id": addonItem['id'],
           "quantity": addonItem['quantity'],
-        });
+        };
+        addon.add(lowerCaseAddon);
       }
 
-      // Prepare form data for the POST request
-      var formData = {
-        'user_id': userId,
-        'plan_from': planFrom,
-        'plan_to': planTo,
-        'product_id': productId,
-        'menu': jsonEncode(menu),
-        'addon': jsonEncode(addon),
-        'price': price,
-        'address': address,
-        'street_no': streetNo,
-        'building_no': buildingNo,
-        'flat_no': flatNo,
-        'mobile_no': mobileNo,
-        'price': price,
-        'delivery_price': deliveryPrice,
-        'payment_status': paymentStatus,
-        'addon_price': addonPrice
+      // Build the request body as JSON
+      Map<String, dynamic> body = {
+        "plan_from": planFrom,
+        "plan_to": planTo,
+        "product_id": productId,
+        "menu": jsonEncode(menu),
+        "addon": jsonEncode(addon),
+        "price": price,
+        "delivery_price": deliveryPrice,
       };
 
-      // Make the POST request with automatic redirection handling
-      var apiUrl = '$baseUrl/api/save-order';
       var logger = Logger();
-      logger.d('jwt token $token');
+      logger.d('Sending request with token: $token');
+      logger.d('Sending request with body: $body');
+
+      // Send the POST request with JSON data
       var response = await http.post(
-        Uri.parse(apiUrl),
-        body: formData,
+        Uri.parse('$baseUrl/api/save-order'),
         headers: {
           'Authorization': 'Bearer $token',
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json; charset=UTF-8', // Ensure Content-Type is set
         },
+        body: jsonEncode(body),
       );
-      print('Form Data: ${jsonEncode(formData)}'); // Print the JSON structure
 
       // Handle response
       if (response.statusCode == 200) {

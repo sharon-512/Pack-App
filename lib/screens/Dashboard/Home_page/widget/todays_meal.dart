@@ -43,45 +43,15 @@ class _CurrentDayMealsState extends State<CurrentDayMeals> {
             (menu) => menu.date == currentDateStr,
       );
 
-      if (todayMenu != null && todayMenu.date.isNotEmpty) {
-        if (todayMenu.breakfast != null) {
-          mealTypes.add('Breakfast');
-          mealNames.add(todayMenu.breakfast?.menuname ?? '');
-          mealKcal.add(todayMenu.breakfast?.kcal ?? 0);
-          mealProteins.add(todayMenu.breakfast?.protien ?? 0);
-          mealCarbs.add(todayMenu.breakfast?.carb ?? 0);
-          mealFats.add(todayMenu.breakfast?.fat ?? 0);
-          mealImages.add(todayMenu.breakfast?.image ?? '');
-        }
-
-        if (todayMenu.lunch != null) {
-          mealTypes.add('Lunch');
-          mealNames.add(todayMenu.lunch?.menuname ?? '');
-          mealKcal.add(todayMenu.lunch?.kcal ?? 0);
-          mealProteins.add(todayMenu.lunch?.protien ?? 0);
-          mealCarbs.add(todayMenu.lunch?.carb ?? 0);
-          mealFats.add(todayMenu.lunch?.fat ?? 0);
-          mealImages.add(todayMenu.lunch?.image ?? '');
-        }
-
-        if (todayMenu.snacks != null) {
-          mealTypes.add('Snacks');
-          mealNames.add(todayMenu.snacks?.menuname ?? '');
-          mealKcal.add(todayMenu.snacks?.kcal ?? 0);
-          mealProteins.add(todayMenu.snacks?.protien ?? 0);
-          mealCarbs.add(todayMenu.snacks?.carb ?? 0);
-          mealFats.add(todayMenu.snacks?.fat ?? 0);
-          mealImages.add(todayMenu.snacks?.image ?? '');
-        }
-
-        if (todayMenu.dinner != null) {
-          mealTypes.add('Dinner');
-          mealNames.add(todayMenu.dinner?.menuname ?? '');
-          mealKcal.add(todayMenu.dinner?.kcal ?? 0);
-          mealProteins.add(todayMenu.dinner?.protien ?? 0);
-          mealCarbs.add(todayMenu.dinner?.carb ?? 0);
-          mealFats.add(todayMenu.dinner?.fat ?? 0);
-          mealImages.add(todayMenu.dinner?.image ?? '');
+      if (todayMenu != null) {
+        for (var meal in todayMenu.meals) {
+          mealTypes.add(meal.type);
+          mealNames.add(meal.menuname);
+          mealKcal.add(meal.kcal);
+          mealProteins.add(meal.protien);
+          mealCarbs.add(meal.carb);
+          mealFats.add(meal.fat);
+          mealImages.add(meal.image);
         }
       }
 

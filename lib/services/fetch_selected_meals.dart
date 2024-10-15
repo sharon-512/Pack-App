@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/customer_plan.dart';
 import 'api.dart';
@@ -8,6 +9,7 @@ class SelectedFoodApi {
   static  String subscriptionListUrl = '$baseUrl/api/subscription-list';
 
   Future<CustomerPlan> fetchCustomerPlan() async {
+    var logger = Logger();
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('bearerToken');
 
@@ -20,6 +22,7 @@ class SelectedFoodApi {
     );
 
     if (response.statusCode == 200) {
+      logger.d('selected food ${response.body}');
       final data = json.decode(response.body);
       return CustomerPlan.fromJson(data);
     } else {
@@ -28,6 +31,7 @@ class SelectedFoodApi {
   }
 
   static Future<Map<String, dynamic>> subscriptionDetails() async {
+    var logger = Logger();
     final prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('bearerToken');
 
@@ -41,6 +45,7 @@ class SelectedFoodApi {
       );
 
       if (response.statusCode == 200) {
+        logger.d('selected food ${response.body}');
         return json.decode(response.body);
       } else {
         print('Failed to load subscription list. Status code: ${response.statusCode}');

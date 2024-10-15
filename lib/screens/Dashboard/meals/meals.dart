@@ -59,7 +59,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
 
   Future<void> initConnectivity() async {
     late List<ConnectivityResult> result;
-    // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
     } on PlatformException catch (e) {
@@ -67,9 +66,6 @@ class _SelectedMealsState extends State<SelectedMeals> {
       return;
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) {
       return Future.value(null);
     }
@@ -122,7 +118,7 @@ class _SelectedMealsState extends State<SelectedMeals> {
     if (index < menuList.length) {
       final selectedMenu = menuList[index];
 
-      // Clear previous values
+      // Clear previous meal data
       mealTypes.clear();
       mealNames.clear();
       mealKcal.clear();
@@ -133,44 +129,15 @@ class _SelectedMealsState extends State<SelectedMeals> {
 
       print('Selected Date: ${selectedMenu.date}');
 
-      if (selectedMenu.breakfast != null) {
-        mealTypes.add('Breakfast');
-        mealNames.add(selectedMenu.breakfast?.menuname ?? '');
-        mealKcal.add(selectedMenu.breakfast?.kcal ?? 0);
-        mealProteins.add(selectedMenu.breakfast?.protien ?? 0);
-        mealCarbs.add(selectedMenu.breakfast?.carb ?? 0);
-        mealFats.add(selectedMenu.breakfast?.fat ?? 0);
-        mealImages.add(selectedMenu.breakfast?.image ?? '');
-      }
-
-      if (selectedMenu.lunch != null) {
-        mealTypes.add('Lunch');
-        mealNames.add(selectedMenu.lunch?.menuname ?? '');
-        mealKcal.add(selectedMenu.lunch?.kcal ?? 0);
-        mealProteins.add(selectedMenu.lunch?.protien ?? 0);
-        mealCarbs.add(selectedMenu.lunch?.carb ?? 0);
-        mealFats.add(selectedMenu.lunch?.fat ?? 0);
-        mealImages.add(selectedMenu.lunch?.image ?? '');
-      }
-
-      if (selectedMenu.snacks != null) {
-        mealTypes.add('Snacks');
-        mealNames.add(selectedMenu.snacks?.menuname ?? '');
-        mealKcal.add(selectedMenu.snacks?.kcal ?? 0);
-        mealProteins.add(selectedMenu.snacks?.protien ?? 0);
-        mealCarbs.add(selectedMenu.snacks?.carb ?? 0);
-        mealFats.add(selectedMenu.snacks?.fat ?? 0);
-        mealImages.add(selectedMenu.snacks?.image ?? '');
-      }
-
-      if (selectedMenu.dinner != null) {
-        mealTypes.add('Dinner');
-        mealNames.add(selectedMenu.dinner?.menuname ?? '');
-        mealKcal.add(selectedMenu.dinner?.kcal ?? 0);
-        mealProteins.add(selectedMenu.dinner?.protien ?? 0);
-        mealCarbs.add(selectedMenu.dinner?.carb ?? 0);
-        mealFats.add(selectedMenu.dinner?.fat ?? 0);
-        mealImages.add(selectedMenu.dinner?.image ?? '');
+      // Iterate over the list of meals
+      for (var meal in selectedMenu.meals) {
+        mealTypes.add(_capitalize(meal.type));
+        mealNames.add(meal.menuname);
+        mealKcal.add(meal.kcal);
+        mealProteins.add(meal.protien);
+        mealCarbs.add(meal.carb);
+        mealFats.add(meal.fat);
+        mealImages.add(meal.image);
       }
 
       // Update the UI to reflect the changes
@@ -179,6 +146,10 @@ class _SelectedMealsState extends State<SelectedMeals> {
       print('No food details available for this date.');
     }
   }
+
+// Helper method to capitalize the first letter
+  String _capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
 
   @override
   Widget build(BuildContext context) {

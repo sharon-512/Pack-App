@@ -21,34 +21,50 @@ class PlanDetails {
 
 class Menu {
   final String date;
-  final Meal? breakfast;
-  final Meal? lunch;
-  final Meal? snacks;
-  final Meal? dinner;
-  Menu({required this.date, this.breakfast, this.lunch, this.snacks, this.dinner});
+  final List<Meal> meals;
+
+  Menu({required this.date, required this.meals});
+
   factory Menu.fromJson(Map<String, dynamic> json) {
+    List<Meal> meals = [];
+    json.forEach((key, value) {
+      if (key != 'date' && value is Map<String, dynamic>) {
+        Meal meal = Meal.fromJson({...value, 'type': key});
+        meals.add(meal);
+      }
+    });
     return Menu(
       date: json['date'],
-      breakfast: json['breakfast'] != null && json['breakfast'] is Map<String, dynamic> ? Meal.fromJson(json['breakfast']) : null,
-      lunch: json['lunch'] != null && json['lunch'] is Map<String, dynamic> ? Meal.fromJson(json['lunch']) : null,
-      snacks: json['snacks'] != null && json['snacks'] is Map<String, dynamic> ? Meal.fromJson(json['snacks']) : null,
-      dinner: json['dinner'] != null && json['dinner'] is Map<String, dynamic> ? Meal.fromJson(json['dinner']) : null,
+      meals: meals,
     );
   }
 }
 
 class Meal {
   final int id;
+  final String type; // New field to indicate meal type
   final String menuname;
   final int kcal;
   final int protien;
   final int carb;
   final int fat;
   final String image;
-  Meal({required this.id, required this.menuname, required this.kcal, required this.protien, required this.carb, required this.fat, required this.image});
+
+  Meal({
+    required this.id,
+    required this.type,
+    required this.menuname,
+    required this.kcal,
+    required this.protien,
+    required this.carb,
+    required this.fat,
+    required this.image,
+  });
+
   factory Meal.fromJson(Map<String, dynamic> json) {
     return Meal(
       id: json['id'],
+      type: json['type'], // Extracting meal type from JSON
       menuname: json['menuname'],
       kcal: json['kcal'],
       protien: json['protien'],
@@ -58,3 +74,4 @@ class Meal {
     );
   }
 }
+
